@@ -1,0 +1,33 @@
+
+<html>
+<div class="edit-laptop-container">
+  <div class="card">
+    <h2>Edit Laptop</h2>
+    <div class="actions1">
+  <button type="button" class="btn btn-secondary" (click)="goToDashboard()">
+    Go to Dashboard
+  </button>
+</div>
+
+    <form [formGroup]="laptopForm" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+        <div class="form-group" *ngFor="let field of laptopForm.controls | keyvalue">
+          <label [for]="field.key">{{ fieldLabels[field.key] || (field.key | titlecase) }}</label>
+          <input
+            [id]="field.key"
+            [formControlName]="field.key"
+            type="text"
+            class="form-control"
+            [placeholder]="'Enter ' + (fieldLabels[field.key] || (field.key | titlecase))"
+          />
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn btn-secondary" [disabled]="laptopForm.invalid">
+          Update Laptop
+        </button>
+        </div>
+    </form>
+  </div>
+</div>
+</html>

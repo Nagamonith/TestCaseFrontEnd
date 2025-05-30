@@ -1,0 +1,103 @@
+
+html, body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+  scroll-behavior: smooth;
+}/* Container styling */
+.edit-laptop-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 1rem;
+  background-color: #f4f8fb;
+  min-height: calc(100vh - 90px); /* Adjust if navbar is 90px */
+}
+
+/* Card styling */
+.edit-laptop-container .card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  max-width: 800px;
+  width: 100%;
+}
+
+/* Title */
+.edit-laptop-container h2 {
+  font-size: 1.8rem;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Grid layout */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Form group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.form-control {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: rgba(41, 48, 124, 255);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(41, 48, 124, 0.2);
+}
+
+/* Actions */
+.actions {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.actions1 {
+  margin-top: 2rem;
+  text-align: right;
+}
+/* Update Button */
+.btn-secondary {
+  background-color:#5a88d6;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #5a88d6;
+}
+
+.btn-secondary:disabled {
+  background-color: #a5b1c2;
+  cursor: not-allowed;
+}
