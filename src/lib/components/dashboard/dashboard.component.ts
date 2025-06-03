@@ -4,23 +4,29 @@ import { Router } from '@angular/router';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
+
+
+
 interface DeviceDetails {
-  manufacturerName: string;
-  processor: string;
-  installedRAM: string;
-  deviceID: string;
-  productID: string;
-  systemType: string;
-  penAndTouch: string;
-  edition: string;
-  version: string;
-  installedOn: string;
-  osBuild: string;
-  
- employeeId: string;
-  // experience: string;
-  assignedTo: string;
-  assetTag: Int32List;
+ assetTag: number;
+  employeeId: number;
+  empName: string;
+  make: string;
+  model: string;
+  cpu: string;
+  os: string;
+  ram: string;
+  hdd: string;
+  ssd: string;
+  mouse: string;
+  company: string;
+  phone: string;
+  email: string;
+  comments: string;
+  invoiceDate: string;
+  physicalIPAddress: string;
+  hostName: string;
+  otherItems: string;
 }
 
 interface LaptopDto {
@@ -88,5 +94,37 @@ export class LaptopDashboardComponent implements OnInit {
   closeModal() {
     this.selectedLaptop = null;
   }
+  // ...existing code...
+
+// showHistoryModal = false;
+// historyLaptop: LaptopDto | null = null;
+// historyData: { date: string, action: string }[] = [];
+
+// openHistory(laptop: LaptopDto) {
+//   this.historyLaptop = laptop;
+//   this.showHistoryModal = true;
+//   // Replace this with your actual API call to fetch history
+//   this.historyData = [
+//     { date: '2024-06-01', action: 'Assigned' },
+//     { date: '2024-06-10', action: 'Repaired' },
+//     { date: '2024-06-15', action: 'Returned' }
+//   ];
+// }
+// // openHistory(laptop: LaptopDto) {
+// //   this.historyLaptop = laptop;
+// //   this.showHistoryModal = true;
+// //   this.http.get<{ date: string, action: string }[]>(`https://localhost:7116/api/LaptopHistory/GetByLaptopId/${laptop.id}`)
+// //     .subscribe({
+// //       next: data => this.historyData = data,
+// //       error: () => this.historyData = []
+// //     });
+// // }
+
+
+// closeHistory() {
+//   this.showHistoryModal = false;
+//   this.historyLaptop = null;
+//   this.historyData = [];
+// }
 }
 

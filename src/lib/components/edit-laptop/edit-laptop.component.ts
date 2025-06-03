@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, RequiredValidator } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { LaptopService } from '../../../app/services/laptop.service';
 
 @Component({
@@ -15,56 +16,66 @@ export class EditLaptopComponent implements OnInit {
   laptopForm: FormGroup;
   laptopId!: number;
   fieldLabels: { [key: string]: string } = {
-  manufacturerName: 'Manufacturer Name',
-  processor: 'Processor',
-  installedRAM: 'Installed RAM',
-  deviceID: 'Device ID',
-  productID: 'Product ID',
-  systemType: 'System Type',
-  penAndTouch: 'Pen & Touch',
-  edition: 'Windows Edition',
-  version: 'Version',
-  installedOn: 'Installed On',
-  osBuild: 'OS Build',
-  // experience: 'Experience',
-  employeeId: 'Employee ID',
-  assignedTo: 'Assigned To'
-};
-
+    assetTag: 'Asset Tag',
+    employeeId: 'Employee ID',
+    empName: 'Employee Name',
+    make: 'Make',
+    model: 'Model',
+    cpu: 'CPU',
+    os: 'Operating System',
+    ram: 'RAM',
+    hdd: 'HDD',
+    ssd: 'SSD',
+    mouse: 'Mouse',
+    company: 'Company',
+    phone: 'Phone Number',
+    email: 'Email',
+    comments: 'Comments',
+    invoiceDate: 'Invoice Date',
+    physicalIPAddress: 'Physical IP Address',
+    hostName: 'Host Name',
+    otherItems: 'Other Items'
+  };
+ 
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    private http: HttpClient,
     private laptopService: LaptopService
   ) {
     this.laptopForm = this.fb.group({
-      manufacturerName: ['', Validators.required],
-      processor: ['', Validators.required],
-      installedRAM: ['', Validators.required],
-      deviceID: ['', Validators.required],
-      productID: ['', Validators.required],
-      systemType: [''],
-      penAndTouch: [''],
-      edition: [''],
-      version: [''],
-      installedOn: [''],
-      osBuild: [''],
-
-      // experience: [''],
-      employeeId: [''],
-      assignedTo: ['']
+      assetTag: ['', Validators.required],
+      employeeId: ['', Validators.required],
+      empName: ['', Validators.required],
+      make: ['', Validators.required],
+      model: ['', Validators.required],
+      cpu: ['', Validators.required],
+      os: ['', Validators.required],
+      ram: ['', Validators.required],
+      hdd: ['', Validators.required],
+      ssd: ['', Validators.required],
+      mouse: ['', Validators.required],
+      company: ['', Validators.required],
+      phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+      email: ['', [Validators.required, Validators.email]],
+      comments: [''],
+      invoiceDate: ['', Validators.required],
+      physicalIPAddress: ['', Validators.required],
+      hostName: ['', Validators.required],
+      otherItems: ['']
     });
   }
 
   ngOnInit(): void {
     this.laptopId = +this.route.snapshot.paramMap.get('id')!;
-    this.laptopService.getLaptopById(this.laptopId).subscribe(data => {
-      this.laptopForm.patchValue(data.deviceDetails);
-    });
+    this.http.get<any>(`https://localhost:7116/api/Device/GetLaptopDetailsById/${this.laptopId}`)
+      .subscribe(data => {
+        this.laptopForm.patchValue(data.deviceDetails);
+      });
   }
-
-  onSubmit(): void {
+    onSubmit(): void {
     if (this.laptopForm.valid) {
       const updatedLaptop = {
         id: this.laptopId,
@@ -76,6 +87,8 @@ export class EditLaptopComponent implements OnInit {
       });
     }
   }
-goToDashboard() {
-  this.router.navigate(['/dashboard']);  }
+
+  goToDashboard() {
+    this.router.navigate(['/dashboard']);
+  }
 }

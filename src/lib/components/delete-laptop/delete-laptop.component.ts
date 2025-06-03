@@ -22,7 +22,7 @@ export class DeleteLaptopComponent implements OnInit {
 
   ngOnInit(): void {
   this.laptopId = Number(this.route.snapshot.paramMap.get('id'));
-  const confirmed = window.confirm('Are you sure you want to delete this laptop?');
+  const confirmed = window.confirm('Are you sure you want to delete this Asset?');
 
   if (confirmed) {
     this.laptopService.deleteLaptop(this.laptopId).pipe(
@@ -33,7 +33,7 @@ export class DeleteLaptopComponent implements OnInit {
       })
     ).subscribe((res) => {
       if (res !== null) {
-        alert('Laptop deleted successfully!');
+        alert('Asset deleted successfully!');
       }
       this.router.navigate(['/dashboard']);
     });

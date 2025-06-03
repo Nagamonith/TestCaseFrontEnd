@@ -10,7 +10,7 @@
   <div class="container-fluid d-flex justify-content-between align-items-center">
     <a class="navbar-brand fs-4 fw-bold d-flex align-items-center" href="#">
       <img src="https://datalyzer.com/wp-content/uploads/2022/01/logo-3.png" width="60" height="60" class="me-2"> 
-      <span>INVENTORY</span>
+      <span>ASSET MANAGEMENT SYSTEM</span>
     </a>
     <div class="d-flex">
       <a class="nav-link text-white me-3" href="#" role="button" (click)="addLaptop(); $event.preventDefault()">ADD NEW DEVICE</a>
@@ -30,16 +30,16 @@
 
       <div>
         <h5 class="card-title">{{ laptop.deviceDetails.employeeId }}</h5>
-        <!-- <p class="card-text">{{ laptop.deviceDetails.manufacturerName }}</p> -->
-        <p><strong>Assigned To:</strong> {{ laptop.deviceDetails.assignedTo }}</p>
-        <p><strong>Processor:</strong> {{ laptop.deviceDetails.processor }}</p>
-        <p><strong>RAM:</strong> {{ laptop.deviceDetails.installedRAM }}</p>
-        <p><strong>Device ID:</strong> {{ laptop.deviceDetails.deviceID }}</p>  
+         <p><strong>Asset Tag:</strong> {{ laptop.deviceDetails.assetTag }}</p>
+<p><strong>Employee ID:</strong> {{ laptop.deviceDetails.employeeId }}</p>
+<p><strong>Employee Name:</strong> {{ laptop.deviceDetails.empName }}</p>
+<p><strong>Make:</strong> {{ laptop.deviceDetails.make }}</p>
       </div>
       <div class="btn-group-custom mt-3">
         <button class="btn btn-white" (click)="openModal(laptop)">View</button>
         <button class="btn btn-white" (click)="editLaptop(laptop.id)">Edit</button>
         <button class="btn btn-danger" (click)="deleteLaptop(laptop.id)">Delete</button>
+          <!-- <button class="btn btn-info" (click)="openHistory(laptop)">History</button> -->
       </div>
     </div>
   </div>
@@ -52,27 +52,28 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Device Details - {{ selectedLaptop.deviceDetails.manufacturerName }}</h5>
-       
+      <h5 class="modal-title">Device Details - {{ selectedLaptop.deviceDetails.assetTag }}</h5>       
       </div>
       <div class="modal-body">
-        <p><strong>Manufacturer Name:</strong> {{ selectedLaptop.deviceDetails.manufacturerName }}</p>
-        <p><strong>Processor:</strong> {{ selectedLaptop.deviceDetails.processor }}</p>
-        <p><strong>Installed RAM:</strong> {{ selectedLaptop.deviceDetails.installedRAM }}</p>
-        <p><strong>Device ID:</strong> {{ selectedLaptop.deviceDetails.deviceID }}</p>
-        <p><strong>Product ID:</strong> {{ selectedLaptop.deviceDetails.productID }}</p>
-        <p><strong>System Type:</strong> {{ selectedLaptop.deviceDetails.systemType }}</p>
-        <p><strong>Pen & Touch:</strong> {{ selectedLaptop.deviceDetails.penAndTouch }}</p>
-        <p><strong>Edition:</strong> {{ selectedLaptop.deviceDetails.edition }}</p>
-        <p><strong>Version:</strong> {{ selectedLaptop.deviceDetails.version }}</p>
-        <p><strong>Installed On:</strong> {{ selectedLaptop.deviceDetails.installedOn }}</p>
-        <p><strong>OS Build:</strong> {{ selectedLaptop.deviceDetails.osBuild }}</p>
-
-        <!-- <p><strong>Experience:</strong> {{ selectedLaptop.deviceDetails.experience }}</p> -->
-           <p><strong>Employee Id:</strong> {{ selectedLaptop.deviceDetails.employeeId }}</p>
-        <p><strong>Assigned To:</strong> {{ selectedLaptop.deviceDetails.assignedTo }}</p>
-
-                <p><strong>Asset Tag:</strong> {{ selectedLaptop.deviceDetails.assetTag}}</p>
+        <p><strong>Company Name:</strong> {{ selectedLaptop.deviceDetails.company }}</p>
+       <p><strong>Asset Tag:</strong> {{ selectedLaptop.deviceDetails.assetTag }}</p>
+       <p><strong>Employee ID:</strong> {{ selectedLaptop.deviceDetails.employeeId }}</p>
+       <p><strong>Employee Name:</strong> {{ selectedLaptop.deviceDetails.empName }}</p>
+       <p><strong>Phone:</strong> {{ selectedLaptop.deviceDetails.phone }}</p>
+       <p><strong>Email:</strong> {{ selectedLaptop.deviceDetails.email }}</p>
+       <p><strong>Make:</strong> {{ selectedLaptop.deviceDetails.make }}</p>
+       <p><strong>Model:</strong> {{ selectedLaptop.deviceDetails.model }}</p>
+       <p><strong>CPU:</strong> {{ selectedLaptop.deviceDetails.cpu }}</p>
+       <p><strong>Operating System:</strong> {{ selectedLaptop.deviceDetails.os }}</p>
+       <p><strong>RAM:</strong> {{ selectedLaptop.deviceDetails.ram }}</p>
+       <p><strong>HDD:</strong> {{ selectedLaptop.deviceDetails.hdd }}</p>
+       <p><strong>SSD:</strong> {{ selectedLaptop.deviceDetails.ssd }}</p>
+       <p><strong>Mouse provided:</strong> {{ selectedLaptop.deviceDetails.mouse }}</p>
+       <p><strong>Comments:</strong> {{ selectedLaptop.deviceDetails.comments }}</p>
+       <p><strong>Invoice Date:</strong> {{ selectedLaptop.deviceDetails.invoiceDate }}</p>
+       <p><strong>Physical IP Address:</strong> {{ selectedLaptop.deviceDetails.physicalIPAddress }}</p>
+       <p><strong>Host Name:</strong> {{ selectedLaptop.deviceDetails.hostName }}</p>
+       <p><strong>Other Items:</strong> {{ selectedLaptop.deviceDetails.otherItems }}</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
@@ -81,55 +82,62 @@
   </div>
 </div>
 
-
     <ng-template #tableView>
       <div class="table-responsive mt-4">
         <table class="table table-bordered table-hover table-striped align-middle">
           <thead class="table-dark text-center">
             <tr>
-              <th>Manufacturer</th>
-              <th>Processor</th>
-              <th>RAM</th>
-              <th>Device ID</th>
-              <th>Product ID</th>
-              <th>System Type</th>
-              <th>Pen & Touch</th>
-              <th>Edition</th>
-              <th>Version</th>
-              <th>Installed On</th>
-              <th>OS Build</th>
-              <!-- <th>Experience</th> -->
-              <th>Employee ID</th>
-              <th>Assigned To</th>
-
-               <th>Asset Tag</th>
-               
-              <th>Actions</th>
+             
+  <th>Asset Tag</th>
+  <th>Employee ID</th>
+  <th>Employee Name</th>
+  <th>Make</th>
+  <th>Model</th>
+  <th>CPU</th>
+  <th>Operating System</th>
+  <th>RAM</th>
+  <th>HDD</th>
+  <th>SSD</th>
+  <th>Mouse provided</th>
+  <th>Company provided</th>
+  <th>Phone</th>
+  <th>Email</th>
+  <th>Comments</th>
+  <th>Invoice Date</th>
+  <th>Physical IP Address</th>
+  <th>Host Name</th>
+  <th>Other Items</th>
+  <th>Actions</th>
              
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let laptop of laptops">
-              <td>{{ laptop.deviceDetails.manufacturerName }}</td>
-              <td>{{ laptop.deviceDetails.processor }}</td>
-              <td>{{ laptop.deviceDetails.installedRAM }}</td>
-              <td>{{ laptop.deviceDetails.deviceID }}</td>
-              <td>{{ laptop.deviceDetails.productID }}</td>
-              <td>{{ laptop.deviceDetails.systemType }}</td>
-              <td>{{ laptop.deviceDetails.penAndTouch }}</td>
-              <td>{{ laptop.deviceDetails.edition }}</td>
-              <td>{{ laptop.deviceDetails.version }}</td>
-              <td>{{ laptop.deviceDetails.installedOn }}</td>
-              <td>{{ laptop.deviceDetails.osBuild }}</td>
-
-              <!-- <td>{{ laptop.deviceDetails.experience }}</td> -->
-               <td>{{ laptop.deviceDetails.employeeId}}</td>
-              <td>{{ laptop.deviceDetails.assignedTo }}</td>
+             
               <td>{{ laptop.deviceDetails.assetTag }}</td>
+  <td>{{ laptop.deviceDetails.employeeId }}</td>
+  <td>{{laptop.deviceDetails.empName }}</td>
+  <td>{{ laptop.deviceDetails.make }}</td>
+  <td>{{ laptop.deviceDetails.model }}</td>
+  <td>{{ laptop.deviceDetails.cpu }}</td>
+  <td>{{ laptop.deviceDetails.os }}</td>
+  <td>{{ laptop.deviceDetails.ram }}</td>
+  <td>{{ laptop.deviceDetails.hdd }}</td>
+  <td>{{ laptop.deviceDetails.ssd }}</td>
+  <td>{{ laptop.deviceDetails.mouse }}</td>
+  <td>{{ laptop.deviceDetails.company }}</td>
+  <td>{{ laptop.deviceDetails.phone }}</td>
+  <td>{{ laptop.deviceDetails.email }}</td>
+  <td>{{ laptop.deviceDetails.comments }}</td>
+  <td>{{ laptop.deviceDetails.invoiceDate }}</td>
+  <td>{{ laptop.deviceDetails.physicalIPAddress }}</td>
+  <td>{{ laptop.deviceDetails.hostName }}</td>
+  <td>{{ laptop.deviceDetails.otherItems }}</td>
               <td>
                 <div class="d-flex gap-2">
                   <button class="btn btn-whitebtn-sm" (click)="editLaptop(laptop.id)">Edit</button>
                   <button class="btn btn-danger btn-sm" (click)="deleteLaptop(laptop.id)">Delete</button>
+                      <!-- <button class="btn btn-info btn-sm" (click)="openHistory(laptop)">History</button> -->
                 </div>
               </td>
             </tr>

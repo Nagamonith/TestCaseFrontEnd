@@ -28,7 +28,7 @@ export class AddLaptopComponent {
   installedOn: 'Installed On',
   osBuild: 'OS Build',
 
-  // experience: 'Experience',
+  
   employeeID: 'Employee ID',
   assignedTo: 'Assigned To'};
 
@@ -38,21 +38,26 @@ export class AddLaptopComponent {
     private router: Router
   ) {
     this.laptopForm = this.fb.group({
-      manufacturerName: ['', Validators.required],
-      Processor: ['', Validators.required],
-      installedRAM: ['', Validators.required],
-      deviceID: ['', Validators.required],
-      productID: ['', Validators.required],
-      systemType: ['', Validators.required],
-      penAndTouch: [''],
-      edition: [''],
-      version: [''],
-      installedOn: [''],
-      osBuild: [''],
-
-      // experience: [''],
-       employeeID:[''],
-      assignedTo: ['']
+     
+      assetTag: ['', Validators.required],
+  employeeId: ['', Validators.required],
+  empName:  ['', Validators.required],
+  make: ['', Validators.required],
+  model: ['', Validators.required],
+  cpu: ['', Validators.required],
+  os: ['', Validators.required],
+  ram: ['', Validators.required],
+  hdd: ['', Validators.required],
+  ssd: ['', Validators.required],
+  mouse: ['', Validators.required],
+  company:  ['', Validators.required],
+  phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
+  email: ['', [Validators.required, Validators.email]],
+  comments: [''],
+  invoiceDate: ['', Validators.required],
+  physicalIPAddress: ['', Validators.required],
+  hostName: ['', Validators.required],
+  otherItems: ['']
     });
   }
 
