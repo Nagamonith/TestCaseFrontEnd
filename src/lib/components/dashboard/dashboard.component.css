@@ -244,3 +244,44 @@ body.modal-open {
   font-weight: bold;
   color: white; /* or your preferred color */
 }
+
+/* Make the form take full width and space out children */
+form.d-flex.align-items-center {
+  gap: 1rem;                /* Increase space between input and buttons */
+  width: 100%;              /* Take full width of parent */
+  max-width: 300px;         /* Optional: limit max width */
+  margin-bottom: 0;
+}
+
+/* Make the input wider */
+form.d-flex .form-control {
+  width: 100%;             /* Take full width of parent */
+  min-width: 280px;         /* Increase min width */
+  flex: 1 1 auto;  
+        
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+}
+
+/* Style the buttons */
+form.d-flex .btn {
+  border-radius: 20px;
+  padding: 0.5rem 1.5rem;
+   width: 100%;              /* Take full width of parent */
+  max-width: 100px;  
+  white-space: 50px;
+  font-size: 1rem;
+}
+/* Make Search and Clear button text more spacious */
+/* Make Search and Clear buttons stand out on a blue navbar */
+.btn.btn-outline-primary,
+.btn.btn-outline-secondary {
+    width: 100%;              /* Take full width of parent */
+  max-width: 100px;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 1rem;
+  border-radius: 20px;
+}

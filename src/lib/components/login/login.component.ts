@@ -1,9 +1,8 @@
-
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router'; // ✅ Import Router
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -17,9 +16,9 @@ export class LoginComponent {
   password: string = '';
   message: string = '';
 
-  private apiBaseUrl = 'https://localhost:7116'; // ✅ Update this if needed
+  private apiBaseUrl = 'https://localhost:7116';
 
-  constructor(private http: HttpClient, private router: Router) {} // ✅ Inject Router
+  constructor(private http: HttpClient, private router: Router) {}
 
   onSubmit() {
     const payload = {
@@ -32,7 +31,8 @@ export class LoginComponent {
         next: (response) => {
           this.message = response;
           alert('Login Successful');
-          this.router.navigate(['/dashboard']); // ✅ Navigate to dashboard on success
+          localStorage.setItem('isLoggedIn', 'true'); // <-- Set login flag
+          this.router.navigate(['/dashboard']);
         },
         error: (error) => {
           if (error.status === 401) {

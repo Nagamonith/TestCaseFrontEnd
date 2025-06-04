@@ -5,20 +5,14 @@ import { AddLaptopComponent } from '../lib/components/add-laptop/add-laptop.comp
 import { EditLaptopComponent } from '../lib/components/edit-laptop/edit-laptop.component';
 import { DeleteLaptopComponent } from '../lib/components/delete-laptop/delete-laptop.component';
 import { AssetViewComponent } from '../lib/components/asset-view/asset-view.component';
-
-
-
+import { AuthGuard } from './auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: LaptopDashboardComponent },
-  {path: 'add-laptop', component: AddLaptopComponent }, 
-  { path: 'edit-laptop/:id', component: EditLaptopComponent },
-  { path: 'delete-laptop/:id', component: DeleteLaptopComponent },
-  { path: 'asset-view/:assetTag', component: AssetViewComponent }
-
-  
-
-
+  { path: 'asset-view/:assetTag', component: AssetViewComponent }, // Public route
+  { path: 'dashboard', component: LaptopDashboardComponent, canActivate: [AuthGuard] },
+  { path: 'add-laptop', component: AddLaptopComponent, canActivate: [AuthGuard] },
+  { path: 'edit-laptop/:id', component: EditLaptopComponent, canActivate: [AuthGuard] },
+  { path: 'delete-laptop/:id', component: DeleteLaptopComponent, canActivate: [AuthGuard] }
 ];

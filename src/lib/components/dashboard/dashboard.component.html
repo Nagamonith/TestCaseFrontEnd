@@ -12,6 +12,12 @@
       <img src="https://datalyzer.com/wp-content/uploads/2022/01/logo-3.png" width="60" height="60" class="me-2"> 
       <span>ASSET MANAGEMENT SYSTEM</span>
     </a>
+    <form class="d-flex align-items-center gap-2" (submit)="onSearch($event)" style="margin-bottom:0;">
+  <input class="form-control" type="search" placeholder="Search by Employee ID"
+         [(ngModel)]="searchEmployeeId" name="searchEmployeeId">
+  <button class="btn btn-outline-primary" type="submit">Search</button>
+  <button class="btn btn-outline-secondary" type="button" (click)="clearSearch()">Clear</button>
+</form>
     <div class="d-flex">
       <a class="nav-link text-white me-3" href="#" role="button" (click)="addLaptop(); $event.preventDefault()">ADD NEW DEVICE</a>
       <a class="nav-link text-white me-3" href="#" role="button" [class.fw-bold]="isCardView" (click)="isCardView = true; $event.preventDefault()">CARD VIEW</a>
@@ -29,7 +35,8 @@
   
 
       <div>
-        <h5 class="card-title">{{ laptop.deviceDetails.employeeId }}</h5>
+        <h5 class="card-title">{{ laptop.deviceDetails.employeeId }}</h5>      
+         <div class="btn-group-custom mt-3"></div><button class="btn btn-info" (click)="openHistory(laptop)">History</button>
          <p><strong>Asset Tag:</strong> {{ laptop.deviceDetails.assetTag }}</p>
 <p><strong>Employee ID:</strong> {{ laptop.deviceDetails.employeeId }}</p>
 <p><strong>Employee Name:</strong> {{ laptop.deviceDetails.empName }}</p>
@@ -39,7 +46,8 @@
         <button class="btn btn-white" (click)="openModal(laptop)">View</button>
         <button class="btn btn-white" (click)="editLaptop(laptop.id)">Edit</button>
         <button class="btn btn-danger" (click)="deleteLaptop(laptop.id)">Delete</button>
-          <!-- <button class="btn btn-info" (click)="openHistory(laptop)">History</button> -->
+
+     
       </div>
     </div>
   </div>
@@ -137,7 +145,8 @@
                 <div class="d-flex gap-2">
                   <button class="btn btn-whitebtn-sm" (click)="editLaptop(laptop.id)">Edit</button>
                   <button class="btn btn-danger btn-sm" (click)="deleteLaptop(laptop.id)">Delete</button>
-                      <!-- <button class="btn btn-info btn-sm" (click)="openHistory(laptop)">History</button> -->
+                  <button class="btn btn-info btn-sm" (click)="openHistory(laptop)">History</button>
+              
                 </div>
               </td>
             </tr>
@@ -146,4 +155,75 @@
       </div>
     </ng-template>
   </div>
+  <div class="modal-backdrop" *ngIf="showHistoryModal" (click)="closeHistory()"></div>
+<div class="modal" *ngIf="showHistoryModal" tabindex="-1" role="dialog" style="display: block;">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+              History for Asset Tag: {{ historyLaptop?.deviceDetails?.assetTag || '' }}        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeHistory()"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="historyLoading">Loading...</div>
+        <div *ngIf="historyError" class="text-danger">{{ historyError }}</div>
+        <div *ngIf="!historyLoading && !historyError && historyData.length === 0">
+          No history found.
+        </div>
+
+        <div *ngIf="historyData.length > 0">
+          <!-- <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>Date</th>
+                <th>Device Details (JSON)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let h of historyData">
+                <td>{{ h.action }}</td>
+                <td>{{ h.changeDate | date:'short' }}</td>
+                <td>
+                  <pre style="white-space: pre-wrap; word-break: break-all;">{{ h.deviceJson }}</pre>
+                </td>
+              </tr>
+            </tbody>
+          </table> -->
+          <table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>Action</th>
+      <th>Date</th>
+      <th>Changed Fields</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let h of historyData">
+      <td>{{ h.action }}</td>
+      <td>{{ h.changeDate | date:'short' }}</td>
+      <td>
+  <div *ngIf="h.changedFields && (getObjectKeys(h.changedFields).length > 0); else noChange">
+    <div *ngFor="let key of getObjectKeys(h.changedFields)">
+      <strong>{{ key }}:</strong>
+      <span class="text-danger">{{ h.changedFields[key].oldValue }}</span>
+      <span class="mx-1">→</span>
+      <span class="text-success">{{ h.changedFields[key].newValue }}</span>
+    </div>
+  </div>
+  <ng-template #noChange>
+    <span>No changes</span>
+  </ng-template>
+</td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeHistory()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
