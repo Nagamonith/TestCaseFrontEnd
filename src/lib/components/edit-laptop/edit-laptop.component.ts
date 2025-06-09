@@ -15,6 +15,12 @@ import { LaptopService } from '../../../app/services/laptop.service';
 export class EditLaptopComponent implements OnInit {
   laptopForm: FormGroup;
   laptopId!: number;
+
+
+    showCommentModal = false;
+  commentForm!: FormGroup;
+
+
   fieldLabels: { [key: string]: string } = {
     assetTag: 'Asset Tag',
     employeeId: 'Employee ID',
@@ -35,6 +41,7 @@ export class EditLaptopComponent implements OnInit {
     physicalIPAddress: 'Physical IP Address',
     hostName: 'Host Name',
     otherItems: 'Other Items'
+    
   };
  
 
@@ -73,7 +80,14 @@ export class EditLaptopComponent implements OnInit {
     this.http.get<any>(`https://localhost:7116/api/Device/GetLaptopDetailsById/${this.laptopId}`)
       .subscribe(data => {
         this.laptopForm.patchValue(data.deviceDetails);
+        
       });
+      this.commentForm = this.fb.group({
+      date: [this.getToday(), Validators.required],
+      commentor: ['', Validators.required],
+      comment: ['', Validators.required]
+    });
+
   }
     onSubmit(): void {
     if (this.laptopForm.valid) {
@@ -83,12 +97,40 @@ export class EditLaptopComponent implements OnInit {
       };
       this.laptopService.updateLaptop(updatedLaptop).subscribe(() => {
         alert('Laptop updated successfully!');
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['assets/dashboard']);
       });
     }
   }
 
   goToDashboard() {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['assets/dashboard']);
+  }
+
+   getToday(): string {
+    const today = new Date();
+    return today.toISOString().substring(0, 10);
+  }
+
+  openCommentModal() {
+    this.showCommentModal = true;
+    this.commentForm.reset({ date: this.getToday() });
+  }
+
+  closeCommentModal() {
+    this.showCommentModal = false;
+  }
+
+  submitComment() {
+    if (this.commentForm.valid) {
+      const payload = {
+        assetId: this.laptopId,
+        ...this.commentForm.value
+      };
+      // Save comment to backend (adjust endpoint as needed)
+      this.http.post('https://localhost:7116/api/Device/AddComment', payload).subscribe(() => {
+        alert('Comment added!');
+        this.closeCommentModal();
+      });
+    }
   }
 }

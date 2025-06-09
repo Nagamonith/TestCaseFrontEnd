@@ -21,13 +21,18 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
+            "src/assets",
               {
                 "glob": "**/*",
                 "input": "public"
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "src/assets/scss/application-main.scss",
+              "src/assets/css/dl-icons.min.css",
+              "src/assets/css/datalyzer-icons.css"
+
             ],
             "scripts": []
           },

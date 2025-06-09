@@ -1,5 +1,6 @@
 
 <html>
+  
 <div class="edit-laptop-container">
   <div class="card">
     <h2>Edit Asset</h2>
@@ -23,11 +24,46 @@
         </div>
       </div>
       <div class="actions">
-        <button type="submit" class="btn btn-secondary" [disabled]="laptopForm.invalid">
+
+        <button type="button" class="btn btn-secondary" style="margin-right: 10px;" (click)="openCommentModal()">
+       Add Comment
+         </button>
+        <button type="submit" class="btn btn-secondary" style="margin-right: 10px;" [disabled]="laptopForm.invalid">
           Update Asset
         </button>
         </div>
     </form>
   </div>
+
+
+  <div class="modal-backdrop" *ngIf="showCommentModal" (click)="closeCommentModal()"></div>
+<div class="modal" *ngIf="showCommentModal" tabindex="-1" style="display:block;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Comment</h5>
+        <button type="button" class="btn-close" (click)="closeCommentModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="commentForm" (ngSubmit)="submitComment()">
+          <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input class="form-control" type="date" formControlName="date">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Commentor Name</label>
+            <input class="form-control" formControlName="commentor" placeholder="Enter your name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Comment</label>
+            <textarea class="form-control" formControlName="comment" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary"  style="margin-right: 10px;" [disabled]="commentForm.invalid">Save Comment</button>
+          <button type="button" class="btn btn-primary" (click)="closeCommentModal()">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 </html>

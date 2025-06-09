@@ -32,7 +32,7 @@ export class LoginComponent {
           this.message = response;
           alert('Login Successful');
           localStorage.setItem('isLoggedIn', 'true'); // <-- Set login flag
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/assets']);
         },
         error: (error) => {
           if (error.status === 401) {

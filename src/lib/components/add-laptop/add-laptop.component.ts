@@ -16,21 +16,7 @@ import { Router } from '@angular/router';
 export class AddLaptopComponent {
   laptopForm: FormGroup;
    fieldLabels: { [key: string]: string } = {
-  manufacturerName: 'Manufacturer Name',
-  processor: 'Processor',
-  installedRAM: 'Installed RAM',
-  deviceID: 'Device ID',
-  productID: 'Product ID',
-  systemType: 'System Type',
-  penAndTouch: 'Pen & Touch',
-  edition: 'Windows Edition',
-  version: 'Version',
-  installedOn: 'Installed On',
-  osBuild: 'OS Build',
-
-  
-  employeeID: 'Employee ID',
-  assignedTo: 'Assigned To'};
+ };
 
   constructor(
     private fb: FormBuilder,
@@ -72,7 +58,7 @@ export class AddLaptopComponent {
         next: () => {
           const confirmed = window.confirm('Laptop added successfully! Go back to dashboard?');
           if (confirmed) {
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['assets/dashboard']);
           }
         },
         error: (err) => {
@@ -82,5 +68,5 @@ export class AddLaptopComponent {
     }
   }
   goToDashboard() {
-  this.router.navigate(['/dashboard']);  }
+  this.router.navigate(['assets/dashboard']);  }
 }

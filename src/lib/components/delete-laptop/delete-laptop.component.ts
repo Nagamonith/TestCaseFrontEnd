@@ -28,17 +28,17 @@ export class DeleteLaptopComponent implements OnInit {
     this.laptopService.deleteLaptop(this.laptopId).pipe(
       catchError((err) => {
        
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['assets/dashboard']);
         return of(null); // Prevent further execution
       })
     ).subscribe((res) => {
       if (res !== null) {
         alert('Asset deleted successfully!');
       }
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['assets/dashboard']);
     });
   } else {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['assets/dashboard']);
   }
 }
 }
