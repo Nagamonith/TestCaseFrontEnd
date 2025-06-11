@@ -1,6 +1,5 @@
 
 <html>
-  
 <div class="edit-laptop-container">
   <div class="card">
     <h2>Edit Asset</h2>
@@ -9,8 +8,7 @@
     Go to Dashboard
   </button>
 </div>
-
-    <form [formGroup]="laptopForm" (ngSubmit)="onSubmit()">
+<form [formGroup]="laptopForm" (ngSubmit)="onSubmit()">
       <div class="form-grid">
         <div class="form-group" *ngFor="let field of laptopForm.controls | keyvalue">
           <label [for]="field.key">{{ fieldLabels[field.key] || (field.key | titlecase) }}</label>
@@ -19,25 +17,21 @@
             [formControlName]="field.key"
             type="text"
             class="form-control"
-            [placeholder]="'Enter ' + (fieldLabels[field.key] || (field.key | titlecase))"
-          />
+            [placeholder]="'Enter ' + (fieldLabels[field.key] || (field.key | titlecase))"/>
         </div>
       </div>
       <div class="actions">
-
-        <button type="button" class="btn btn-secondary" style="margin-right: 10px;" (click)="openCommentModal()">
-       Add Comment
+ <button type="button" class="btn btn-secondary" style="margin-right: 10px;" [disabled]="laptopForm.invalid" (click)="openCommentModal()">
+          Add Comment
          </button>
-        <button type="submit" class="btn btn-secondary" style="margin-right: 10px;" [disabled]="laptopForm.invalid">
+        <button type="submit" class="btn btn-secondary" style="margin-right: 10px;" [disabled]="laptopForm.invalid || !commentAdded">
           Update Asset
         </button>
         </div>
     </form>
   </div>
-
-
-  <div class="modal-backdrop" *ngIf="showCommentModal" (click)="closeCommentModal()"></div>
-<div class="modal" *ngIf="showCommentModal" tabindex="-1" style="display:block;">
+ <div class="modal-backdrop" *ngIf="showCommentModal" (click)="closeCommentModal()"></div>
+<div class="modal" *ngIf="showCommentModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">

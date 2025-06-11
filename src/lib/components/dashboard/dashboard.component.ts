@@ -5,8 +5,8 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ElementRef, HostListener, ViewChild } from '@angular/core';
-
-
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 interface DeviceDetails {
  assetTag: number;
@@ -189,4 +189,82 @@ onSearch(event: Event) {
       this.searchExpanded = false;
     }
   }
+  exportToExcel() {
+  const data = this.laptops.map(l => ({
+    'Asset Tag': l.deviceDetails.assetTag,
+    'Employee ID': l.deviceDetails.employeeId,
+    'Employee Name': l.deviceDetails.empName,
+    'Make': l.deviceDetails.make,
+    'Model': l.deviceDetails.model,
+    'CPU': l.deviceDetails.cpu,
+    'Operating System': l.deviceDetails.os,
+    'RAM': l.deviceDetails.ram,
+    'HDD': l.deviceDetails.hdd,
+    'SSD': l.deviceDetails.ssd,
+    'Mouse provided': l.deviceDetails.mouse,
+    'Company': l.deviceDetails.company,
+    'Phone': l.deviceDetails.phone,
+    'Email': l.deviceDetails.email,
+    'Comments': l.deviceDetails.comments,
+    'Invoice Date': l.deviceDetails.invoiceDate,
+    'Physical IP Address': l.deviceDetails.physicalIPAddress,
+    'Host Name': l.deviceDetails.hostName,
+    'Other Items': l.deviceDetails.otherItems
+  }));
+
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Assets');
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  saveAs(blob, 'Datalyzer_Asset_Report.xlsx');
+}
+// ...existing code...
+
+exportAllHistoryToExcel() {
+  // Fetch all history for all laptops
+  
+  const requests = this.allLaptops.map(laptop =>
+    this.http.get<LaptopHistory[]>(`https://localhost:7116/api/Device/GetComments/${laptop.id}`)
+      .toPromise()
+      .then(history => ({ 
+        employeeId: laptop.deviceDetails.employeeId,
+        empName: laptop.deviceDetails.empName,
+        assetTag: laptop.deviceDetails.assetTag,
+        history: history || []
+      }))
+  );
+
+  Promise.all(requests).then(results => {
+    // Flatten the data for Excel
+    const data: any[] = [];
+    results.forEach(item => {
+      item.history.forEach((h: LaptopHistory) => {
+        data.push({
+          'Asset Tag': item.assetTag,
+          'Employee ID': item.employeeId,
+          'Employee Name': item.empName,
+          'Date': h.date,
+          'Commentor': h.commentor,
+          'Comment': h.comment
+        });
+      });
+    });
+
+    if (data.length === 0) {
+      alert('No history data found.');
+      return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Asset History');
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(blob, 'Datalyzer_Asset_History_Report.xlsx');
+  }).catch(() => {
+    alert('Failed to export asset history.');
+  });
+}
+
 }

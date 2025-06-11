@@ -15,6 +15,7 @@ import { LaptopService } from '../../../app/services/laptop.service';
 export class EditLaptopComponent implements OnInit {
   laptopForm: FormGroup;
   laptopId!: number;
+  commentAdded = false;
 
 
     showCommentModal = false;
@@ -126,9 +127,11 @@ export class EditLaptopComponent implements OnInit {
         assetId: this.laptopId,
         ...this.commentForm.value
       };
-      // Save comment to backend (adjust endpoint as needed)
+    
       this.http.post('https://localhost:7116/api/Device/AddComment', payload).subscribe(() => {
         alert('Comment added!');
+
+         this.commentAdded = true;
         this.closeCommentModal();
       });
     }

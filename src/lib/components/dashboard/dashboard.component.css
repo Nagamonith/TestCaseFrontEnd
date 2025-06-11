@@ -235,6 +235,8 @@ html, body {
   border-color: black;
 }
 
+
+
 /* Modal styles */
 .modal-backdrop {
   position: fixed;
@@ -339,10 +341,7 @@ html, body {
   gap: 0.5rem;
 }
 
-/* Remove transform/slide logic for search-expanded */
-.nav-actions-group.search-expanded {
-  /* No transform needed */
-}
+
 
 /* Search container is inline, not absolute */
 .search-container {
