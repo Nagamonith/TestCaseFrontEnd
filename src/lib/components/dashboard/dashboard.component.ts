@@ -28,6 +28,8 @@ interface DeviceDetails {
   physicalIPAddress: string;
   hostName: string;
   otherItems: string;
+   features?: string[];
+  status?: string; // Optional field for status
 }
 
 interface LaptopHistory {
@@ -189,27 +191,32 @@ onSearch(event: Event) {
       this.searchExpanded = false;
     }
   }
-  exportToExcel() {
-  const data = this.laptops.map(l => ({
-    'Asset Tag': l.deviceDetails.assetTag,
+
+
+exportToExcel() {
+  const data = this.laptops.map((l, idx) => ({
+    'Sl.no': idx + 1,
+    'Asset Name': 'Laptop',
+    'Asset Features': [
+      l.deviceDetails.make,
+      l.deviceDetails.model,
+      l.deviceDetails.cpu,
+      l.deviceDetails.os,
+      l.deviceDetails.ram,
+      l.deviceDetails.hdd,
+      l.deviceDetails.ssd
+    ].filter(Boolean).join(', '), // Merge and skip empty values
+    'Asset ID': l.deviceDetails.assetTag,
+    'Asset Owner': 'IT admin',
+    'Asset Custodian': l.deviceDetails.empName,
     'Employee ID': l.deviceDetails.employeeId,
-    'Employee Name': l.deviceDetails.empName,
-    'Make': l.deviceDetails.make,
-    'Model': l.deviceDetails.model,
-    'CPU': l.deviceDetails.cpu,
-    'Operating System': l.deviceDetails.os,
-    'RAM': l.deviceDetails.ram,
-    'HDD': l.deviceDetails.hdd,
-    'SSD': l.deviceDetails.ssd,
-    'Mouse provided': l.deviceDetails.mouse,
-    'Company': l.deviceDetails.company,
-    'Phone': l.deviceDetails.phone,
-    'Email': l.deviceDetails.email,
-    'Comments': l.deviceDetails.comments,
-    'Invoice Date': l.deviceDetails.invoiceDate,
-    'Physical IP Address': l.deviceDetails.physicalIPAddress,
-    'Host Name': l.deviceDetails.hostName,
-    'Other Items': l.deviceDetails.otherItems
+    'Employee Phone Number': l.deviceDetails.phone,
+    'Employee Email': l.deviceDetails.email,
+    'Employee Department': 'Engineering',
+    'Date of Issue': l.deviceDetails.invoiceDate,
+    'Date of Return': '',
+    
+    'Status': l.deviceDetails.status || ''
   }));
 
   const worksheet = XLSX.utils.json_to_sheet(data);
