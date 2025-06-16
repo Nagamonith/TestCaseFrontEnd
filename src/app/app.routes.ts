@@ -7,6 +7,8 @@ import { DeleteLaptopComponent } from '../lib/components/delete-laptop/delete-la
 import { AssetViewComponent } from '../lib/components/asset-view/asset-view.component';
 import { AuthGuard } from './auth.guard';
 import { LayoutsComponent } from './layouts/layouts.component';
+import { PreDashboardComponent } from '../lib/components/pre-dashboard/pre-dashboard.component';
+import { AssetDashboardComponent } from '../lib/components/lib/components/asset-dashboard.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -20,7 +22,10 @@ export const routes: Routes = [
 
   { path: 'add-laptop', component: AddLaptopComponent, canActivate: [AuthGuard] },
   { path: 'edit-laptop/:id', component: EditLaptopComponent, canActivate: [AuthGuard] },
-  { path: 'delete-laptop/:id', component: DeleteLaptopComponent, canActivate: [AuthGuard] }
+  { path: 'delete-laptop/:id', component: DeleteLaptopComponent, canActivate: [AuthGuard] },
+  { path: 'pre-dashboard', component: PreDashboardComponent, canActivate: [AuthGuard] },
+   {path: 'asset-dashboard', component: AssetDashboardComponent }
+   
     ]
   },
  

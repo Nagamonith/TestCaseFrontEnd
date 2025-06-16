@@ -7,10 +7,10 @@
     </li>
     <li>
       <a placement="end" >
-        <span [innerHTML]="leftNavIcon.Catalogue">&nbsp;</span>
+        <span [innerHTML]="leftNavIcon.Catalogue" (click)="navigatePreDashboard()">&nbsp;</span>
       </a>  
     </li>
-    <li>
+    <!-- <li>
       <a placement="end" >
         <span [innerHTML]="leftNavIcon.Report">&nbsp;</span>
       </a>
@@ -44,7 +44,7 @@
       <a placement="end" >
         <span [innerHTML]="leftNavIcon.Help">&nbsp;</span>
       </a>
-    </li>
+    </li> -->
   </ul>
 
   <ul class="lower-nav">

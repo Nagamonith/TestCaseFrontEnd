@@ -19,7 +19,7 @@ html, body {
 
 /* Navbar */
 .custom-navbar {
-  background-color: #29307c !important;
+  background-color: #ebebeb !important;
   padding: 1rem;
   border-color: black;
   height: 60px;
@@ -47,7 +47,7 @@ html, body {
 .custom-navbar .navbar-brand span {
   font-size: 1.8rem;
   font-weight: bold;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .nav-link {
@@ -393,3 +393,46 @@ html, body {
   }
 }
 
+/* ...existing code... */
+
+/* Responsive navigation for tablets and mobile */
+@media (max-width: 900px) {
+  .nav-actions-group {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: flex-start;
+    width: 100%;
+  }
+  .nav-link {
+    font-size: 0.95rem;
+    padding: 0.3rem 0.7rem;
+    margin-right: 0.5rem !important;
+    margin-bottom: 0;
+    min-width: 110px;
+  }
+  .search-container {
+    margin-left: 0.5rem;
+    width: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav-actions-group {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    justify-content: flex-start;
+    width: 100%;
+  }
+  .nav-link {
+    font-size: 0.9rem;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.3rem !important;
+    min-width: 90px;
+  }
+  .search-container {
+    margin-left: 0.3rem;
+    width: auto;
+  }
+}
+
+/* ...existing code... */

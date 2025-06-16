@@ -10,19 +10,19 @@
         <span>Asset Management</span>
       </a>
       <div class="nav-actions-group d-flex align-items-center" [class.search-expanded]="searchExpanded">
-        <a class="nav-link text-white me-3" href="#" role="button" (click)="addLaptop(); $event.preventDefault()">ADD NEW DEVICE</a>
-        <a class="nav-link text-white me-3" href="#" role="button"
+        <a class="nav-link text-black me-3" href="#" role="button" (click)="addLaptop(); $event.preventDefault()">ADD NEW DEVICE</a>
+        <a class="nav-link text-black me-3" href="#" role="button"
            [class.fw-bold]="isCardView"
            (click)="setCardView(true); $event.preventDefault()">CARD VIEW</a>
-        <a class="nav-link text-white me-3" href="#" role="button"
+        <a class="nav-link text-black me-3" href="#" role="button"
            [class.fw-bold]="!isCardView"
            (click)="setCardView(false); $event.preventDefault()">GRID VIEW</a>
           
           
-           <a class="nav-link text-white me-3" href="#" role="button" (click)="exportToExcel(); $event.preventDefault()">
+           <a class="nav-link text-black me-3" href="#" role="button" (click)="exportToExcel(); $event.preventDefault()">
   <i class="bi bi-file-earmark-excel"></i> EXPORT REPORT
 </a>
-<a class="nav-link text-white me-3" href="#" role="button" (click)="exportAllHistoryToExcel(); $event.preventDefault()">
+<a class="nav-link text-black me-3" href="#" role="button" (click)="exportAllHistoryToExcel(); $event.preventDefault()">
   <i class="bi bi-clock-history"></i> EXPORT ASSET HISTORY
 </a>
 <div class="search-container d-flex align-items-center" #searchContainer [class.expanded]="searchExpanded">

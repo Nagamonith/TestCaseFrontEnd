@@ -88,7 +88,12 @@ export class LeftnavigationbarComponent implements OnInit {
   navigateDashboard() {
     this.router.navigate(['assets/dashboard']);
   }
- 
+
+  navigatePreDashboard() {
+    this.router.navigate(['assets/pre-dashboard']);
+    
+  }
+
   // toggleClass(id:number){
   //   const atags = this.navbar.nativeElement.querySelectorAll('a')
   //   for(let tag in atags){

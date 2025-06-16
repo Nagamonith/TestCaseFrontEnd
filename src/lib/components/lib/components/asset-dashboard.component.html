@@ -1,0 +1,20 @@
+ <div class="container">
+      <h2>Asset Dashboard</h2>
+      <label>Select Asset Type:</label>
+      <select [(ngModel)]="selectedType" (change)="fetchAssets()" class="form-select mb-3">
+        <option *ngFor="let type of assetTypes" [value]="type">{{ type }}</option>
+      </select>
+      <table class="table table-bordered" *ngIf="assets.length">
+        <thead>
+          <tr>
+            <th *ngFor="let col of columns">{{ col }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let asset of assets">
+            <td *ngFor="let col of columns">{{ asset[col] }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="!assets.length && selectedType">No assets found.</div>
+    </div>

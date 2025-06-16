@@ -1,0 +1,78 @@
+
+<div class="pre-dashboard-container">
+  <div class="header">
+    <h2>Asset Overview</h2>
+    <div>
+      <button class="btn btn-primary me-2" (click)="openAddTypeModal()">Add Asset Type</button>
+      <button class="btn btn-success" (click)="openAddAssetModal()" [disabled]="!selectedAssetType">
+        Add Asset
+      </button>
+      <button class="btn btn-outline-primary ms-2" (click)="exportReport()" [disabled]="!selectedAssetType">
+        Export Report
+      </button>
+      <!-- Add this where you want the button to appear -->
+<button class="btn btn-primary" (click)="goToAssetDashboard()">
+  Go to Asset Dashboard
+</button>
+    </div>
+  </div>
+  <div class="asset-type-selector">
+    <label for="assetType">Select Asset Type:</label>
+    <select id="assetType" [(ngModel)]="selectedAssetType" class="form-select">
+      <option value="" disabled>Select type</option>
+      <option *ngFor="let type of assetTypes" [value]="type">{{ type }}</option>
+    </select>
+  </div>
+  <div class="asset-summary-cards">
+    <div class="summary-card" *ngFor="let summary of assetSummaries">
+      <h4>{{ summary.type }}</h4>
+      <p>{{ summary.count }} assets</p>
+    </div>
+  </div>
+
+  <!-- Modal for adding new asset type -->
+  <div class="modal-backdrop" *ngIf="showAddTypeModal"></div>
+  <div class="modal" *ngIf="showAddTypeModal">
+    <div class="modal-content">
+      <h5>Add New Asset Type</h5>
+      <input [(ngModel)]="newAssetType" class="form-control" placeholder="Asset Type Name" />
+      <div class="mt-3">
+        <button class="btn btn-primary" (click)="addAssetType()">Add</button>
+        <button class="btn btn-secondary ms-2" (click)="showAddTypeModal=false">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for adding asset with dynamic fields -->
+  <div class="modal-backdrop" *ngIf="showAddAssetModal"></div>
+  <div class="modal" *ngIf="showAddAssetModal">
+    <div class="modal-content">
+      <h5>Add {{ selectedAssetType }} Asset</h5>
+      <div *ngFor="let field of dynamicFields; let i = index" class="d-flex align-items-center mb-2">
+        <input [(ngModel)]="field.key" class="form-control me-2" placeholder="Field Name" readonly />
+        <input [(ngModel)]="field.value" class="form-control me-2" placeholder="Value" />
+        <button class="btn btn-danger btn-sm" (click)="removeField(i)">Remove</button>
+      </div>
+      <div class="d-flex align-items-center mb-3">
+        <input [(ngModel)]="newFieldName" class="form-control me-2" placeholder="New Field Name" />
+        <button class="btn btn-outline-primary btn-sm" (click)="addField()">Add Field</button>
+      </div>
+      <div>
+        <button class="btn btn-success" (click)="saveAsset()">Save Asset</button>
+        <button class="btn btn-secondary ms-2" (click)="showAddAssetModal=false">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="pre-dashboard-container">
+  <div class="header">
+    <h2>Asset Overview</h2>
+    <div>
+      <!-- ...existing buttons... -->
+    </div>
+  </div>
+  <div class="mb-3">
+    <strong>Total Assets in Inventory:</strong> {{ totalAssetCount }}
+  </div>
+  <!-- ...existing code... -->
+</div>

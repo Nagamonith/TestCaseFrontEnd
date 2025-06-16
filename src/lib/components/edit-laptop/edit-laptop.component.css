@@ -227,3 +227,55 @@ html, body {
   transition: background-color 0.3s ease;
 }
 
+/* ...existing code... */
+
+/* Responsive: tablet */
+@media (max-width: 900px) {
+  .edit-laptop-container {
+    padding: 1.5rem 0.5rem;
+    min-height: unset;
+  }
+  .edit-laptop-container .card {
+    padding: 1rem;
+    max-width: 98vw;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Responsive: mobile */
+@media (max-width: 600px) {
+  .edit-laptop-container {
+    padding: 0.5rem 0.1rem;
+  }
+  .edit-laptop-container .card {
+    padding: 0.5rem;
+    border-radius: 8px;
+  }
+  .edit-laptop-container h2 {
+    font-size: 1.1rem;
+  }
+  .form-group label {
+    font-size: 0.95rem;
+  }
+  .form-control {
+    font-size: 0.95rem;
+    padding: 0.4rem 0.6rem;
+  }
+  .btn-secondary, .btn-primary {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 7px;
+  }
+  .modal-dialog {
+    max-width: 98vw;
+    width: 98vw;
+  }
+  .modal-content {
+    padding: 0.5rem;
+  }
+}
+
+/* ...existing code... */
