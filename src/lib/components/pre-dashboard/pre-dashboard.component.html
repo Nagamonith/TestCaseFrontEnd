@@ -53,7 +53,7 @@
   </div>
 
   <div class="asset-type-selector">
-  <label for="assetType" class="asset-type-label">Select Asset Type to Add New Asset:</label>
+  <label for="assetType" class="asset-type-label ms-2">Select Asset Type to Add New Asset:</label>
   <div class="custom-select-wrapper">
     <select id="assetType" [(ngModel)]="selectedAssetType" class="form-select custom-select">
       <option value="" disabled>Select type</option>
@@ -64,7 +64,7 @@
 </div>
   <div class="asset-summary-cards">
     <div
-      class="summary-card"
+      class="summary-card ms-2"
       *ngFor="let summary of assetSummaries"
       (dblclick)="goToAssetDashboardWithType(summary.type)"
       style="cursor: pointer;"
