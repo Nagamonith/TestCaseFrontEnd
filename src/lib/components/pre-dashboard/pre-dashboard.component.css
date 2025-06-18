@@ -1,3 +1,50 @@
+/* Ribbon Navigation */
+.ribbon-nav {
+  background: #f7f7fa;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 2px 8px rgba(34,34,59,0.06);
+  margin-bottom: 24px;
+  padding: 0 0 12px 0;
+}
+.ribbon-tabs {
+  display: flex;
+  align-items: center;
+  border-bottom: 1.5px solid #e0e1dd;
+  padding: 0 16px;
+  gap: 0;
+  position: relative;
+}
+.ribbon-tab {
+  background: none;
+  border: none;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #242d83d5;
+  padding: 14px 28px 10px 28px;
+  border-radius: 12px 12px 0 0;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  margin-right: 2px;
+}
+.ribbon-tab.active, .ribbon-tab:hover {
+  background: #fff;
+  color: #a9def9;
+  box-shadow: 0 2px 8px rgba(34,34,59,0.04);
+  border-bottom: 2.5px solid #274690;
+}
+.ribbon-search {
+  margin-left: auto;
+  padding: 0 0 0 12px;
+  display: flex;
+  align-items: center;
+}
+.ribbon-toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 16px 16px 0 16px;
+  background: #fff;
+  border-radius: 0 0 12px 12px;
+}
 
 /* Header */
 .header {
@@ -214,6 +261,15 @@ button:disabled {
     min-width: unset;
     padding: 18px 8px 16px 8px;
   }
+  .ribbon-tabs, .ribbon-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 0 6px;
+  }
+  .ribbon-toolbar {
+    padding: 10px 6px 0 6px;
+  }
 }
 @media (max-width: 600px) {
   .header > div, .asset-summary-cards {
@@ -227,6 +283,16 @@ button:disabled {
     width: 100%;
     min-width: unset;
     padding: 12px 6px 10px 6px;
+  }
+  .ribbon-tabs {
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 2px;
+  }
+  .ribbon-toolbar {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 2px 0 2px;
   }
 }
 /* Add to pre-dashboard.component.css */
@@ -342,3 +408,254 @@ button:disabled {
   display: flex;
   align-items: center;
 }
+/* ...existing code... */
+
+.ribbon-nav {
+  background: #f7f7fa;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 2px 8px rgba(34,34,59,0.06);
+  margin-bottom: 0; /* Remove margin-bottom for flush border */
+  padding: 0 0 12px 0;
+  position: relative;
+}
+
+/* Add a thin sky blue separator below the ribbon nav */
+.ribbon-separator {
+  height: 3px;
+  background: #a9def9;
+  width: 100%;
+  border: none;
+  margin: 0 0 24px 0;
+  box-shadow: 0 1px 0 #a9def9;
+}
+
+/* ...existing code... */
+
+.ribbon-toolbar-icons {
+  display: flex;
+  gap: 36px;
+  padding: 18px 16px 0 16px;
+  background: #fff;
+  border-radius: 0 0 12px 12px;
+  justify-content: flex-start;
+}
+.ribbon-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  color: #222;
+  min-width: 80px;
+  user-select: none;
+  transition: color 0.18s, transform 0.18s;
+}
+/* .ribbon-action i {
+  font-size: 2.1em;
+  margin-bottom: 4px;
+  color: #274690;
+  transition: color 0.18s;
+} */
+.ribbon-action-label {
+  font-size: 0.7em;
+  color: #222;
+  text-align: center;
+  margin-top: 2px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.ribbon-action:hover:not(.disabled) i,
+.ribbon-action:focus:not(.disabled) i {
+  color: #4361ee;
+  transform: scale(1.12);
+}
+.ribbon-action.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Responsive for icons */
+@media (max-width: 900px) {
+  .ribbon-toolbar-icons {
+    gap: 18px;
+    padding: 12px 6px 0 6px;
+  }
+  .ribbon-action {
+    min-width: 60px;
+  }
+}
+@media (max-width: 600px) {
+  .ribbon-toolbar-icons {
+    gap: 10px;
+    padding: 8px 2px 0 2px;
+  }
+  .ribbon-action {
+    min-width: 48px;
+  }
+}
+/* ...existing code... */
+
+.ribbon-action i {
+  font-size: 1 em; /* Reduced from 2.1em to 1.4em */
+  margin-bottom: 2px;
+  color: #274690;
+  transition: color 0.18s;
+}
+
+.dashboard-body-container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(34,34,59,0.04);
+  padding: 32px 24px 24px 24px;
+  margin-bottom: 32px;
+}
+
+.asset-type-selector-card {
+  background: #f7f7fa;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(34,34,59,0.04);
+  padding: 18px 18px 10px 18px;
+  margin-bottom: 24px;
+}
+
+.asset-summary-cards {
+  margin-bottom: 32px;
+}
+
+.summary-card {
+  min-height: 110px;
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  border: 1.5px solid #e0e1dd;
+  background: #fafdff;
+}
+.summary-card:hover, .summary-card:focus {
+  box-shadow: 0 6px 18px rgba(34, 34, 59, 0.13);
+  background: #eaf6fb;
+  border-color: #a9def9;
+  outline: none;
+}
+
+.total-assets-info {
+  font-size: 1.08rem;
+  color: #274690;
+  background: #f7f7fa;
+  border-radius: 8px;
+  padding: 10px 18px;
+  display: inline-block;
+}
+
+.ribbon-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  padding: 18px 16px 0 16px;
+  background: #fff;
+  border-radius: 0 0 12px 12px;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.ribbon-toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.asset-type-selector-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.asset-type-label-toolbar {
+  font-size: 0.97em;
+  color: #274690;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+
+.custom-select-toolbar {
+  min-width: 120px;
+  max-width: 180px;
+  font-size: 0.97em;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #f7f7fa;
+  border: 1.2px solid #bfc0c0;
+}
+/* ...existing code... */
+
+.search-modal-content {
+  max-width: 520px;
+  width: 100%;
+  padding: 28px 20px 20px 20px;
+  border-radius: 14px;
+  background: #fafdff;
+  box-shadow: 0 4px 24px rgba(34,34,59,0.10);
+  position: relative;
+  min-height: 180px;
+  max-height: 70vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.search-modal-title {
+  color: #274690;
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin-bottom: 18px;
+}
+.search-asset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: 48vh;
+  overflow-y: auto;
+}
+.search-asset-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(34,34,59,0.07);
+  padding: 14px 16px;
+  border: 1.5px solid #e0e1dd;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.search-asset-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2px 0;
+  border-bottom: 1px dashed #e0e1dd;
+  font-size: 0.98em;
+}
+.search-asset-row:last-child {
+  border-bottom: none;
+}
+.search-asset-field {
+  color: #274690;
+  font-weight: 500;
+  margin-right: 12px;
+  min-width: 110px;
+  word-break: break-word;
+}
+.search-asset-value {
+  color: #22223b;
+  word-break: break-word;
+  flex: 1 1 0;
+  text-align: right;
+}
+@media (max-width: 600px) {
+  .search-modal-content {
+    max-width: 98vw;
+    padding: 16px 4px 12px 4px;
+  }
+  .search-asset-card {
+    padding: 10px 6px;
+  }
+  .search-asset-field {
+    min-width: 80px;
+    font-size: 0.97em;
+  }
+}
+
+/* ...existing code... */

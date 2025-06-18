@@ -68,6 +68,7 @@ export class PreDashboardComponent implements OnInit {
   isLoading = false;
   searchError = '';
   assetIdField: string = '';
+  activeTab: string = 'add';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -219,5 +220,7 @@ getDisplayKeys(asset: any): string[] {
   if (!asset) return [];
   return Object.keys(asset);
 }
-// ...existing code...
+getAssetKeys(asset: any): string[] {
+  return asset ? Object.keys(asset) : [];
+}
 }
