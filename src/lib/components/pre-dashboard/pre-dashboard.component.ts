@@ -214,4 +214,10 @@ export class PreDashboardComponent implements OnInit {
     this.showSearchModal = false;
     this.searchEmployeeId = '';
   }
+  // ...existing code...
+getDisplayKeys(asset: any): string[] {
+  if (!asset) return [];
+  return Object.keys(asset);
+}
+// ...existing code...
 }
