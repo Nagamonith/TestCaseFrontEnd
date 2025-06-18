@@ -1,0 +1,60 @@
+<div>
+  <h2>Vendor Dashboard</h2>
+  <div class="header-actions-fixed">
+    <div>
+      <button class="btn btn-primary ms-2" (click)="openAddVendorModal()">Add Vendor</button>
+      <button class="btn btn-secondary ms-2" (click)="goToPreviousPage()">Back</button>
+    </div>
+    <!-- (Search bar will go here if needed in the future) -->
+  </div>
+
+  <table class="table table-bordered table-striped table-hover" *ngIf="vendors.length">
+    <thead>
+      <tr>
+        <th *ngFor="let col of columns">{{ col }}</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let vendor of vendors">
+        <td *ngFor="let col of columns">{{ vendor[col] || '' }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-2" (click)="openEditModal(vendor)">Edit</button>
+          <button class="btn btn-danger btn-sm" (click)="deleteVendor(vendor.Id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="!vendors.length">No vendors found.</div>
+
+  <!-- Modal for adding/editing vendor -->
+  <div class="modal-backdrop" *ngIf="showAddVendorModal"></div>
+  <div class="modal" *ngIf="showAddVendorModal">
+    <div class="modal-content">
+      <h5>{{ isEditMode ? 'Edit Vendor' : 'Add Vendor' }}</h5>
+      <form (ngSubmit)="isEditMode ? saveEditVendor() : saveVendor()">
+        <div *ngFor="let field of dynamicFields; let i = index" class="row align-items-center mb-2">
+          <label class="col-4 col-md-3 col-form-label fw-bold">{{ field.key }}</label>
+          <div class="col-6 col-md-7">
+            <input [(ngModel)]="field.value" name="field{{i}}" class="form-control" placeholder="Value" />
+          </div>
+          <div class="col-2 col-md-2">
+            <button type="button" class="btn btn-danger btn-sm" (click)="removeField(i)">Remove</button>
+          </div>
+        </div>
+        <div class="row align-items-center mb-3">
+          <div class="col-8 col-md-10">
+            <input [(ngModel)]="newFieldName" name="newFieldName" class="form-control" placeholder="New Field Name" />
+          </div>
+          <div class="col-4 col-md-2">
+            <button type="button" class="btn btn-outline-primary btn-sm w-100" (click)="addField()">Add Field</button>
+          </div>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-success">{{ isEditMode ? 'Save Changes' : 'Save Vendor' }}</button>
+          <button type="button" class="btn btn-secondary ms-2" (click)="closeModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

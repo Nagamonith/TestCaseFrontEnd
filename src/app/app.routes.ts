@@ -8,13 +8,15 @@ import { AssetViewComponent } from '../lib/components/asset-view/asset-view.comp
 import { AuthGuard } from './auth.guard';
 import { LayoutsComponent } from './layouts/layouts.component';
 import { PreDashboardComponent } from '../lib/components/pre-dashboard/pre-dashboard.component';
-import { AssetDashboardComponent } from '../lib/components/lib/components/asset-dashboard.component';
+import { AssetDashboardComponent } from '../lib/components/asset-dashboard/asset-dashboard.component';
+import { VendorDashboardComponent } from '../lib/components/vendor-dashboard/vendor-dashboard.component';   
+import { EmployeeDashboardComponent } from '../lib/components/employee-dashboard/employee-dashboard.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'asset-view/:assetTag', component: AssetViewComponent }, 
-  {path:"assets", component :LayoutsComponent,  
+  {path:"assets", component :LayoutsComponent,canActivate: [AuthGuard],
 
     children: [
   // Public route
@@ -24,8 +26,10 @@ export const routes: Routes = [
   { path: 'edit-laptop/:id', component: EditLaptopComponent, canActivate: [AuthGuard] },
   { path: 'delete-laptop/:id', component: DeleteLaptopComponent, canActivate: [AuthGuard] },
   { path: 'pre-dashboard', component: PreDashboardComponent, canActivate: [AuthGuard] },
-   {path: 'asset-dashboard', component: AssetDashboardComponent }
-   
+   {path: 'asset-dashboard', component: AssetDashboardComponent, canActivate: [AuthGuard] },
+    { path: 'vendor-dashboard', component: VendorDashboardComponent, canActivate: [AuthGuard] },
+    { path: 'employee-dashboard', component: EmployeeDashboardComponent, canActivate: [AuthGuard] },
+
     ]
   },
  

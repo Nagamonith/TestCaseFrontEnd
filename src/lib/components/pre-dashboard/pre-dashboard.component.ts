@@ -1,11 +1,9 @@
-
-
-
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 
 interface AssetSummary {
   type: string;
@@ -20,7 +18,6 @@ interface AssetSummary {
   styleUrls: ['./pre-dashboard.component.css']
 })
 export class PreDashboardComponent implements OnInit {
-  // Keep essential types hardcoded
   essentialAssetTypes: string[] = [
     'Server',
     'Laptop',
@@ -35,10 +32,27 @@ export class PreDashboardComponent implements OnInit {
     'Monitor',
     'Other'
   ];
+
+  requiredFieldsMap: { [type: string]: string[] } = {
+    'Server': ['Brand', 'Model', 'Serial Number'],
+    'Laptop': ['Brand', 'Model', 'Serial Number', 'RAM', 'Processor'],
+    'Charger': ['Brand', 'Power'],
+    'Keyboard': ['Brand', 'Type'],
+    'Mouse': ['Brand', 'Type'],
+    'Pendrive': ['Brand', 'Capacity'],
+    'Software License': ['Software Name', 'License Key', 'Expiry Date'],
+    'Chair': ['Type', 'Color'],
+    'AC': ['Brand', 'Capacity'],
+    'Refrigerator': ['Brand', 'Capacity'],
+    'Monitor': ['Brand', 'Size'],
+    'Other': []
+  };
+
+  employeeIdField: string = '';
   assetTypes: string[] = [];
   selectedAssetType: string = '';
   assetSummaries: AssetSummary[] = [];
-  apiBaseUrl = 'https://localhost:7116'; // Update as needed
+  apiBaseUrl = 'https://localhost:7116';
 
   // For adding new asset type
   showAddTypeModal = false;
@@ -48,8 +62,14 @@ export class PreDashboardComponent implements OnInit {
   showAddAssetModal = false;
   dynamicFields: { key: string, value: string }[] = [];
   newFieldName = '';
+  searchEmployeeId: string = '';
+  filteredAssets: any[] = [];
+  showSearchModal = false;
+  isLoading = false;
+  searchError = '';
+  assetIdField: string = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
     this.fetchAssetTypes();
@@ -59,7 +79,6 @@ export class PreDashboardComponent implements OnInit {
   fetchAssetTypes() {
     this.http.get<string[]>(`${this.apiBaseUrl}/api/assets/types`)
       .subscribe(types => {
-        // Combine essential and backend types, removing duplicates
         const allTypes = [...this.essentialAssetTypes, ...types];
         this.assetTypes = Array.from(new Set(allTypes));
       });
@@ -78,7 +97,10 @@ export class PreDashboardComponent implements OnInit {
     window.open(`${this.apiBaseUrl}/api/assets/export?type=${this.selectedAssetType}`, '_blank');
   }
 
-  // Add new asset type
+  exportOverallReport() {
+    window.open(`${this.apiBaseUrl}/api/assets/export-all`, '_blank');
+  }
+
   openAddTypeModal() {
     this.showAddTypeModal = true;
     this.newAssetType = '';
@@ -97,11 +119,41 @@ export class PreDashboardComponent implements OnInit {
     }
   }
 
-  // Add asset with dynamic fields
   openAddAssetModal() {
     this.showAddAssetModal = true;
     this.dynamicFields = [];
     this.newFieldName = '';
+    this.employeeIdField = '';
+    this.assetIdField = '';
+    const required = this.requiredFieldsMap[this.selectedAssetType] || [];
+    this.dynamicFields = required.map(key => ({ key, value: '' }));
+  }
+
+  saveAsset() {
+    if (!this.assetIdField || !this.assetIdField.trim()) {
+      alert('AssetId is required.');
+      return;
+    }
+    const assetData: any = {};
+    this.dynamicFields.forEach(f => assetData[f.key] = f.value);
+    assetData.EmployeeId = this.employeeIdField;
+    assetData.AssetId = this.assetIdField;
+    const payload = {
+      type: this.selectedAssetType,
+      data: JSON.stringify(assetData),
+      employeeId: this.employeeIdField,
+      assetId: this.assetIdField
+    };
+    this.http.post(`${this.apiBaseUrl}/api/assets`, payload)
+      .subscribe({
+        next: () => {
+          this.showAddAssetModal = false;
+          this.fetchAssetSummaries();
+        },
+        error: (err) => {
+          alert(err.error || 'Failed to add asset.');
+        }
+      });
   }
 
   addField() {
@@ -115,25 +167,51 @@ export class PreDashboardComponent implements OnInit {
     this.dynamicFields.splice(idx, 1);
   }
 
-  saveAsset() {
-    const assetData: any = {};
-    this.dynamicFields.forEach(f => assetData[f.key] = f.value);
-    const payload = {
-      type: this.selectedAssetType,
-      data: JSON.stringify(assetData)
-    };
-    this.http.post(`${this.apiBaseUrl}/api/assets`, payload)
-      .subscribe(() => {
-        this.showAddAssetModal = false;
-        this.fetchAssetSummaries();
+  goToAssetDashboardWithType(type: string) {
+    this.router.navigate(['/assets/asset-dashboard'], { queryParams: { type } });
+  }
+
+  get totalAssetCount(): number {
+    return this.assetSummaries.reduce((sum, summary) => sum + summary.count, 0);
+  }
+
+  goToVendorDashboard() {
+    window.location.href = '/assets/vendor-dashboard';
+  }
+
+  goToEmployeeDashboard() {
+    window.location.href = '/assets/employee-dashboard';
+  }
+
+  goToAssetDashboard() {
+    this.router.navigate(['/assets/asset-dashboard']);
+  }
+
+  searchEmployeeAssets(employeeId: string) {
+    if (!employeeId || !employeeId.trim()) {
+      this.filteredAssets = [];
+      this.showSearchModal = false;
+      return;
+    }
+    this.isLoading = true;
+    this.http.get<any[]>(`${this.apiBaseUrl}/api/assets/by-employee/${employeeId.trim()}`)
+      .subscribe({
+        next: data => {
+          this.filteredAssets = data.map(a => ({ ...JSON.parse(a.data), Type: a.type, Id: a.id }));
+          this.showSearchModal = true;
+          this.isLoading = false;
+        },
+        error: err => {
+          this.filteredAssets = [];
+          this.showSearchModal = true;
+          this.isLoading = false;
+          this.searchError = 'Failed to fetch assets. Please try again.';
+        }
       });
   }
-  goToAssetDashboard() {
-    window.location.href = '/assets/asset-dashboard';
+
+  closeSearchModal() {
+    this.showSearchModal = false;
+    this.searchEmployeeId = '';
   }
-  // ...existing code...
-get totalAssetCount(): number {
-  return this.assetSummaries.reduce((sum, summary) => sum + summary.count, 0);
-}
-// ...existing code...
 }
