@@ -38,7 +38,7 @@ interface LaptopHistory {
   comment: string;
 }
 
-
+ 
 interface LaptopDto {
   id: number;
   deviceDetails: DeviceDetails;
@@ -63,7 +63,7 @@ export class LaptopDashboardComponent implements OnInit {
   historyError = '';
   searchExpanded = false;
   searchEmployeeId: string = '';
-
+  apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
   selectedLaptop: LaptopDto | null = null;
 
   constructor(private router: Router, private http: HttpClient) {}
@@ -84,7 +84,7 @@ export class LaptopDashboardComponent implements OnInit {
   }
 
   loadLaptops() {
-    this.http.get<LaptopDto[]>('https://localhost:7116/api/Device/GetAllLaptopDetails')
+    this.http.get<LaptopDto[]>(`${this.apiBaseUrl}/api/Device/GetAllLaptopDetails`)
       .subscribe({
         next: (data) => {
           this.laptops = data;
@@ -127,7 +127,7 @@ export class LaptopDashboardComponent implements OnInit {
   this.showHistoryModal = true;
   this.historyLoading = true;
   this.historyError = '';
-  this.http.get<LaptopHistory[]>(`https://localhost:7116/api/Device/GetComments/${laptop.id}`)
+  this.http.get<LaptopHistory[]>(`${this.apiBaseUrl}/api/Device/GetComments/${laptop.id}`)
     .subscribe({
       next: data => {
         this.historyData = data;
@@ -232,7 +232,7 @@ exportAllHistoryToExcel() {
   // Fetch all history for all laptops
   
   const requests = this.allLaptops.map(laptop =>
-    this.http.get<LaptopHistory[]>(`https://localhost:7116/api/Device/GetComments/${laptop.id}`)
+    this.http.get<LaptopHistory[]>(`${this.apiBaseUrl}/api/Device/GetComments/${laptop.id}`)
       .toPromise()
       .then(history => ({ 
         employeeId: laptop.deviceDetails.employeeId,

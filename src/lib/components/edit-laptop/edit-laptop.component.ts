@@ -75,10 +75,11 @@ export class EditLaptopComponent implements OnInit {
       otherItems: ['']
     });
   }
-
+ 
+  apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
   ngOnInit(): void {
     this.laptopId = +this.route.snapshot.paramMap.get('id')!;
-    this.http.get<any>(`https://localhost:7116/api/Device/GetLaptopDetailsById/${this.laptopId}`)
+    this.http.get<any>(`${this.apiBaseUrl}/api/Device/GetLaptopDetailsById/${this.laptopId}`)
       .subscribe(data => {
         this.laptopForm.patchValue(data.deviceDetails);
         
@@ -127,8 +128,8 @@ export class EditLaptopComponent implements OnInit {
         assetId: this.laptopId,
         ...this.commentForm.value
       };
-    
-      this.http.post('https://localhost:7116/api/Device/AddComment', payload).subscribe(() => {
+
+      this.http.post(`${this.apiBaseUrl}/api/Device/AddComment`, payload).subscribe(() => {
         alert('Comment added!');
 
          this.commentAdded = true;

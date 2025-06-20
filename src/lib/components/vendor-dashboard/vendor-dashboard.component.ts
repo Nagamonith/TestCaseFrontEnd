@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./vendor-dashboard.component.css']
 })
 export class VendorDashboardComponent implements OnInit {
-  apiBaseUrl = 'https://localhost:7116';
+  apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
   vendors: any[] = [];
   columns: string[] = [];
   showAddVendorModal = false;

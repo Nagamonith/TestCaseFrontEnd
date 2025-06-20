@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./employee-dashboard.component.css']
 })
 export class EmployeeDashboardComponent implements OnInit {
-  apiBaseUrl = 'https://localhost:7116';
+  apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
   employees: any[] = [];
   columns: string[] = [];
   showAddEditModal = false;

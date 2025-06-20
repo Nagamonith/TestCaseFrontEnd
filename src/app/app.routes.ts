@@ -29,7 +29,7 @@ export const routes: Routes = [
     { path: 'vendor-dashboard', component: VendorDashboardComponent, canActivate: [AuthGuard] },
     { path: 'employee-dashboard', component: EmployeeDashboardComponent, canActivate: [AuthGuard] },
 
-    ]
+    ]   
   },
  
 ];

@@ -52,7 +52,7 @@ export class PreDashboardComponent implements OnInit {
   assetTypes: string[] = [];
   selectedAssetType: string = '';
   assetSummaries: AssetSummary[] = [];
-  apiBaseUrl = 'https://localhost:7116';
+  apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
 
   // For adding new asset type
   showAddTypeModal = false;
@@ -69,6 +69,7 @@ export class PreDashboardComponent implements OnInit {
   searchError = '';
   assetIdField: string = '';
   activeTab: string = 'add';
+  
 
   constructor(private http: HttpClient, private router: Router) {}
 

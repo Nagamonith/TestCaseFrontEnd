@@ -14,7 +14,8 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./asset-dashboard.component.css']
 })
 export class AssetDashboardComponent implements OnInit {
-  apiBaseUrl = 'https://localhost:7116';
+  apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
+  
   essentialAssetTypes: string[] = [
     'Server',
     'Laptop',

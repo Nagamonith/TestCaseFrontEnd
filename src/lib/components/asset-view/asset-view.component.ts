@@ -116,11 +116,11 @@ export class AssetViewComponent implements OnInit {
     private http: HttpClient,
     private router: Router
   ) {}
-
+apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
   ngOnInit(): void {
     this.assetTag = this.route.snapshot.paramMap.get('assetTag');
     if (this.assetTag) {
-      this.http.get<LaptopDto>(`https://localhost:7116/api/Device/GetLaptopByAssetTag/${this.assetTag}`)
+      this.http.get<LaptopDto>(`${this.apiBaseUrl}/api/Device/GetLaptopByAssetTag/${this.assetTag}`)
         .subscribe({
           next: data => {
             this.asset = data;
