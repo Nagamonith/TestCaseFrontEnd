@@ -69,6 +69,8 @@ export class PreDashboardComponent implements OnInit {
   searchError = '';
   assetIdField: string = '';
   activeTab: string = 'add';
+  vendors: any[] = [];
+selectedVendorId: string = '';
   
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -76,7 +78,22 @@ export class PreDashboardComponent implements OnInit {
   ngOnInit() {
     this.fetchAssetTypes();
     this.fetchAssetSummaries();
+     this.fetchVendors();
   }
+
+  
+fetchVendors() {
+  this.http.get<any[]>(`${this.apiBaseUrl}/api/assets/vendors`)
+    .subscribe(data => {
+      this.vendors = data.map(v => {
+        try {
+          return { ...JSON.parse(v.data), Id: v.id, Name: JSON.parse(v.data).Name || `Vendor ${v.id}` };
+        } catch {
+          return { Id: v.id, Name: `Vendor ${v.id}` };
+        }
+      });
+    });
+}
 
   fetchAssetTypes() {
     this.http.get<string[]>(`${this.apiBaseUrl}/api/assets/types`)
@@ -127,6 +144,7 @@ export class PreDashboardComponent implements OnInit {
     this.newFieldName = '';
     this.employeeIdField = '';
     this.assetIdField = '';
+     this.selectedVendorId = ''; 
     const required = this.requiredFieldsMap[this.selectedAssetType] || [];
     this.dynamicFields = required.map(key => ({ key, value: '' }));
   }
@@ -140,6 +158,7 @@ export class PreDashboardComponent implements OnInit {
     this.dynamicFields.forEach(f => assetData[f.key] = f.value);
     assetData.EmployeeId = this.employeeIdField;
     assetData.AssetId = this.assetIdField;
+    assetData.VendorId = this.selectedVendorId;
     const payload = {
       type: this.selectedAssetType,
       data: JSON.stringify(assetData),
