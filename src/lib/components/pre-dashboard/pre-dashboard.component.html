@@ -6,6 +6,7 @@
       <button class="ribbon-tab" [class.active]="activeTab==='add'" (click)="activeTab='add'">Add</button>
       <button class="ribbon-tab" [class.active]="activeTab==='export'" (click)="activeTab='export'">Export</button>
       <button class="ribbon-tab" [class.active]="activeTab==='goto'" (click)="activeTab='goto'">Goto</button>
+      <button class="ribbon-tab" [class.active]="activeTab==='QR'" (click)="activeTab='QR'; ">QR</button>
       <div class="ribbon-search">
         <form class="search-inline-form" (submit)="searchEmployeeAssets(searchEmployeeId); $event.preventDefault();">
           <div class="search-inline-group">
@@ -64,6 +65,12 @@
         <div class="ribbon-action" (click)="goToEmployeeDashboard()">
           <i class="bi bi-person-badge"></i>
           <div class="ribbon-action-label">Employee Dashboard</div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="activeTab==='QR'">
+        <div class="ribbon-action" (click)="goToMainDashboard()">
+          <i class="bi bi-qr-code"></i>
+          <div class="ribbon-action-label">QR for laptops</div>
         </div>
       </ng-container>
     </div>

@@ -314,17 +314,17 @@ html, body {
 /* Search (animated icon and box) */
 .search-icon {
   font-size: 1.7rem;
-  color: #fff;
+  color: #1b1818;
   cursor: pointer;
   padding: 0.3rem 0.6rem;
   border-radius: 50%;
   transition: background 0.2s;
 }
-
+/* 
 .search-icon:hover {
   background: #7d8ea9;
-  color: #29307c;
-}
+  color: #b4b5bc;
+} */
 
 @keyframes expandSearch {
   from { opacity: 0; transform: translateY(-50%) scaleX(0.5);}

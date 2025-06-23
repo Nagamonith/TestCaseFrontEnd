@@ -20,8 +20,12 @@ export class VendorDashboardComponent implements OnInit {
   editVendorId: number | null = null;
   dynamicFields: { key: string, value: string }[] = [];
   newFieldName = '';
+  showViewModal = false;
+viewVendor: any = {};
+viewVendorKeys: string[] = [];
   // Default fields
   defaultFields = [
+    { key: 'VendorId', value: '' },
     { key: 'Name', value: '' },
     { key: 'Company', value: '' },
     { key: 'Type of Goods/Purchase', value: '' },
@@ -55,6 +59,11 @@ export class VendorDashboardComponent implements OnInit {
       });
   }
 
+  openViewVendor(vendor: any) {
+  this.viewVendor = vendor;
+  this.viewVendorKeys = Object.keys(vendor);
+  this.showViewModal = true;
+}
   openAddVendorModal() {
     this.showAddVendorModal = true;
     this.isEditMode = false;
@@ -84,23 +93,48 @@ export class VendorDashboardComponent implements OnInit {
     this.dynamicFields.splice(idx, 1);
   }
 
+  // saveVendor() {
+  //   const vendorData: any = {};
+  //   this.dynamicFields.forEach(f => vendorData[f.key] = f.value);
+  //   const payload = {
+  //     data: JSON.stringify(vendorData)
+      
+  //   };
+  //   this.http.post(`${this.apiBaseUrl}/api/assets/vendors`, payload)
+  //     .subscribe(() => {
+  //       this.showAddVendorModal = false;
+  //       this.fetchVendors();
+  //     });
+  // }
   saveVendor() {
-    const vendorData: any = {};
-    this.dynamicFields.forEach(f => vendorData[f.key] = f.value);
-    const payload = {
-      data: JSON.stringify(vendorData)
-    };
-    this.http.post(`${this.apiBaseUrl}/api/assets/vendors`, payload)
-      .subscribe(() => {
-        this.showAddVendorModal = false;
-        this.fetchVendors();
-      });
+  const vendorData: any = {};
+  this.dynamicFields.forEach(f => vendorData[f.key] = f.value);
+
+  // Require VendorId
+  if (!vendorData.VendorId || !vendorData.VendorId.trim()) {
+    alert('VendorId is required.');
+    return;
   }
+
+  const payload = {
+    data: JSON.stringify(vendorData)
+  };
+  this.http.post(`${this.apiBaseUrl}/api/assets/vendors`, payload)
+    .subscribe(() => {
+      this.showAddVendorModal = false;
+      this.fetchVendors();
+    });
+}
 
   saveEditVendor() {
     if (this.editVendorId == null) return;
     const vendorData: any = {};
     this.dynamicFields.forEach(f => vendorData[f.key] = f.value);
+    
+    if (!vendorData.VendorId || !vendorData.VendorId.trim()) {
+    alert('VendorId is required.');
+    return;
+  }
     const payload = {
       data: JSON.stringify(vendorData)
     };

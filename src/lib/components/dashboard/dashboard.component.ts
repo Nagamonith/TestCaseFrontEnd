@@ -122,6 +122,10 @@ export class LaptopDashboardComponent implements OnInit {
     this.selectedLaptop = null;
   }
 
+  gotoPreDashboard() {
+    this.router.navigate(['assets/pre-dashboard']);
+  }
+
   openHistory(laptop: LaptopDto) {
   this.historyLaptop = laptop;
   this.showHistoryModal = true;

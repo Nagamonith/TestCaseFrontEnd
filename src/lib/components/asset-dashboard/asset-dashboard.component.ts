@@ -54,6 +54,9 @@ export class AssetDashboardComponent implements OnInit {
   employees: any[] = [];
   invoiceFile: File | null = null;
   currentInvoiceFileName: string | null = null;
+  showViewModal = false;
+viewAsset: any = {};
+viewAssetKeys: string[] = [];
 
   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private sanitizer: DomSanitizer) {}
 
@@ -98,13 +101,21 @@ export class AssetDashboardComponent implements OnInit {
     }
   }
 
+  // openEditAsset(asset: any) {
+  //   this.showEditModal = true;
+  //   this.editAssetId = asset.Id;
+  //   this.editFields = this.columns
+  //     .filter(col => col !== 'Id' && col !== 'CreatedAt')
+  //     .map(key => ({ key, value: asset[key] || '' }));
+  // }
   openEditAsset(asset: any) {
-    this.showEditModal = true;
     this.editAssetId = asset.Id;
-    this.editFields = this.columns
-      .filter(col => col !== 'Id' && col !== 'CreatedAt')
-      .map(key => ({ key, value: asset[key] || '' }));
-  }
+  this.editFields = Object.keys(asset).map(key => ({
+    key,
+    value: asset[key]
+  }));
+  this.showEditModal = true;
+}
 
   saveEditAsset() {
     if (this.editAssetId == null) return;
@@ -151,4 +162,9 @@ export class AssetDashboardComponent implements OnInit {
   goToPreviousPage() {
     this.router.navigate(['/assets/pre-dashboard']);
   }
+  openViewAsset(asset: any) {
+  this.viewAsset = asset;
+  this.viewAssetKeys = Object.keys(asset);
+  this.showViewModal = true;
+}
 }

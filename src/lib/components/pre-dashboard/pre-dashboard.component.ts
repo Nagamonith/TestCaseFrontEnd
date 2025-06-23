@@ -189,6 +189,9 @@ export class PreDashboardComponent implements OnInit {
     this.router.navigate(['/assets/asset-dashboard']);
   }
 
+  goToMainDashboard() {
+    this.router.navigate(['/assets/dashboard']);
+  } 
   searchEmployeeAssets(employeeId: string) {
     if (!employeeId || !employeeId.trim()) {
       this.filteredAssets = [];

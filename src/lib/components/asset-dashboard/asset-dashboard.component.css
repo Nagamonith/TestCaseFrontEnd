@@ -236,3 +236,31 @@ button:disabled {
   background: #e9ecef;
   color: #adb5bd;
 }
+/* Add to your component's CSS file for a clean field-value modal layout */
+
+.asset-details-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.asset-details-row:last-child {
+  border-bottom: none;
+}
+
+.asset-details-label {
+  font-weight: 600;
+  color: #274690;
+  min-width: 120px;
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.asset-details-value {
+  color: #22223b;
+  word-break: break-word;
+  flex: 1 1 0;
+  text-align: right;
+}
