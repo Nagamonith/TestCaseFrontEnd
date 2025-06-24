@@ -32,33 +32,7 @@ export class LaptopService {
   }
   constructor(private http: HttpClient) {}
 
-//   getAllLaptops(): Observable<LaptopDto[]> {
-//     return this.http.get<LaptopDto[]>(`${this.apiBaseUrl}/GetAllLaptopDetails`);
-//   }
 
-//   getLaptopById(id: number): Observable<LaptopDto> {
-//     return this.http.get<LaptopDto>(`${this.apiBaseUrl}/GetLaptopById/${id}`);
-//   }
-
-//   addLaptop(newLaptop: LaptopDto): Observable<any> {
-   
-//     return this.http.post(`${this.apiBaseUrl}/AddNewLaptopDetails`, newLaptop, { responseType: 'text' });
-//   }
-
-//  updateLaptop(updatedLaptop: LaptopDto): Observable<any> {
-//   return this.http.put(`${this.apiBaseUrl}/UpdateLaptopDetails`, updatedLaptop, {
-//     responseType: 'text' as 'json'  // Force Angular to treat text response as JSON
-//   });
-// }
-
-// deleteLaptop(id: number): Observable<any> {
-//   return this.http.delete(`${this.apiBaseUrl}/${id}`);
-//    responseType: 'text' as 'json' 
-
-// }
-
-
- 
 
   getAllLaptops(): Observable<LaptopDto[]> {
     return this.http.get<LaptopDto[]>(`${this.apiBaseUrl}/api/Device/GetAllLaptopDetails`);
@@ -81,6 +55,12 @@ export class LaptopService {
   deleteLaptop(id: number): Observable<any> {
     return this.http.delete(`${this.apiBaseUrl}/api/Device/DeleteLaptop/${id}`, { responseType: 'text' });
   }
+  addComment(commentPayload: any): Observable<any> {
+  return this.http.post(`${this.apiBaseUrl}/api/Device/AddComment`, commentPayload, {
+    responseType: 'text' as 'json'
+  });
+}
+
 }
 
 
