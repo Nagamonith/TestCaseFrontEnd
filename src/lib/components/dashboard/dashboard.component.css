@@ -79,7 +79,8 @@ html, body {
 
 @media (min-width: 992px) {
   .card-container {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
   }
 }
 
@@ -210,9 +211,9 @@ html, body {
   position: sticky;
   right: 0;
   z-index: 3;
-  background: #f8f9fa; /* Match your table's background */
+  background: #f8f9fa;
   box-shadow: -2px 0 4px -2px rgba(0,0,0,0.08);
-  min-width: 120px; /* Adjust as needed for your buttons */
+  min-width: 120px;
   text-align: center;
 }
 
@@ -319,33 +320,37 @@ html, body {
   padding: 0.3rem 0.6rem;
   border-radius: 50%;
   transition: background 0.2s;
+  /* Always on right, handled by parent .search-container */
 }
-/* 
-.search-icon:hover {
-  background: #7d8ea9;
-  color: #b4b5bc;
-} */
 
 @keyframes expandSearch {
   from { opacity: 0; transform: translateY(-50%) scaleX(0.5);}
   to   { opacity: 1; transform: translateY(-50%) scaleX(1);}
 }
+
 /* Group nav buttons and search icon together, right-aligned */
 .nav-actions-group {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  position: relative;
+  flex-wrap: wrap;
   gap: 0.5rem;
+  width: 100%;
+  /* Remove justify-content here, let .search-container be absolutely positioned */
+  position: relative;
 }
 
-/* Search container is inline, not absolute */
+/* Search container absolutely positioned to right */
 .search-container {
   display: flex;
   align-items: center;
-  margin-left: 0.5rem;
-  position: relative;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 0;
+  z-index: 20;
 }
+
 .search-form-animated {
   display: flex;
   align-items: center;
@@ -375,17 +380,21 @@ html, body {
   opacity: 0;
   pointer-events: none;
 }
+
 /* Responsive: stack nav actions if needed */
 @media (max-width: 900px) {
   .nav-actions-group,
   .nav-actions-group.search-expanded {
-    transform: none !important;
     flex-wrap: wrap;
+    width: 100%;
   }
   .search-container {
-    position: static !important;
-    margin-left: 0.5rem;
-    transform: none;
+    position: absolute !important;
+    right: 0;
+    top: 100%;
+    transform: translateY(0);
+    margin-top: 0.3rem;
+    width: auto;
   }
 }
 
@@ -394,7 +403,6 @@ html, body {
   .nav-actions-group {
     flex-wrap: wrap;
     gap: 0.4rem;
-    justify-content: flex-start;
     width: 100%;
   }
   .nav-link {
@@ -414,7 +422,6 @@ html, body {
   .nav-actions-group {
     flex-wrap: wrap;
     gap: 0.3rem;
-    justify-content: flex-start;
     width: 100%;
   }
   .nav-link {
@@ -424,8 +431,23 @@ html, body {
     min-width: 90px;
   }
   .search-container {
-    margin-left: 0.3rem;
-    width: auto;
+    position: static !important;
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.5rem;
+    justify-content: flex-end;
+    transform: none;
+  }
+  .search-form-animated {
+    max-width: 98vw;
+    width: 98vw;
+  }
+  .table-responsive {
+    max-width: 100vw;
+    overflow-x: auto;
+  }
+  .table th, .table td {
+    padding: 0.5rem;
   }
 }
 
@@ -491,6 +513,10 @@ html, body {
   .search-container {
     width: 100%;
     margin-left: 0;
+    margin-top: 0.5rem;
+    position: static !important;
+    justify-content: flex-end;
+    transform: none;
   }
   .search-form-animated {
     max-width: 98vw;
@@ -502,5 +528,44 @@ html, body {
   }
   .table th, .table td {
     padding: 0.5rem;
-  } 
+  }
+}
+
+/* Responsive QR Code Modal */
+@media (max-width: 600px) {
+  .modal-dialog.modal-dialog-centered {
+    max-width: 98vw !important;
+    width: 98vw !important;
+    margin: 0 auto;
+  }
+  .modal-content#qrCanvas {
+    padding: 0.7rem 0.2rem !important;
+    min-width: unset !important;
+    max-width: 98vw !important;
+    width: 98vw !important;
+    border-radius: 10px !important;
+  }
+  .modal-content#qrCanvas .modal-header,
+  .modal-content#qrCanvas .modal-footer {
+    padding: 0.7rem 0.5rem !important;
+    font-size: 1rem !important;
+  }
+  .modal-content#qrCanvas .modal-title {
+    font-size: 1.1rem !important;
+    word-break: break-word;
+  }
+  .modal-content#qrCanvas .modal-body {
+    padding: 0.7rem 0.2rem !important;
+    text-align: center;
+  }
+  .modal-content#qrCanvas qrcode {
+    width: 150px !important;
+    height: 150px !important;
+    max-width: 90vw !important;
+    max-height: 90vw !important;
+  }
+  .modal-content#qrCanvas p {
+    font-size: 0.92rem !important;
+    word-break: break-all;
+  }
 }

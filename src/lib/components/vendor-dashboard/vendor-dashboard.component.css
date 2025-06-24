@@ -160,9 +160,10 @@ button:disabled {
   font-weight: 400;
 }
 
-/* Add/Edit Vendor Modal - Improved */
+/* Add/Edit Vendor Modal - Horizontal Layout & Responsive */
 .modal-field-row {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
@@ -174,6 +175,7 @@ button:disabled {
   color: #4361ee;
   font-size: 1rem;
   margin-bottom: 0;
+  text-align: left;
 }
 .modal-field-row input.form-control {
   flex: 1 1 180px;
@@ -200,30 +202,19 @@ button:disabled {
 .modal-field-row.mb-3 {
   margin-bottom: 1rem !important;
 }
+
+/* Utility Classes */
 .form-label.fw-bold {
   font-weight: 600 !important;
   color: #4361ee;
   margin-bottom: 4px;
 }
-.mb-2 {
-  margin-bottom: 0.75rem !important;
-}
-.mb-3 {
-  margin-bottom: 1rem !important;
-}
-.d-flex {
-  display: flex !important;
-  align-items: center !important;
-}
-.me-2 {
-  margin-right: 0.5rem !important;
-}
-.ms-2 {
-  margin-left: 0.5rem !important;
-}
-.mt-3 {
-  margin-top: 1rem !important;
-}
+.mb-2 { margin-bottom: 0.75rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.mt-3 { margin-top: 1rem !important; }
+.ms-2 { margin-left: 0.5rem !important; }
+.me-2 { margin-right: 0.5rem !important; }
+.d-flex { display: flex !important; align-items: center !important; }
 
 /* Miscellaneous */
 .text-danger {

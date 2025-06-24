@@ -28,7 +28,6 @@ viewVendorKeys: string[] = [];
     { key: 'VendorId', value: '' },
     { key: 'Name', value: '' },
     { key: 'Company', value: '' },
-    { key: 'Type of Goods', value: '' },
     { key: 'Date of Purchase', value: '' }
   ];
 

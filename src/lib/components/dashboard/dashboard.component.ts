@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { ElementRef, HostListener, ViewChild } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 interface DeviceDetails {
  assetTag: number;
@@ -47,7 +48,7 @@ interface LaptopDto {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,FormsModule],
+  imports: [CommonModule, HttpClientModule,FormsModule, QRCodeComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
@@ -65,6 +66,8 @@ export class LaptopDashboardComponent implements OnInit {
   searchEmployeeId: string = '';
   apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
   selectedLaptop: LaptopDto | null = null;
+  showQrModal = false;
+  qrAssetTag: number | null = null;
 
   constructor(private router: Router, private http: HttpClient) {}
   
@@ -278,4 +281,31 @@ exportAllHistoryToExcel() {
   });
 }
 
+
+
+ openQrModal(assetTag: number) {
+    this.qrAssetTag = assetTag;
+    this.showQrModal = true;
+  }
+
+  closeQrModal() {
+    this.showQrModal = false;
+    this.qrAssetTag = null;
+  }
+
+  downloadQrCode() {
+    const qrCanvas = document.querySelector('#qrCanvas canvas') as HTMLCanvasElement;
+    if (qrCanvas) {
+      const url = qrCanvas.toDataURL('image/png');
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `asset-${this.qrAssetTag}-qrcode.png`;
+      a.click();
+    }
+  }
+   get qrUrl(): string {
+    if (!this.qrAssetTag) return '';
+    const base = window.location.origin;
+    return `${base}/asset-view/${this.qrAssetTag}`;
+  }
 }
