@@ -174,7 +174,7 @@ onSearch(event: Event) {
     this.laptops = this.allLaptops;
     this.searchExpanded = false;
   }
-  // --- END UPDATED SEARCH LOGIC ---
+  
 
   @ViewChild('searchContainer') searchContainer!: ElementRef;
 
@@ -280,8 +280,6 @@ exportAllHistoryToExcel() {
     alert('Failed to export asset history.');
   });
 }
-
-
 
  openQrModal(assetTag: number) {
     this.qrAssetTag = assetTag;

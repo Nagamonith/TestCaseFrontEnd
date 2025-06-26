@@ -134,7 +134,7 @@ viewAssetKeys: string[] = [];
       employeeId: assetData.EmployeeId,
       assetId: assetData.AssetId
     };
-    this.http.put(`${this.apiBaseUrl}/api/assets/${this.editAssetId}`, payload)
+    this.http.post(`${this.apiBaseUrl}/api/assets/edit/${this.editAssetId}`, payload)
       .subscribe({
         next: () => {
           this.showEditModal = false;
@@ -154,7 +154,7 @@ viewAssetKeys: string[] = [];
 
   deleteAsset(id: number) {
     if (confirm('Are you sure you want to delete this asset?')) {
-      this.http.delete(`${this.apiBaseUrl}/api/assets/${id}`)
+      this.http.post(`${this.apiBaseUrl}/api/assets/${id}`, null)
         .subscribe(() => this.fetchAssets());
     }
   }

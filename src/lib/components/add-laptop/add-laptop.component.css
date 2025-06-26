@@ -1,29 +1,35 @@
-/* Fullscreen background */
+/* Base styles */
+html, body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+  scroll-behavior: smooth;
+}
+
 .add-laptop-fullscreen {
   min-height: 100vh;
   width: 100vw;
-  background: linear-gradient(120deg, #f4f8fb 60%, #e6eaff 100%);
+  background-color: #f4f8fb;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 0;
+  justify-content: center;
+  padding: 3rem 1rem;
 }
 
-/* Header with title and dashboard button */
+/* Header */
 .add-laptop-header {
   width: 100%;
-  max-width: 1100px;
+  max-width: 800px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2.5rem 2rem 1.5rem 2rem;
+  padding: 0 0 1.5rem 0;
   background: transparent;
 }
 
 .add-laptop-header h2 {
-  font-size: 2.2rem;
-  color: #181818;
+  font-size: 1.8rem;
+  color: #1f2937;
   font-weight: 700;
   margin: 0;
   display: flex;
@@ -32,47 +38,54 @@
 }
 
 .add-laptop-header .btn-secondary {
-  font-size: 1rem;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(41,48,124,0.08);
+  background-color: #29307c;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* Card styling for the form */
+.add-laptop-header .btn-secondary:hover {
+  background-color: #1f10bd;
+}
+
+.add-laptop-header .btn-secondary:disabled {
+  background-color: #a5b1c2;
+  cursor: not-allowed;
+}
+
+/* Card styling */
 .add-laptop-card {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 8px 32px rgba(41,48,124,0.13), 0 1.5px 6px rgba(41,48,124,0.08);
-  padding: 2.5rem 2rem 2rem 2rem;
-  max-width: 1100px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  max-width: 800px;
   width: 100%;
-  margin-bottom: 2rem;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
 }
 
-/* Grid layout for form */
+/* Grid layout */
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem 2.5rem;
-  margin-bottom: 2.5rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-/* Responsive: single column on small screens */
-@media (max-width: 900px) {
-  .add-laptop-header, .add-laptop-card {
-    padding: 1.2rem 0.5rem;
-    max-width: 98vw;
-  }
+@media (max-width: 768px) {
   .form-grid {
     grid-template-columns: 1fr;
-    gap: 1.2rem;
+    gap: 1rem;
   }
 }
 
-/* Form group styling */
+/* Form group */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -81,37 +94,38 @@
 .form-group label {
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #151516;
-  letter-spacing: 0.01em;
+  color: #2c3e50;
 }
 
 .form-control {
-  padding: 0.7rem 1rem;
+  padding: 0.6rem 0.8rem;
   border: 1px solid #ced4da;
   border-radius: 8px;
-  font-size: 1.08rem;
-  transition: border-color 0.3s;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
   background: #f8faff;
 }
 
 .form-control:focus {
-  border-color: #1b12c3;
+  border-color: #29307c;
   outline: none;
-  box-shadow: 0 0 0 2px rgba(41, 48, 124, 0.13);
+  box-shadow: 0 0 0 2px rgba(41, 48, 124, 0.2);
 }
 
 /* Actions */
 .actions {
-  text-align: right;
+  margin-top: 2rem;
+  text-align: center;
 }
 
+/* Add Button */
 .btn-add {
-  background-color: #1b12c3;
+  background-color: #29307c;
   color: #ffffff;
   border: none;
-  padding: 0.8rem 2.2rem;
-  font-size: 1.15rem;
-  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
   border-radius: 10px;
   cursor: pointer;
   display: inline-flex;
@@ -122,7 +136,7 @@
 }
 
 .btn-add:hover {
-  background-color: #0c0c97;
+  background-color: #1f10bd;
 }
 
 .btn-add:disabled {
@@ -130,43 +144,27 @@
   cursor: not-allowed;
 }
 
-.btn-secondary {
-  background-color: #100c90;
-  color: #ffffff;
-  border: none;
-  padding: 0.7rem 1.5rem;
-  font-size: 1.08rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.btn-secondary:hover {
-  background-color: #0c11b6;
-}
-
-.btn-secondary:disabled {
-  background-color: #ffffff;
-  cursor: not-allowed;
-}
-
-/* ...existing code... */
-
 /* Responsive: tablet */
 @media (max-width: 900px) {
+  .add-laptop-fullscreen {
+    padding: 1.5rem 0.5rem;
+    min-height: unset;
+  }
   .add-laptop-header, .add-laptop-card {
-    padding: 1.2rem 0.5rem;
+    padding: 1rem;
     max-width: 98vw;
   }
   .form-grid {
     grid-template-columns: 1fr;
-    gap: 1.2rem;
+    gap: 1rem;
   }
 }
 
 /* Responsive: mobile */
 @media (max-width: 600px) {
+  .add-laptop-fullscreen {
+    padding: 0.5rem 0.1rem;
+  }
   .add-laptop-header {
     flex-direction: column;
     align-items: flex-start;
@@ -174,19 +172,19 @@
     gap: 0.5rem;
   }
   .add-laptop-header h2 {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     gap: 0.3rem;
   }
   .add-laptop-card {
-    padding: 1rem 0.3rem;
-    border-radius: 10px;
+    padding: 0.5rem;
+    border-radius: 8px;
   }
   .form-group label {
     font-size: 0.95rem;
   }
   .form-control {
     font-size: 0.95rem;
-    padding: 0.5rem 0.7rem;
+    padding: 0.4rem 0.6rem;
   }
   .btn-add, .btn-secondary {
     font-size: 1rem;
@@ -194,5 +192,3 @@
     border-radius: 7px;
   }
 }
-
-/* ...existing code... */

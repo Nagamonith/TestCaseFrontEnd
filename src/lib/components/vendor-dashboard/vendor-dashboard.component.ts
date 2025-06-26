@@ -137,7 +137,7 @@ viewVendorKeys: string[] = [];
     const payload = {
       data: JSON.stringify(vendorData)
     };
-    this.http.put(`${this.apiBaseUrl}/api/assets/vendors/${this.editVendorId}`, payload)
+    this.http.post(`${this.apiBaseUrl}/api/assets/vendors/${this.editVendorId}`, payload)
       .subscribe(() => {
         this.showAddVendorModal = false;
         this.fetchVendors();
@@ -146,7 +146,7 @@ viewVendorKeys: string[] = [];
 
   deleteVendor(id: number) {
     if (confirm('Are you sure you want to delete this vendor?')) {
-      this.http.delete(`${this.apiBaseUrl}/api/assets/vendors/${id}`)
+      this.http.post(`${this.apiBaseUrl}/api/assets/vendors/delete/${id}`, null)
         .subscribe(() => this.fetchVendors());
     }
   }

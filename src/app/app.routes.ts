@@ -19,7 +19,7 @@ export const routes: Routes = [
   {path:"assets", component :LayoutsComponent,canActivate: [AuthGuard],
 
     children: [
-  
+
   { path: 'dashboard', component: LaptopDashboardComponent, canActivate: [AuthGuard] },
   { path: 'add-laptop', component: AddLaptopComponent, canActivate: [AuthGuard] },
   { path: 'edit-laptop/:id', component: EditLaptopComponent, canActivate: [AuthGuard] },

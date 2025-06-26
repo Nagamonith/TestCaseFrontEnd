@@ -49,7 +49,9 @@ export class AssetViewComponent implements OnInit {
     private router: Router
   ) {}
 apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
-  ngOnInit(): void {
+
+
+ngOnInit(): void {
     this.assetTag = this.route.snapshot.paramMap.get('assetTag');
     if (this.assetTag) {
       this.http.get<LaptopDto>(`${this.apiBaseUrl}/api/Device/GetLaptopByAssetTag/${this.assetTag}`)
@@ -59,10 +61,10 @@ apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
             this.loading = false;
           },
           error: () => {
-            // this.loading = false;
-            this.router.navigate([`/asset-view/${this.assetTag}`]);
-            // alert('Asset not found');
-            // this.router.navigate(['/dashboard']);
+            this.loading = false;
+           
+            alert('Asset not found');
+            this.router.navigate(['/login']);
           }
         });
     }

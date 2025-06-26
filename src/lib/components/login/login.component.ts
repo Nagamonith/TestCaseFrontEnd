@@ -99,7 +99,7 @@ export class LoginComponent implements OnInit {
         this.message = response;
         alert('Login Successful');
         localStorage.setItem('isLoggedIn', 'true');
-        this.router.navigate(['/assets']);
+        this.router.navigate(['/assets/pre-dashboard']);
       },
       error: (error) => {
         if (error.status === 401) {

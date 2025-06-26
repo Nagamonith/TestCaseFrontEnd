@@ -37,11 +37,11 @@
       <ng-container *ngIf="activeTab==='add'">
         <div class="ribbon-action" (click)="openAddTypeModal()">
           <i class="bi bi-folder-plus"></i>
-          <div class="ribbon-action-label">Add Asset Type</div>
+          <div class="ribbon-action-label">Add New Asset Type</div>
         </div>
         <div class="ribbon-action" [class.disabled]="!selectedAssetType" (click)="selectedAssetType && openAddAssetModal()">
           <i class="bi bi-plus-circle"></i>
-          <div class="ribbon-action-label">Add Asset</div>
+          <div class="ribbon-action-label">Add New Asset</div>
         </div>
       </ng-container>
       <ng-container *ngIf="activeTab==='export'">

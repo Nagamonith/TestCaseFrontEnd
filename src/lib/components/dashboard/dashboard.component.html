@@ -259,10 +259,10 @@
            [class.fw-bold]="!isCardView"
            (click)="setCardView(false); $event.preventDefault()">GRID VIEW</a>
         <a class="nav-link text-black me-3" href="#" role="button" (click)="exportToExcel(); $event.preventDefault()">
-          EXPORT REPORT
+          EXPORT OVERALL REPORT
         </a>
         <a class="nav-link text-black me-3" href="#" role="button" (click)="exportAllHistoryToExcel(); $event.preventDefault()">
-          EXPORT LAPTOP HISTORY
+          EXPORT ALL LAPTOP HISTORY
         </a>
         <a class="nav-link text-black me-3" href="#" role="button" (click)="gotoPreDashboard(); $event.preventDefault()">
           DASHBOARD
@@ -294,7 +294,7 @@
             <p><strong>Asset Tag:</strong> {{ laptop.deviceDetails.assetTag }}</p>
             <p><strong>Employee ID:</strong> {{ laptop.deviceDetails.employeeId }}</p>
             <p><strong>Employee Name:</strong> {{ laptop.deviceDetails.empName }}</p>
-            <p><strong>Make:</strong> {{ laptop.deviceDetails.make }}</p>
+            <p><strong>Manufacturer:</strong> {{ laptop.deviceDetails.make }}</p>
           </div>
           <div class="icon-group-horizontal mt-3">
             <span class="icon-action" title="View" (click)="openModal(laptop)">
@@ -332,7 +332,7 @@
             <p><strong>Employee Name:</strong> {{ selectedLaptop.deviceDetails.empName }}</p>
             <p><strong>Phone:</strong> {{ selectedLaptop.deviceDetails.phone }}</p>
             <p><strong>Email:</strong> {{ selectedLaptop.deviceDetails.email }}</p>
-            <p><strong>Make:</strong> {{ selectedLaptop.deviceDetails.make }}</p>
+            <p><strong>Manufacturer:</strong> {{ selectedLaptop.deviceDetails.make }}</p>
             <p><strong>Model:</strong> {{ selectedLaptop.deviceDetails.model }}</p>
             <p><strong>CPU:</strong> {{ selectedLaptop.deviceDetails.cpu }}</p>
             <p><strong>Operating System:</strong> {{ selectedLaptop.deviceDetails.os }}</p>
@@ -361,7 +361,7 @@
               <th>Asset Tag</th>
               <th>Employee ID</th>
               <th>Employee Name</th>
-              <th>Make</th>
+              <th>Manufacturer</th>
               <th>Model</th>
               <th>CPU</th>
               <th>Operating System</th>

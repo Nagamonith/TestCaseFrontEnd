@@ -106,7 +106,7 @@ export class EmployeeDashboardComponent implements OnInit {
       data: JSON.stringify(empData)
     };
     if (this.isEditMode) {
-      this.http.put(`${this.apiBaseUrl}/api/assets/employees/${this.editEmployeeId}`, payload)
+      this.http.post(`${this.apiBaseUrl}/api/assets/employees/${this.editEmployeeId}`, payload)
         .subscribe(() => {
           this.showAddEditModal = false;
           this.fetchEmployees();
@@ -126,7 +126,7 @@ export class EmployeeDashboardComponent implements OnInit {
       return;
     }
     if (confirm('Are you sure you want to delete this employee?')) {
-      this.http.delete(`${this.apiBaseUrl}/api/assets/employees/${id}`)
+      this.http.post(`${this.apiBaseUrl}/api/assets/employees/delete/${id}`, null)
         .subscribe(() => this.fetchEmployees());
     }
   }

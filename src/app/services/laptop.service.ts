@@ -47,13 +47,13 @@ export class LaptopService {
   }
 
   updateLaptop(updatedLaptop: LaptopDto): Observable<any> {
-    return this.http.put(`${this.apiBaseUrl}/api/Device/UpdateLaptopDetails`, updatedLaptop, {
+    return this.http.post(`${this.apiBaseUrl}/api/Device/UpdateLaptopDetails`, updatedLaptop, {
       responseType: 'text' as 'json'
     });
   }
 
   deleteLaptop(id: number): Observable<any> {
-    return this.http.delete(`${this.apiBaseUrl}/api/Device/DeleteLaptop/${id}`, { responseType: 'text' });
+    return this.http.post(`${this.apiBaseUrl}/api/Device/${id}`, { responseType: 'text' });
   }
   addComment(commentPayload: any): Observable<any> {
   return this.http.post(`${this.apiBaseUrl}/api/Device/AddComment`, commentPayload, {
