@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'asset-view/:assetTag', component: AssetViewComponent }, 
-  {path:"assets", component :LayoutsComponent,canActivate: [AuthGuard],
+  { path:"assets", component :LayoutsComponent,canActivate: [AuthGuard],
 
     children: [
 
