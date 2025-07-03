@@ -93,6 +93,9 @@ export class LeftnavigationbarComponent implements OnInit {
     this.router.navigate(['assets/pre-dashboard']);
     
   }
+  navigateToSprintMatrix() {
+    this.router.navigate(['assets/bug']);
+  }
 
   // toggleClass(id:number){
   //   const atags = this.navbar.nativeElement.querySelectorAll('a')

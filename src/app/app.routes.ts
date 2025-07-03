@@ -11,6 +11,7 @@ import { PreDashboardComponent } from '../lib/components/pre-dashboard/pre-dashb
 import { AssetDashboardComponent } from '../lib/components/asset-dashboard/asset-dashboard.component';
 import { VendorDashboardComponent } from '../lib/components/vendor-dashboard/vendor-dashboard.component';   
 import { EmployeeDashboardComponent } from '../lib/components/employee-dashboard/employee-dashboard.component';
+import { BugComponent } from '../lib/components/bug/bug.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -28,7 +29,7 @@ export const routes: Routes = [
    {path: 'asset-dashboard', component: AssetDashboardComponent, canActivate: [AuthGuard] },
     { path: 'vendor-dashboard', component: VendorDashboardComponent, canActivate: [AuthGuard] },
     { path: 'employee-dashboard', component: EmployeeDashboardComponent, canActivate: [AuthGuard] },
-
+    { path: 'bug', component: BugComponent, canActivate: [AuthGuard] }
     ]   
   },
  

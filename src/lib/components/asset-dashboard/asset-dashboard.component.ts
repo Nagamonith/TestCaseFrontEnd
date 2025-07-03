@@ -57,6 +57,8 @@ export class AssetDashboardComponent implements OnInit {
   showViewModal = false;
 viewAsset: any = {};
 viewAssetKeys: string[] = [];
+showAllAssetsSummary = false;
+assetTypeSummaries: { type: string, count: number }[] = [];
 
   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private sanitizer: DomSanitizer) {}
 
@@ -74,6 +76,7 @@ viewAssetKeys: string[] = [];
       });
     this.http.get<any[]>(`${this.apiBaseUrl}/api/assets/employees`)
       .subscribe(data => this.employees = data);
+    this.fetchAssetTypeSummaries();
   }
 
   fetchAssets() {
@@ -167,4 +170,13 @@ viewAssetKeys: string[] = [];
   this.viewAssetKeys = Object.keys(asset);
   this.showViewModal = true;
 }
+fetchAssetTypeSummaries() {
+  this.http.get<{ type: string, count: number }[]>(`${this.apiBaseUrl}/api/assets/summaries`)
+    .subscribe(data => {
+      this.assetTypeSummaries = data;
+      this.showAllAssetsSummary = true;
+    });
+
+}
+
 }
