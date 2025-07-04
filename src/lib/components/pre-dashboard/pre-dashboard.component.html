@@ -84,7 +84,7 @@
   </div>
   <div class="modal-backdrop" *ngIf="showSearchModal"></div>
   <div class="modal" *ngIf="showSearchModal">
-    <div class="modal-content">
+    <div class="responsive-modal-content">
       <button class="btn-close float-end" (click)="closeSearchModal()" aria-label="Close">Close</button>
       <h5>Assets for Employee ID: {{ searchEmployeeId }}</h5>
       <ul *ngIf="filteredAssets?.length; else noAssets">
@@ -125,7 +125,7 @@
 
   <div class="modal-backdrop" *ngIf="showAddAssetModal"></div>
   <div class="modal" *ngIf="showAddAssetModal">
-    <div class="modal-content">
+    <div class="responsive-modal-content">
       <h5>Add {{ selectedAssetType }} Asset</h5>
       <div class="d-flex align-items-center mb-2">
         <input class="form-control me-2" value="AssetId" readonly />

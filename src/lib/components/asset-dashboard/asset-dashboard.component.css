@@ -264,3 +264,71 @@ button:disabled {
   flex: 1 1 0;
   text-align: right;
 }
+/* ...existing code... */
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(34, 34, 59, 0.18);
+  z-index: 1010;
+  min-width: 320px;
+  max-width: 95vw;
+  width: 400px;
+  padding: 32px 24px 24px 24px;
+  animation: modalIn 0.18s;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  overflow-y: auto;
+  max-height: 70vh;
+  min-height: 0;
+}
+
+/* ...existing code... */
+
+@media (max-width: 900px) {
+  .container {
+    padding: 12px 4vw;
+  }
+  .modal {
+    width: 95vw;
+    min-width: unset;
+    padding: 18px 8px 16px 8px;
+    max-height: 95vh;
+  }
+  .modal-content {
+    gap: 10px;
+    max-height: 75vh;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 6px 2vw;
+  }
+  .modal {
+    width: 99vw;
+    padding: 10px 2vw 10px 2vw;
+    max-height: 99vh;
+  }
+  .modal-content {
+    gap: 6px;
+    max-height: 80vh;
+  }
+  .modal-field-row label {
+    min-width: 70px;
+    font-size: 0.97rem;
+  }
+}
+

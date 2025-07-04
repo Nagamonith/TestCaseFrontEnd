@@ -4,13 +4,13 @@
 <div class="ribbon-nav sprint-matrix-ribbon">
   <div class="ribbon-tabs">
     <button class="ribbon-tab active" >
-      Sprint Matrix
+      Sprint Metrics
     </button>
   </div>
   <div class="ribbon-toolbar ribbon-toolbar-icons">
     <div class="ribbon-action" (click)="openSprintMatrixModal()">
       <i class="bi bi-graph-up"></i>
-      <div class="ribbon-action-label">Open Matrix</div>
+      <div class="ribbon-action-label">Open Metrics</div>
     </div>
   </div>
 </div>
@@ -20,7 +20,7 @@
 <div class="modal-backdrop" *ngIf="showSprintMatrixModal"></div>
 <div class="modal" *ngIf="showSprintMatrixModal">
   <div class="modal-content">
-    <h4>Sprint Matrix Parameters</h4>
+    <h4>Sprint Metrics Parameters</h4>
     <div class="mb-3">
       <label>Bug ID:</label>
       <input type="number" class="form-control" [(ngModel)]="bugId" placeholder="Enter Bug ID" />
@@ -55,7 +55,7 @@
    <div class="sprint-matrix-summary-table ms-2">
     <h5 class="ms-2">Bug Time Summary</h5>
     <div class="table-responsive stickey-table">
-      <table class="table table-bordered table-sm">
+      <table class="table table-bordered table-sm sticky-header-table">
         <thead> 
           <tr>
             <th>Summary</th>
@@ -135,7 +135,7 @@
     <div class="sprint-matrix-tracking-table ms-2">
       <h5>  Total Resource Hours</h5>
       <div class="table-responsive">
-      <table class="table table-bordered table-sm">
+      <table class="table table-bordered table-sm sticky-header-table">
         <thead>
           <tr>
             <!-- <th>User ID</th> -->

@@ -19,7 +19,7 @@ export interface BugTask {
 
 export interface BugSummary {
   Summary: string;
-  // bug_id: number;
+  bug_id: number;
   target_version: string;
   Actual_Hours: number;
   Estimates_Hours: string;

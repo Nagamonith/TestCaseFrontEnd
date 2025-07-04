@@ -30,21 +30,34 @@ export class PreDashboardComponent implements OnInit {
     'AC',
     'Refrigerator',
     'Monitor',
+    'Switch',
+    'Router',
+    'Firewall',
+    'Antivirus',
+    'Office 365',
+    'Software License',
+    'Asset Disposal',
     'Other'
   ];
 
   requiredFieldsMap: { [type: string]: string[] } = {
-    'Server': ['Brand', 'Model', 'Serial Number'],
-    'Laptop': ['Brand', 'Model', 'Serial Number', 'RAM', 'Processor'],
+    'Server': ['Serial Number', 'IP Address', 'Server Type','Make', 'Host Name', 'Server Name','Operating System','RAM','Date of Purchase','Processor','HDD', 'Ownership'],
+    'Laptop': ['Serial Number', 'Laptop Make', 'Employee Id','Employee Name', 'Laptop Alloted date', 'Ownership(company/personal)', 'Remarks'],
     'Charger': ['Brand', 'Power'],
     'Keyboard': ['Brand', 'Type'],
     'Mouse': ['Brand', 'Type'],
     'Pendrive': ['Brand', 'Capacity'],
-    'Software License': ['Software Name', 'License Key', 'Expiry Date'],
     'Chair': ['Type', 'Color'],
     'AC': ['Brand', 'Capacity'],
     'Refrigerator': ['Brand', 'Capacity'],
     'Monitor': ['Brand', 'Size'],
+    'Switch':['Make','Host IP Address','Date of Purchase','Model','Host Name','Ownership'],
+    'Router': ['Make', 'Host IP Address', 'Date of Purchase', 'Model', 'Host Name', 'Ownership'],
+    'Firewall': ['Make', 'Host IP Address', 'Date of Purchase', 'Expire On','Model', 'Serial Number','Registered Email','Ownership'],
+    'Antivirus': ['Reg Email ID', 'Reg. Mobile No','Date of Purchase', 'Expires On', 'Ownership'], 
+    'Office 365':['Reg Email ID', 'Reg. Mobile No','License Type','Started On', 'Expires On', 'No of License Procured','Account ID','Ownership'], 
+    'Software License': ['Reg Email ID', 'Software Name', 'Renewal Period','Started On', 'Expires On', 'No of License Procured','Ownership'],
+    'Asset Disposal': ['Asset Id', 'Asset Type', 'Disposed Date', 'Disposed By', 'Remarks'],
     'Other': []
   };
 

@@ -488,7 +488,6 @@ button:disabled {
 }
 
 
-
 /* Make ALL table headers sticky */
 .table thead th,
 .sticky-table thead th {
@@ -500,7 +499,41 @@ button:disabled {
 .sticky-header-table thead th {
   position: sticky;
   top: 0;
-  background: #242d83d5 ;
+ 
  
   z-index: 2;
 }
+.ribbon-separator {
+  height: 2px;
+  background: #a9def9;
+  width: 100%;
+  border: none;
+  margin: 0 0 0;
+  box-shadow: 0 1px 0 #a9def9;
+}
+/* Resizable Divider Between Tables */
+.sprint-matrix-divider {
+  width: 6px;
+  cursor: col-resize;
+  background: #e0e1dd;
+  transition: background 0.2s;
+}
+.sprint-matrix-divider:hover {
+  background: #a9def9;
+}
+
+/* Optional: Add to bottom row to enable resizing */
+.sprint-matrix-bottom-row.resizable {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* Optional utility: Flex shrink/expand prevention */
+.sprint-matrix-tasks-table,
+.sprint-matrix-tracking-table {
+  min-width: 0;
+  overflow: hidden;
+}
+
