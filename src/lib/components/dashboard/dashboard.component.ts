@@ -233,7 +233,6 @@ exportToExcel() {
   const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
   saveAs(blob, 'Datalyzer_Asset_Report.xlsx');
 }
-// ...existing code...
 
 exportAllHistoryToExcel() {
   // Fetch all history for all laptops

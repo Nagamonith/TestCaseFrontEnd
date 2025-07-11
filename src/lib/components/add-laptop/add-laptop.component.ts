@@ -36,7 +36,7 @@ export class AddLaptopComponent {
     phone: 'Phone Number',
     email: 'Email Address',
     comments: 'Comments',
-    invoiceDate: 'Invoice Date',
+    invoiceDate: 'Issued Date',
     physicalIPAddress: 'Physical IP Address',
     hostName: 'Host Name',
     otherItems: 'Other Items'

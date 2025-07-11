@@ -341,7 +341,7 @@
             <p><strong>SSD:</strong> {{ selectedLaptop.deviceDetails.ssd }}</p>
             <p><strong>Mouse provided:</strong> {{ selectedLaptop.deviceDetails.mouse }}</p>
             <p><strong>Comments:</strong> {{ selectedLaptop.deviceDetails.comments }}</p>
-            <p><strong>Invoice Date:</strong> {{ selectedLaptop.deviceDetails.invoiceDate }}</p>
+            <p><strong>Issued Date:</strong> {{ selectedLaptop.deviceDetails.invoiceDate }}</p>
             <p><strong>Physical IP Address:</strong> {{ selectedLaptop.deviceDetails.physicalIPAddress }}</p>
             <p><strong>Host Name:</strong> {{ selectedLaptop.deviceDetails.hostName }}</p>
             <p><strong>Other Items:</strong> {{ selectedLaptop.deviceDetails.otherItems }}</p>
@@ -373,7 +373,7 @@
               <th>Phone</th>
               <th>Email</th>
               <th>Comments</th>
-              <th>Invoice Date</th>
+              <th>Issued Date</th>
               <th>Physical IP Address</th>
               <th>Host Name</th>
               <th>Other Items</th>
@@ -475,7 +475,7 @@
       </div>
       <div class="modal-body text-center">
         <qrcode [qrdata]="qrUrl" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
-        <p class="mt-2"><small>{{ qrUrl }}</small></p>
+        <!-- <p class="mt-2"><small>{{ qrUrl }}</small></p> -->
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="downloadQrCode()">Download QR</button>

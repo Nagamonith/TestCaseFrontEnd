@@ -1,18 +1,20 @@
 <div class="container">
   <h2>Asset Dashboard</h2>
 
-  <div class="custom-select-wrapper">
+  <div class="custom-select-wrapper d-flex align-items-center">
     <select [(ngModel)]="selectedType" (change)="fetchAssets()" class="form-select custom-select">
       <option value="" disabled>Select Asset Type</option>
       <option *ngFor="let type of assetTypes" [value]="type">{{ type }}</option>
     </select>
     <span class="custom-select-arrow">&#9662;</span>
+    <button class="btn btn-primary ms-2" (click)="viewAllAssets()">View All Assets</button>
   </div>
   <div>
     <button class="btn btn-secondary mb-3" (click)="goToPreviousPage()">Back</button>
   </div>
 
-  <table class="table table-bordered" *ngIf="assets.length">
+  <!-- Table for selected type assets -->
+  <table class="table table-bordered" *ngIf="assets.length && !showAllAssetsGrid">
     <thead>
       <tr>
         <th>AssetId</th>
@@ -36,7 +38,33 @@
     </tbody>
   </table>
 
-  <div *ngIf="!assets.length && selectedType">No assets found.</div>
+  <div *ngIf="!assets.length && selectedType && !showAllAssetsGrid">No assets found.</div>
+
+  <!-- All Assets Grid -->
+  <div *ngIf="showAllAssetsGrid">
+    <h4>All Assets</h4>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>AssetId</th>
+          <th>Type</th>
+          <th>EmployeeId</th>
+          <th>View</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let asset of allAssets">
+          <td>{{ asset.AssetId }}</td>
+          <td>{{ asset.Type }}</td>
+          <td>{{ asset.EmployeeId }}</td>
+          <td>
+            <button class="btn btn-info btn-sm" (click)="openViewAsset(asset)">View</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="btn btn-secondary" (click)="showAllAssetsGrid = false">Close</button>
+  </div>
 
   <!-- View Asset Modal -->
   <div class="modal-backdrop" *ngIf="showViewModal"></div>
@@ -44,9 +72,9 @@
     <div class="modal-content">
       <h5>Asset Details</h5>
       <div *ngFor="let key of viewAssetKeys" class="asset-details-row">
-  <span class="asset-details-label">{{ key }}</span>
-  <span class="asset-details-value">{{ viewAsset[key] }}</span>
-</div>
+        <span class="asset-details-label">{{ key }}</span>
+        <span class="asset-details-value">{{ viewAsset[key] }}</span>
+      </div>
       <div>
         <button class="btn btn-secondary" (click)="showViewModal=false">Close</button>
       </div>
@@ -79,5 +107,3 @@
         <button class="btn btn-secondary ms-2" (click)="showEditModal=false">Cancel</button>
       </div>
     </div>
-  </div>
-</div>

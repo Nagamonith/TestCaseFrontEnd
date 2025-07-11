@@ -38,7 +38,7 @@ export class EditLaptopComponent implements OnInit {
     phone: 'Phone Number',
     email: 'Email',
     comments: 'Comments',
-    invoiceDate: 'Invoice Date',
+    invoiceDate: 'Issued Date',
     physicalIPAddress: 'Physical IP Address',
     hostName: 'Host Name',
     otherItems: 'Other Items'

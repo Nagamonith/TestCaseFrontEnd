@@ -71,6 +71,8 @@ viewAsset: any = {};
 viewAssetKeys: string[] = [];
 showAllAssetsSummary = false;
 assetTypeSummaries: { type: string, count: number }[] = [];
+allAssets: any[] = [];
+showAllAssetsGrid = false;
 
   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute, private sanitizer: DomSanitizer) {}
 
@@ -190,5 +192,18 @@ fetchAssetTypeSummaries() {
     });
 
 }
-
+viewAllAssets() {
+  this.http.get<any[]>(`${this.apiBaseUrl}/api/Assets`)
+    .subscribe(data => {
+      this.allAssets = data.map(a => ({
+        ...JSON.parse(a.data),
+        AssetId: a.assetId,
+        EmployeeId: a.employeeId,
+        Type: a.type,
+        Id: a.id,
+        CreatedAt: a.createdAt
+      }));
+      this.showAllAssetsGrid = true;
+    });
+}
 }

@@ -42,7 +42,7 @@ export class PreDashboardComponent implements OnInit {
 
   requiredFieldsMap: { [type: string]: string[] } = {
     'Server': ['Serial Number', 'IP Address', 'Server Type','Make', 'Host Name', 'Server Name','Operating System','RAM','Date of Purchase','Processor','HDD', 'Ownership'],
-    'Laptop': ['Serial Number', 'Laptop Make', 'Employee Id','Employee Name', 'Laptop Alloted date', 'Ownership(company/personal)', 'Remarks'],
+    'Laptop': ['Serial Number', 'Laptop Make','Employee Name', 'Laptop Alloted date', 'Ownership(company/personal)', 'Remarks'],
     'Charger': ['Brand', 'Power'],
     'Keyboard': ['Brand', 'Type'],
     'Mouse': ['Brand', 'Type'],
@@ -196,7 +196,7 @@ fetchVendors() {
       this.newFieldName = '';
     }
   }
-
+  
   removeField(idx: number) {
     this.dynamicFields.splice(idx, 1);
   }

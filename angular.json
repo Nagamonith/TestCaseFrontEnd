@@ -32,7 +32,9 @@
               "src/styles.css",
               "src/assets/scss/application-main.scss",
               "src/assets/css/dl-icons.min.css",
-              "src/assets/css/datalyzer-icons.css"
+              "src/assets/css/datalyzer-icons.css",
+              "node_modules/devextreme/dist/css/dx.carmine.css",
+              "node_modules/devexpress-gantt/dist/dx-gantt.css"
 
             ],
             "scripts": []
@@ -91,7 +93,7 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              
             ],
             "scripts": []
           }

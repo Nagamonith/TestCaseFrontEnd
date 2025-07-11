@@ -236,7 +236,7 @@ button:disabled {
   background: #e9ecef;
   color: #adb5bd;
 }
-/* Add to your component's CSS file for a clean field-value modal layout */
+
 
 .asset-details-row {
   display: flex;
@@ -264,9 +264,7 @@ button:disabled {
   flex: 1 1 0;
   text-align: right;
 }
-/* ...existing code... */
 
-/* Modal Styles */
 .modal {
   position: fixed;
   top: 50%; left: 50%;
@@ -295,7 +293,6 @@ button:disabled {
   min-height: 0;
 }
 
-/* ...existing code... */
 
 @media (max-width: 900px) {
   .container {

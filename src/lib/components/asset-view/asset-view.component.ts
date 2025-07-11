@@ -17,7 +17,7 @@ interface DeviceDetails {
   ssd: string;
   // mouse: string;
   company: string;
-  phone: string;
+  // phone: string;
   email: string;
   // comments: string;
   // invoiceDate: string;
