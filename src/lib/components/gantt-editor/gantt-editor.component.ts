@@ -443,4 +443,11 @@ this.skippedTasks = (data.tasks || []).filter(
     const resource = this.ganttResources.find(r => r.id === assignment.resourceId);
     return resource ? resource.text : '-';
   }     
+  
+  saveTask(task: any) {
+  this.http.post('http://localhost:5238/api/gantt/save-task', task).subscribe({
+    next: () => alert('Task saved!'),
+    error: () => alert('Error saving task')
+  });
+}
 }

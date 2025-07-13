@@ -1,3 +1,4 @@
+
 <div class="gantt-editor">
   <form [formGroup]="ganttForm" class="top-bar" (ngSubmit)="showGanttChart()">
     <label>
@@ -10,72 +11,42 @@
     </label>
     <button type="submit" [disabled]="ganttForm.invalid || ganttChartLoading">Load</button>
   </form>
-
-  <div class="main-content">
-    <div class="left-half">
-      <h3>Tasks</h3>
-      <table class="task-table">
-        <thead>
-          <tr>
-            <th>Summary</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Progress</th>
-            <th>Resource</th>
-            <th>Dependency</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let task of ganttChartData" (dblclick)="onRowDblClick(task)">
-            <td>{{task.title}}</td>
-            <td>{{task.start}}</td>
-            <td>{{task.end}}</td>
-            <td>{{task.progress}}%</td>
-            <!-- <td>{{task.resource_Name || '-'}}</td> -->
-             <td>{{ getResourceName(task.id) }}</td>
-            <td>{{ getDependency(task.id) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div *ngIf="skippedTasks.length > 0" style="color:orange;">
-        ⚠ Skipped {{skippedTasks.length}} task(s) missing start or end date.
-      </div>
-    </div>
-   
-
-    <!-- Right: Gantt Chart -->
-    <div class="right-half">
-      <h3>Gantt Chart</h3>
-      <div *ngIf="ganttChartLoading">Loading chart...</div>
-      <!-- <dx-gantt
-        *ngIf="!ganttChartLoading && ganttChartData.length > 0"
-        [tasks]="{ dataSource: ganttChartData, keyExpr: 'id', titleExpr: 'title', startExpr: 'start', endExpr: 'end', progressExpr: 'progress' }"
-        [dependencies]="{ dataSource: ganttDependencies, keyExpr: 'id', predecessorIdExpr: 'predecessorId', successorIdExpr: 'successorId', typeExpr: 'type' }"
-        [resources]="{ dataSource: ganttResources, keyExpr: 'id', textExpr: 'text' }"
-        [resourceAssignments]="{ dataSource: ganttAssignments, keyExpr: 'id', taskIdExpr: 'taskId', resourceIdExpr: 'resourceId' }"
-        [height]="600"
-        scaleType="weeks"
-      > -->
-      <dx-gantt
-  *ngIf="ganttChartReady && !ganttChartLoading && ganttChartData.length > 0"
-  [tasks]="{ dataSource: ganttChartData, keyExpr: 'id', titleExpr: 'title', startExpr: 'start', endExpr: 'end', progressExpr: 'progress' }"
-  [dependencies]="{ dataSource: ganttDependencies, keyExpr: 'id', predecessorIdExpr: 'predecessorId', successorIdExpr: 'successorId', typeExpr: 'type' }"
-  [resources]="{ dataSource: ganttResources, keyExpr: 'id', textExpr: 'text' }"
-  [resourceAssignments]="{ dataSource: ganttAssignments, keyExpr: 'id', taskIdExpr: 'taskId', resourceIdExpr: 'resourceId' }"
-  [height]="600"
-  scaleType="weeks"
->
-        <dxi-column dataField="title" caption="Summary" [width]="250"></dxi-column>
-        <dxi-column dataField="resource_Name" caption="Resource"></dxi-column>
-        <dxi-column dataField="progress" caption="Progress"></dxi-column>
-        <dxi-column dataField="start" caption="Start"></dxi-column>
-        <dxi-column dataField="end" caption="End"></dxi-column>
-      </dx-gantt>
-      <div *ngIf="!ganttChartLoading && ganttChartData.length === 0" style="color:red;">
-        No tasks with valid dates found for this filter.
-      </div>
-    </div>
+<div class="gantt-editor-container">
+  <div class="gantt-grid-section">
+    <h4>Task List</h4>
+    <table class="gantt-grid-table">
+      <thead>
+        <tr>
+          <th>Summary</th>
+          <th>Resource</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Progress</th>
+          <th>Dependency</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of ganttChartData" (dblclick)="onRowDblClick(task)">
+          <td>{{ task.text || task.summary }}</td>
+          <td>{{ getResourceName(task.id) }}</td>
+          <td>{{ task.start | date:'yyyy-MM-dd' }}</td>
+          <td>{{ task.end | date:'yyyy-MM-dd' }}</td>
+          <td>{{ task.progress ? (task.progress) + '%' : '-' }}</td>
+          <td>{{ getDependency(task.id) }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-
- 
+  <div class="gantt-separator"></div>
+  <div class="gantt-chart-section">
+    <dx-gantt
+      *ngIf="ganttChartReady"
+      [tasks]="{ dataSource: ganttChartData }"
+      [dependencies]="{ dataSource: ganttDependencies }"
+      [resources]="{ dataSource: ganttResources }"
+      [resourceAssignments]="{ dataSource: ganttAssignments }"
+      [height]="500">
+    </dx-gantt>
+    <div *ngIf="ganttChartLoading" class="gantt-loading">Loading chart...</div>
+  </div>
 </div>
