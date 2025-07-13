@@ -1,4 +1,5 @@
 
+
 <div class="gantt-editor">
   <form [formGroup]="ganttForm" class="top-bar" (ngSubmit)="showGanttChart()">
     <label>
@@ -13,40 +14,78 @@
   </form>
 <div class="gantt-editor-container">
   <div class="gantt-grid-section">
-    <h4>Task List</h4>
+    <h4>Task List </h4>
+ <label>
+    Filter by Resource:
+    <select [(ngModel)]="selectedResourceId" (change)="applyResourceFilter()" name="resourceFilter">
+      <option [ngValue]="null">All</option>
+      <option *ngFor="let resource of ganttResources" [ngValue]="resource.id">{{ resource.text }}</option>
+    </select>
+  </label>
+
     <table class="gantt-grid-table">
       <thead>
         <tr>
           <th>Summary</th>
           <th>Resource</th>
-          <th>Start</th>
-          <th>End</th>
+          <th> Start Date</th>
+          <th>Current Merge Date</th>
           <th>Progress</th>
-          <th>Dependency</th>
+          <!-- <th>Dependency</th> -->
+          <th>Actions</th>
+          <th>Loader</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let task of ganttChartData" (dblclick)="onRowDblClick(task)">
+         <!-- <tr *ngFor="let task of ganttChartData" (dblclick)="onRowDblClick(task)"> -->
+     <tr *ngFor="let task of filteredTasks" (dblclick)="onRowDblClick(task)">
+
+          <td>{{task.title}}</td>
+                 <td>{{ getResourceName(task.id) }}</td>
+            <td>{{task.start}}</td>
+            <td><input type="date" [(ngModel)]="task.end" name="end-{{task.id}}" /></td>
+            <td><input type="number" [(ngModel)]="task.progress" name="progress-{{task.id}}" />%</td>
+             <!-- <td>{{ getResourceName(task.id) }}</td> -->
+            <!-- <td>{{ getDependency(task.id) }}</td> -->
+   
+             <td>
+    <button (click)="saveTask(task)">Save</button>
+  </td>
+            <td>  <button (click)="showGanttChart()" style="background-color: darkblue; color: white;">Refresh Chart</button>
+</td>
+          </tr>
+
+    <!-- <tr *ngFor="let task of ganttChartData" (dblclick)="onRowDblClick(task)">
           <td>{{ task.text || task.summary }}</td>
           <td>{{ getResourceName(task.id) }}</td>
           <td>{{ task.start | date:'yyyy-MM-dd' }}</td>
           <td>{{ task.end | date:'yyyy-MM-dd' }}</td>
           <td>{{ task.progress ? (task.progress) + '%' : '-' }}</td>
           <td>{{ getDependency(task.id) }}</td>
-        </tr>
+        </tr> -->
       </tbody>
     </table>
   </div>
   <div class="gantt-separator"></div>
+  
   <div class="gantt-chart-section">
-    <dx-gantt
+    <!-- <dx-gantt
       *ngIf="ganttChartReady"
       [tasks]="{ dataSource: ganttChartData }"
       [dependencies]="{ dataSource: ganttDependencies }"
       [resources]="{ dataSource: ganttResources }"
       [resourceAssignments]="{ dataSource: ganttAssignments }"
       [height]="500">
-    </dx-gantt>
+    </dx-gantt> -->
+
+<dx-gantt
+  *ngIf="ganttChartReady"
+  [tasks]="{ dataSource: filteredTasks }"
+  [dependencies]="{ dataSource: ganttDependencies }"
+  [resources]="{ dataSource: ganttResources }"
+  [resourceAssignments]="{ dataSource: ganttAssignments }"
+  [height]="500">
+</dx-gantt>
     <div *ngIf="ganttChartLoading" class="gantt-loading">Loading chart...</div>
   </div>
 </div>
