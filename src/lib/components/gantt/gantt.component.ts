@@ -76,6 +76,7 @@ export class GanttComponent {
   endDate = '';
   resourceName = '';
 targetVersion = '';
+  apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
 
   ngOnInit() {
    
@@ -89,7 +90,8 @@ targetVersion = '';
     if (this.resourceName) params = params.set('resourceName', this.resourceName);
     if (this.targetVersion) params = params.set('targetVersion', this.targetVersion);
 
-    this.http.get<any[]>('http://localhost:5238/api/ganttchart', { params }).subscribe({
+   this.http.get<any>(`${this.apiBaseUrl}/api/ganttchart`, { params }).subscribe({
+
       next: (data) => {
       console.log('Gantt data loaded:', data);
       this.gattData = data;

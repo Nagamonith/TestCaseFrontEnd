@@ -97,6 +97,9 @@ export class LeftnavigationbarComponent implements OnInit {
     this.router.navigate(['assets/bug']);
   }
 
+  navigateToGanttChart() {
+    this.router.navigate(['assets/gantt-editor']);
+  }
   // toggleClass(id:number){
   //   const atags = this.navbar.nativeElement.querySelectorAll('a')
   //   for(let tag in atags){

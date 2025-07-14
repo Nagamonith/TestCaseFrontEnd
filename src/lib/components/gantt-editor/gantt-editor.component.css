@@ -1,66 +1,133 @@
+/* gantt-editor.component.css */
+
+.gantt-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.top-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.top-bar label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+}
+
+.top-bar input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.top-bar button {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.top-bar button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
 .gantt-editor-container {
   display: flex;
-  flex-direction: row;
-  background: #fafbfc;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px #0001;
-  overflow: hidden;
-  margin: 24px 0;
+  gap: 1rem;
 }
 
 .gantt-grid-section {
-  flex: 1 1 350px;
-  padding: 24px 16px 24px 24px;
-  background: #fff;
-  min-width: 350px;
-  max-width: 500px;
-  overflow-x: auto;
+  flex: 1;
+  min-width: 400px;
+}
+
+.gantt-grid-section h4 {
+  margin-bottom: 0.5rem;
+}
+
+.gantt-grid-section label {
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
 .gantt-grid-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 15px;
-  background: #fff;
 }
 
 .gantt-grid-table th,
 .gantt-grid-table td {
-  border-bottom: 1px solid #e0e0e0;
-  padding: 8px 10px;
+  border: 1px solid #ddd;
+  padding: 0.5rem;
   text-align: left;
 }
 
 .gantt-grid-table th {
-  background: #f5f6fa;
-  font-weight: 600;
-  color: #333;
+  background-color: #f5f5f5;
 }
 
-.gantt-grid-table tr:hover {
-  background: #f0f4ff;
+.gantt-grid-table input[type="date"],
+.gantt-grid-table input[type="number"] {
+  width: 100%;
+  padding: 0.25rem;
+  box-sizing: border-box;
+}
+
+.gantt-grid-table button {
+  padding: 0.25rem 0.5rem;
+  border: none;
+  background-color: #28a745;
+  color: #fff;
+  border-radius: 4px;
   cursor: pointer;
 }
 
+.gantt-grid-table button:hover {
+  opacity: 0.9;
+}
+
 .gantt-separator {
-  width: 2px;
-  background: linear-gradient(to bottom, #e0e0e0 60%, #b0b0b0 100%);
-  margin: 0 0;
+  width: 1px;
+  background-color: #ddd;
 }
 
 .gantt-chart-section {
-  flex: 2 1 600px;
-  padding: 24px;
-  background: #f8fafc;
-  min-width: 400px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  flex: 2;
+  position: relative;
 }
 
 .gantt-loading {
-  text-align: center;
-  color: #888;
-  margin-top: 40px;
-  font-size: 18px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.view-toggle {
+  margin-top: 1rem;
+}
+
+.view-toggle button {
+  padding: 0.5rem 1rem;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.view-toggle button:hover {
+  opacity: 0.9;
 }

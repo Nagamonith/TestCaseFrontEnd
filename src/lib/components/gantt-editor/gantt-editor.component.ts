@@ -26,6 +26,7 @@ export class GanttEditorComponent {
     selectedResourceId: number | null = null;
   filteredTasks: any[] = [];
    validChartTasks: any[] = [];
+  apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
 
   // Modal state
   showTaskModal = false;
@@ -120,34 +121,40 @@ export class GanttEditorComponent {
 
   const params: any = { projectName, targetVersion };
 
-   this.http.get<any>('http://localhost:5238/api/gantt/chart', { params }).subscribe({
+   this.http.get<any>(`${this.apiBaseUrl}/api/gantt/chart`, { params }).subscribe({
       next: (data) => {
-        this.ganttChartData = data.tasks || [];
-        this.ganttResources = data.resources || [];
-        this.ganttAssignments = data.assignments || [];
-        this.ganttDependencies = data.dependencies || [];
-        this.skippedTasks = (data.tasks || []).filter((t: any) => !t.start || !t.end);
+  // Remove duplicate tasks by id (normalize id as string)
+  const seenIds = new Set<string>();
+  this.ganttChartData = (data.tasks || []).filter((task: any) => {
+    const idStr = String(task.id);
+    if (seenIds.has(idStr)) return false;
+    seenIds.add(idStr);
+    return true;
+  });
+  this.ganttResources = data.resources || [];
+  this.ganttAssignments = data.assignments || [];
+  this.ganttDependencies = data.dependencies || [];
+  this.skippedTasks = (data.tasks || []).filter((t: any) => !t.start || !t.end);
 
-        this.applyResourceFilter();
-        this.cdr.markForCheck();
+  this.applyResourceFilter();
+  this.cdr.markForCheck();
 
-        // Only allow chart if at least one filtered task has required fields
-        this.validChartTasks = this.filteredTasks.filter(t => !!t.start && !!t.end);
+  // Only allow chart if at least one filtered task has required fields
+  this.validChartTasks = this.filteredTasks.filter(t => !!t.start && !!t.end);
 
-        if (this.validChartTasks.length === 0) {
-          this.ganttChartReady = false;
-          this.ganttChartLoading = false;
-          alert('Please fill in all required fields (start and end dates) for at least one task before loading the chart.');
-          return;
-        }
+  if (this.validChartTasks.length === 0) {
+    this.ganttChartReady = false;
+    this.ganttChartLoading = false;
+    alert('Please fill in all required fields (start and end dates) for at least one task before loading the chart.');
+    return;
+  }
 
-
-      setTimeout(() => {
-        this.ganttChartReady = true;
-        this.ganttChartLoading = false;
-        this.cdr.markForCheck();
-      }, 0);
-    },
+  setTimeout(() => {
+    this.ganttChartReady = true;
+    this.ganttChartLoading = false;
+    this.cdr.markForCheck();
+  }, 0);
+},
     error: (err) => {
       alert('Error loading Gantt data');
       this.ganttChartLoading = false;
@@ -189,7 +196,7 @@ export class GanttEditorComponent {
 
   const payload = { ...task, resource_Name };
 
-  this.http.post('http://localhost:5238/api/gantt/save-task', payload).subscribe({
+  this.http.post(`${this.apiBaseUrl}/api/gantt/save-task`, payload).subscribe({
     next: () => {
       alert('Task saved!');
       this.showGanttChart(); // reload data
@@ -208,4 +215,10 @@ export class GanttEditorComponent {
       this.filteredTasks = this.ganttChartData.filter(task => assignedTaskIds.includes(task.id));
     }
   }
+  showGrid: boolean = true;
+
+toggleView() {
+  this.showGrid = !this.showGrid;
+}
+
 }
