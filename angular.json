@@ -21,8 +21,8 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-            "src/assets",
-            "src/web.config",
+              "src/assets",
+              "src/web.config",
               {
                 "glob": "**/*",
                 "input": "public"
@@ -35,7 +35,6 @@
               "src/assets/css/datalyzer-icons.css",
               "node_modules/devextreme/dist/css/dx.carmine.css",
               "node_modules/devexpress-gantt/dist/dx-gantt.css"
-
             ],
             "scripts": []
           },
@@ -44,13 +43,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "3MB",
+                  "maximumError": "6MB"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "4kB",
-                  "maximumError": "10mb"
+                  "maximumError": "10MB"
                 }
               ],
               "outputHashing": "all"
@@ -92,9 +91,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              
-            ],
+            "styles": [],
             "scripts": []
           }
         }

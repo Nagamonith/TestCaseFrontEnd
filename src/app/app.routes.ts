@@ -32,7 +32,7 @@ export const routes: Routes = [
     { path: 'vendor-dashboard', component: VendorDashboardComponent, canActivate: [AuthGuard] },
     { path: 'employee-dashboard', component: EmployeeDashboardComponent, canActivate: [AuthGuard] },
     { path: 'bug', component: BugComponent, canActivate: [AuthGuard] },
-    {path: 'gantt', component: GanttComponent, canActivate: [AuthGuard] },
+    // {path: 'gantt', component: GanttComponent, canActivate: [AuthGuard] },
     {path: 'gantt-editor', component: GanttEditorComponent, canActivate: [AuthGuard] }
     ]
 }

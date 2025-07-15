@@ -7,11 +7,12 @@
       <option *ngFor="let type of assetTypes" [value]="type">{{ type }}</option>
     </select>
     <span class="custom-select-arrow">&#9662;</span>
-    <button class="btn btn-primary ms-2" (click)="viewAllAssets()">View All Assets</button>
+
   </div>
   <div>
     <button class="btn btn-secondary mb-3" (click)="goToPreviousPage()">Back</button>
   </div>
+      <button class="btn btn-primary ms-2" (click)="viewAllAssets()">View All Assets</button>
 
   <!-- Table for selected type assets -->
   <table class="table table-bordered" *ngIf="assets.length && !showAllAssetsGrid">

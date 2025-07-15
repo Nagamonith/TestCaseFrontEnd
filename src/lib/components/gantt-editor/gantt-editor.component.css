@@ -29,7 +29,7 @@
 
 .top-bar button {
   padding: 0.5rem 1rem;
-  background-color: #007bff;
+  background-color: #242d83d5;
   border: none;
   color: #fff;
   border-radius: 4px;
@@ -130,4 +130,17 @@
 
 .view-toggle button:hover {
   opacity: 0.9;
+}
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-right: 16px;
+}
+.form-group label {
+  margin-right: 8px;
+  min-width: 120px;
+}
+.form-group select,
+.form-group input {
+  flex: 1;
 }

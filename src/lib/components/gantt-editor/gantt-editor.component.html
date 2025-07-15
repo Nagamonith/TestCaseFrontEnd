@@ -1,17 +1,16 @@
 <div class="gantt-editor">
   <form [formGroup]="ganttForm" class="top-bar" (ngSubmit)="showGanttChart()">
-    <label for="projectName">
-      Project Name:
-      <input id="projectName" name="projectName" formControlName="projectName" required />
-    </label>
-
-    <label for="targetVersion">
-      Target Version:
+    <div class="form-group">
+      <label for="projectName">Project Name:</label>
+      <select id="projectName" formControlName="projectName">
+        <option *ngFor="let name of projectNames" [value]="name">{{ name }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="targetVersion">Target Version:</label>
       <input id="targetVersion" name="targetVersion" formControlName="targetVersion" required />
-    </label>
-
+    </div>
     <button type="submit" [disabled]="ganttForm.invalid || ganttChartLoading">Load</button>
-
     <div class="view-toggle">
       <button type="button" (click)="toggleView()">
         {{ showGrid ? 'Show Chart' : 'Show Grid' }}
@@ -19,8 +18,9 @@
     </div>
   </form>
 
+
   <div class="gantt-editor-container">
-    <!-- Grid Section -->
+  
     <div *ngIf="showGrid" class="gantt-grid-section">
       <h4>Task List</h4>
 
@@ -70,17 +70,16 @@
                 [id]="'progress-' + task.id" />%
             </td>
             <td>
-              <button type="button" (click)="saveTask(task)">Save</button>
+              <button type="button" (click)="saveTask(task)" style="background-color: #242d83d5; color: white;">Save</button>
             </td>
             <td>
-              <button type="button" (click)="showGanttChart()" style="background-color: darkblue; color: white;">Refresh Chart</button>
+              <button type="button" (click)="showGanttChart()" style="background-color: #242d83d5; color: white;">Refresh Chart</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Chart Section -->
     <div *ngIf="!showGrid" class="gantt-chart-section">
       <dx-gantt
         *ngIf="ganttChartReady"

@@ -83,7 +83,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     const config = JSON.parse(sessionStorage.getItem('config') || '{}');
-    this.apiBaseUrl = (config.url || '').replace(/\/+$/, ''); // Remove trailing slashes
+    this.apiBaseUrl = (config.url || '').replace(/\/+$/, ''); 
   }
 
   onSubmit() {

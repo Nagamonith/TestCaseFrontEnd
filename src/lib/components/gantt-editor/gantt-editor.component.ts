@@ -28,18 +28,46 @@ export class GanttEditorComponent {
    validChartTasks: any[] = [];
   apiBaseUrl = JSON.parse(sessionStorage.getItem('config') || '{}').url;
 
-  // Modal state
   showTaskModal = false;
   selectedTask: any = null;
   ganttChartReady: boolean | undefined;
+    projectNames = [
+    'Web DSM',
+    'Test Automation',
+    'Security',
+    'Sales&Marketing',
+    'Qualis Wizard',
+    'Qualis Saas',
+    'Qualis Gage',
+    'Qualis FMEA',
+    'Qualis APQP',
+    'Qualis 4.0 SPC',
+    'OEE',
+    'Licensing Integration',
+    'IT Support',
+    'DSM',
+    'DIS',
+    'DataLyzer Reporting',
+    'DataLyzer Mould Application',
+    'Datalyzer License Management',
+    'DataLyzer FMEA',
+    'DataLyzer Console',
+    'DataLyzer COA',
+    'Datalyzer Cloud',
+    'Archive Qualis Admin',
+    'AI_MLOPS'
+  ];
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {
-    this.ganttForm = this.fb.group({
-      projectName: ['', Validators.required],
+    // this.ganttForm = this.fb.group({
+    //   projectName: ['', Validators.required],
+    //   targetVersion: ['']
+     this.ganttForm = this.fb.group({
+      projectName: [this.projectNames[0], Validators.required], // Default to first project
       targetVersion: ['']
     });
   }
