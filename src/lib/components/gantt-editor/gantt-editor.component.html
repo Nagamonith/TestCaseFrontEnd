@@ -43,7 +43,8 @@
           <tr>
             <th>Summary</th>
             <th>Resource</th>
-            <th>Start Date</th>
+            <th>Start Date </th>
+            <th>Original Merge Date</th>
             <th>Current Merge Date</th>
             <th>Progress</th>
             <th>Actions</th>
@@ -55,6 +56,7 @@
             <td>{{ task.title }}</td>
             <td>{{ getResourceName(task.id) }}</td>
             <td>{{ task.start }}</td>
+            <td>{{ getOriginalMergeDate(task.id) }}</td>
             <td>
               <input
                 type="date"

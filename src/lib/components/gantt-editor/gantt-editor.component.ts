@@ -206,6 +206,10 @@ export class GanttEditorComponent {
     const dep = this.ganttDependencies.find(dep => dep.successorId === taskId);
     return dep ? dep.predecessorId : '-';
   }
+  getOriginalMergeDate(taskId: number): string {
+    const task = this.ganttChartData.find(t => t.id === taskId);        
+    return task ? task.originalEnd || '-' : '-';
+  }
 
   getResourceName(taskId: number): string {
     const assignment = this.ganttAssignments.find(a => a.taskId === taskId);
