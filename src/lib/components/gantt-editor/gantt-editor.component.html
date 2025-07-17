@@ -18,23 +18,23 @@
     </div>
   </form>
 
-
   <div class="gantt-editor-container">
-  
     <div *ngIf="showGrid" class="gantt-grid-section">
       <h4>Task List</h4>
 
-      <label for="resourceFilter">
+      <label>
         Filter by Resource:
-        <select
-          id="resourceFilter"
-          name="resourceFilter"
-          [(ngModel)]="selectedResourceId"
-          (change)="applyResourceFilter()">
+        <select [(ngModel)]="selectedResourceId" (change)="onResourceFilterChange()" name="resourceFilter">
           <option [ngValue]="null">All</option>
-          <option *ngFor="let resource of ganttResources" [ngValue]="resource.id">
-            {{ resource.text }}
-          </option>
+          <option *ngFor="let resource of ganttResources" [ngValue]="resource.id">{{ resource.text }}</option>
+        </select>
+      </label>
+
+      <label>
+        Filter by Type:
+        <select [(ngModel)]="selectedTypeId" (change)="onTypeFilterChange()" name="typeFilter">
+          <option [ngValue]="null">All</option>
+          <option *ngFor="let type of ganttTypes" [ngValue]="type.id">{{ type.text }}</option>
         </select>
       </label>
 
@@ -42,8 +42,9 @@
         <thead>
           <tr>
             <th>Summary</th>
+            <th>Type</th>
             <th>Resource</th>
-            <th>Start Date </th>
+            <th>Start Date</th>
             <th>Original Merge Date</th>
             <th>Current Merge Date</th>
             <th>Progress</th>
@@ -54,28 +55,21 @@
         <tbody>
           <tr *ngFor="let task of filteredTasks" (dblclick)="onRowDblClick(task)">
             <td>{{ task.title }}</td>
+            <td>{{ task.type }}</td>
             <td>{{ getResourceName(task.id) }}</td>
             <td>{{ task.start }}</td>
             <td>{{ getOriginalMergeDate(task.id) }}</td>
             <td>
-              <input
-                type="date"
-                [(ngModel)]="task.end"
-                [name]="'end-' + task.id"
-                [id]="'end-' + task.id" />
+              <input type="date" [(ngModel)]="task.end" [name]="'end-' + task.id" />
             </td>
             <td>
-              <input
-                type="number"
-                [(ngModel)]="task.progress"
-                [name]="'progress-' + task.id"
-                [id]="'progress-' + task.id" />%
+              <input type="number" [(ngModel)]="task.progress" [name]="'progress-' + task.id" />%
             </td>
             <td>
-              <button type="button" (click)="saveTask(task)" style="background-color: #242d83d5; color: white;">Save</button>
+              <button type="button" style="background: #29307c; color: white;" (click)="saveTask(task)">Save</button>
             </td>
             <td>
-              <button type="button" (click)="showGanttChart()" style="background-color: #242d83d5; color: white;">Refresh Chart</button>
+              <button type="button" style="background: #29307c; color: white;" (click)="showGanttChart()">Refresh Chart</button>
             </td>
           </tr>
         </tbody>
