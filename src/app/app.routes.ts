@@ -12,7 +12,6 @@ import { AssetDashboardComponent } from '../lib/components/asset-dashboard/asset
 import { VendorDashboardComponent } from '../lib/components/vendor-dashboard/vendor-dashboard.component';   
 import { EmployeeDashboardComponent } from '../lib/components/employee-dashboard/employee-dashboard.component';
 import { BugComponent } from '../lib/components/bug/bug.component';
-import { GanttComponent } from '../lib/components/gantt/gantt.component';
 import { GanttEditorComponent } from '../lib/components/gantt-editor/gantt-editor.component';
 
 export const routes: Routes = [
@@ -32,8 +31,7 @@ export const routes: Routes = [
     { path: 'vendor-dashboard', component: VendorDashboardComponent, canActivate: [AuthGuard] },
     { path: 'employee-dashboard', component: EmployeeDashboardComponent, canActivate: [AuthGuard] },
     { path: 'bug', component: BugComponent, canActivate: [AuthGuard] },
-    // {path: 'gantt', component: GanttComponent, canActivate: [AuthGuard] },
-    {path: 'gantt-editor', component: GanttEditorComponent, canActivate: [AuthGuard] }
+    { path: 'gantt-editor', component: GanttEditorComponent, canActivate: [AuthGuard] }
     ]
 }
 

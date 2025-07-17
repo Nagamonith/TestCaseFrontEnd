@@ -91,7 +91,7 @@ export class LaptopDashboardComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.laptops = data;
-          this.allLaptops = data; // Save original list
+          this.allLaptops = data; 
         },
         error: (err) => alert('Error loading laptops: ' + err.message)
       });

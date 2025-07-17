@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 
 // Interfaces for API data
 export interface BugTask {
@@ -16,6 +18,7 @@ export interface BugTask {
   task_resource_name: string;
   // Add/remove fields as needed
 }
+
 
 export interface BugSummary {
   Summary: string;
@@ -44,7 +47,7 @@ export interface TimeTracking {
 @Component({
   selector: 'app-bug',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './bug.component.html',
   styleUrls: ['./bug.component.css']
 })
@@ -60,7 +63,8 @@ export class BugComponent implements OnInit {
   dataLoaded = false;
   notFound = false;
 
-  constructor(private http: HttpClient) {}
+
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
     this.showSprintMatrixModal = false;
@@ -98,6 +102,10 @@ export class BugComponent implements OnInit {
   }
   closeNotFoundModal(): void {
     this.notFound = false;
-  this.openSprintMatrixModal
+  this.openSprintMatrixModal();
+  }
+  
+  openGanttChartModal(): void {
+    this.router.navigate(['assets/gantt-editor']);
   }
 }
