@@ -145,6 +145,10 @@ export class LeftnavigationbarComponent implements OnInit {
   toggleLanguageList() {
     this.showLanguageList = !this.showLanguageList;
   }
+  navigateToTestcase() {
+  this.router.navigate(['/select-product']); // or '/tester/add-testcases' depending on entry
+}
+
  
 
  // Adjust path as needed

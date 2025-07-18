@@ -1,0 +1,33 @@
+<h2 class="text-center">Import Test Cases from Excel</h2>
+
+<div class="container-fluid">
+  <div class="form-group">
+    <label>Upload Excel File (.xlsx)</label>
+    <input type="file" (change)="handleFileInput($event)" />
+  </div>
+
+  <div *ngIf="sheetData() as sheets">
+    <h4>📑 Sheets Found: {{ (sheetData() | keyvalue)?.length }}</h4>
+
+    <div *ngFor="let sheet of sheetData() | keyvalue" class="sheet-preview">
+      <h5>🧾 {{ sheet.key }}</h5>
+
+      <table border="1">
+        <thead>
+          <tr>
+            <th *ngFor="let col of sheet.value[0] | keyvalue">{{ col.key }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of sheet.value">
+            <td *ngFor="let col of row | keyvalue">{{ col.value }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr />
+    </div>
+
+    <button (click)="saveData()">✅ Save to Backend (Dummy)</button>
+  </div>
+</div>

@@ -47,6 +47,7 @@
             <th>Start Date</th>
             <th>Original Merge Date</th>
             <th>Current Merge Date</th>
+         
             <th>Progress</th>
             <th>Actions</th>
             <th>Loader</th>
@@ -62,6 +63,7 @@
             <td>
               <input type="date" [(ngModel)]="task.end" [name]="'end-' + task.id" />
             </td>
+           
             <td>
               <input type="number" [(ngModel)]="task.progress" [name]="'progress-' + task.id" />%
             </td>

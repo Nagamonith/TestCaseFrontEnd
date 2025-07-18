@@ -1,0 +1,39 @@
+.add-form {
+  margin-bottom: 20px;
+}
+
+.add-form input {
+  padding: 8px;
+  width: 250px;
+  margin-right: 10px;
+}
+
+.add-form button {
+  padding: 8px 14px;
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.product-card {
+  padding: 20px;
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  width: 150px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.product-card:hover {
+  background-color: #d2ebff;
+}

@@ -1,0 +1,70 @@
+<h2 class="text-center">Add Test Case</h2>
+
+<div class="container-fluid">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-box">
+
+    <!-- Module dropdown -->
+    <div class="form-group">
+      <label>Select Module</label>
+      <select formControlName="moduleId" (change)="onModuleChange($event)">
+        <option value="">-- Choose Module --</option>
+        <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
+      </select>
+    </div>
+
+    <!-- Version dropdown -->
+    <div class="form-group">
+      <label>Select Version</label>
+      <select formControlName="version">
+        <option value="">-- Choose Version --</option>
+        <option *ngFor="let v of versions()">{{ v }}</option>
+      </select>
+    </div>
+
+    <!-- Fixed fields -->
+    <div formGroupName="fixed">
+      <div class="form-group">
+        <label>Use Case</label>
+        <input type="text" formControlName="useCase" />
+      </div>
+
+      <div class="form-group">
+        <label>Test Case ID</label>
+        <input type="text" formControlName="testCaseId" />
+      </div>
+
+      <div class="form-group">
+        <label>Scenario</label>
+        <input type="text" formControlName="scenario" />
+      </div>
+
+      <div class="form-group">
+        <label>Steps</label>
+        <textarea formControlName="steps"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Expected Result</label>
+        <textarea formControlName="expected"></textarea>
+      </div>
+    </div>
+
+    <!-- Dynamic custom attributes -->
+    <div class="form-group">
+      <label>Custom Attributes</label>
+      <div
+        *ngFor="let ctrl of dynamic.controls; let i = index"
+        [formGroupName]="i"
+        class="dynamic-row"
+      >
+        <input formControlName="key" placeholder="Key" />
+        <input formControlName="value" placeholder="Value" />
+        <button type="button" (click)="removeDynamicField(i)">❌</button>
+      </div>
+
+      <button type="button" (click)="addDynamicField()">+ Add Attribute</button>
+    </div>
+
+    <button type="submit" class="submit-btn">✅ Save Test Case</button>
+  </form>
+</div>

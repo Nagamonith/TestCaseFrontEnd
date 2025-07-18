@@ -1,0 +1,38 @@
+<h2 class="text-center">Results Summary</h2>
+
+<div class="container-fluid">
+  <div class="form-group">
+    <label>Select Module</label>
+    <select [(ngModel)]="selectedModule">
+      <option value="">-- Choose Module --</option>
+      <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Select Version</label>
+    <select [(ngModel)]="selectedVersion">
+      <option value="">-- Choose Version --</option>
+      <option *ngFor="let v of versionsByModule[selectedModule()] || []">{{ v }}</option>
+    </select>
+  </div>
+
+  <div *ngIf="selectedModule() && selectedVersion()">
+    <h4>📊 Test Case Stats</h4>
+    <ul>
+      <li>Total: {{ stats().total }}</li>
+      <li style="color: green;">✅ Pass: {{ stats().pass }}</li>
+      <li style="color: red;">❌ Fail: {{ stats().fail }}</li>
+      <li style="color: orange;">⏳ Pending: {{ stats().pending }}</li>
+    </ul>
+
+    <h4>📄 Azure Report Preview</h4>
+    <iframe
+      *ngIf="azureReportUrl()"
+      [src]="azureReportUrl()"
+      width="100%"
+      height="500px"
+      style="border: 1px solid #ccc;"
+    ></iframe>
+  </div>
+</div>

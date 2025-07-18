@@ -1,0 +1,26 @@
+<div class="container-fluid">
+  <div class="dashboard-header">
+    <h2>Testing Dashboard</h2>
+    <div class="product-info">🧪 Product: <strong>{{ productName }}</strong></div>
+  </div>
+
+  <div class="card-container">
+    <div class="card" routerLink="add-testcases">
+      ➕ Add Test Cases
+    </div>
+    <div class="card" routerLink="import-excel">
+      📥 Import Excel
+    </div>
+    <div class="card" routerLink="modules">
+      🧪 Modules
+    </div>
+    <div class="card" routerLink="results">
+      📊 Results
+    </div>
+    <div class="card" routerLink="summary">
+      📈 Summary
+    </div>
+  </div>
+
+  <router-outlet></router-outlet>
+</div>

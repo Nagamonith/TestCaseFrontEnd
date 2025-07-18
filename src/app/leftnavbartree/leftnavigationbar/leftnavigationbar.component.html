@@ -10,7 +10,12 @@
         <span [innerHTML]="leftNavIcon.Catalogue" (click)="navigateToSprintMatrix()">&nbsp;</span>
       </a>  
     </li>
-    
+    <li>
+  <a ngbTooltip="Testcase" (click)="navigateToTestcase()" routerLink="/select-product" routerLinkActive="active">
+    <img src="assets/images/icons/testcase-logo.svg" alt="Testcase" class="testcase-logo" />
+  </a>
+</li>
+
     <!-- <li>
       <a placement="end" >
         <span [innerHTML]="leftNavIcon.Report" (click)="navigateToGanttChart()">&nbsp;</span>

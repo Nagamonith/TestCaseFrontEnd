@@ -1,0 +1,43 @@
+.dashboard-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.dashboard-header h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.product-info {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.card {
+  background-color: #f0f0f0;
+  padding: 1.2rem 2rem;
+  text-align: center;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease-in-out;
+  user-select: none;
+}
+
+.card:hover {
+  background-color: #d9f2ff;
+  transform: scale(1.03);
+}

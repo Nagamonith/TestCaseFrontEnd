@@ -1,0 +1,18 @@
+<h2>Select a Product</h2>
+
+<!-- 💡 Add Product Form -->
+<div class="add-form">
+  <input [(ngModel)]="newProductName" placeholder="Enter new product name" />
+  <button (click)="addProduct()">➕ Add Product</button>
+</div>
+
+<!-- 💡 Product Grid -->
+<div class="product-grid">
+  <div
+    class="product-card"
+    *ngFor="let product of products"
+    (click)="selectProduct(product)"
+  >
+    {{ product.name }}
+  </div>
+</div>

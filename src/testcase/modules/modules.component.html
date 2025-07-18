@@ -1,0 +1,53 @@
+<h2 class="text-center">Start Testing</h2>
+
+<div class="container-fluid">
+  <div class="form-group">
+    <label>Select Module</label>
+    <select [(ngModel)]="selectedModule" (change)="onModuleVersionChange()">
+      <option value="">-- Choose Module --</option>
+      <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Select Version</label>
+    <select [(ngModel)]="selectedVersion" (change)="onModuleVersionChange()">
+      <option value="">-- Choose Version --</option>
+      <option *ngFor="let v of currentVersions">{{ v }}</option>
+
+    </select>
+  </div>
+
+  <div *ngIf="testCases().length > 0">
+    <table border="1" width="100%" cellpadding="10">
+      <thead>
+        <tr>
+          <th>Sl No</th>
+          <th>Scenario</th>
+          <th>Expected</th>
+          <th>Result</th>
+          <th>Actual</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tc of testCases(); let i = index" [formGroup]="formGroups()[i]">
+          <td>{{ tc.id }}</td>
+          <td>{{ tc.scenario }}</td>
+          <td>{{ tc.expected }}</td>
+          <td>
+            <select formControlName="result">
+              <option value="Pass">Pass ✅</option>
+              <option value="Fail">Fail ❌</option>
+              <option value="Pending">Pending ⏳</option>
+            </select>
+          </td>
+          <td><input type="text" formControlName="actual" /></td>
+          <td><input type="text" formControlName="remarks" /></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <button class="submit-btn" (click)="onSave()">✅ Save Results</button>
+  </div>
+</div>

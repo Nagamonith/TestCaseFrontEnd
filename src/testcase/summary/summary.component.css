@@ -1,0 +1,14 @@
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.matrix-table th,
+.matrix-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+.matrix-table th {
+  background-color: #f0f0f0;
+}
