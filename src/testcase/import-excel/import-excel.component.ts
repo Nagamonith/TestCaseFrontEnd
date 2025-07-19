@@ -11,7 +11,8 @@ import * as XLSX from 'xlsx';
 })
 export class ImportExcelComponent {
   fileName = '';
-  sheetData = signal<Record<string, any[]> | null>(null); // key: sheet name, value: JSON rows
+  sheetNames = signal<string[]>([]);
+  sheetData = signal<Record<string, any[]> | null>(null); // store all sheet data internally
 
   handleFileInput(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -31,6 +32,10 @@ export class ImportExcelComponent {
         allSheets[sheet] = rows;
       });
 
+      // ✅ Save only sheet names to show in UI
+      this.sheetNames.set(workbook.SheetNames);
+
+      // ✅ Keep actual sheet data internally (simulate storing to DB)
       this.sheetData.set(allSheets);
     };
 
@@ -39,6 +44,6 @@ export class ImportExcelComponent {
 
   saveData() {
     alert('✅ Dummy save done. Check console.');
-    console.log('📄 Final imported test case data:', this.sheetData());
+    console.log('📦 Final sheet data (to be sent to backend):', this.sheetData());
   }
 }
