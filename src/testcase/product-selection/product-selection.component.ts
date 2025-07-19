@@ -12,7 +12,6 @@ import { FormsModule } from '@angular/forms'; // ✅ Needed for [(ngModel)]
 })
 export class ProductSelectionComponent {
   products = [
-    { id: '1', name: 'CopyEdit' },
     { id: '2', name: 'Qualis SPC' },
     { id: '3', name: 'MSA' },
     { id: '4', name: 'FMEA' },
@@ -21,8 +20,38 @@ export class ProductSelectionComponent {
   ];
 
   newProductName = '';
+  showAddForm = false;
 
-  constructor(private router: Router) {}
+  contextMenuIndex: number | null = null;
+  menuX = 0;
+  menuY = 0;
+
+  editingIndex: number | null = null;
+  editedProductName = '';
+
+  constructor(private router: Router) {
+    // Close context menu on outside click
+    document.addEventListener('click', () => {
+      this.contextMenuIndex = null;
+    });
+  }
+
+  toggleAddProduct() {
+    this.showAddForm = true;
+  }
+
+  saveProduct() {
+    if (!this.newProductName.trim()) return;
+    const newId = (this.products.length + 1).toString();
+    this.products.push({ id: newId, name: this.newProductName });
+    this.newProductName = '';
+    this.showAddForm = false;
+  }
+
+  clearForm() {
+    this.newProductName = '';
+    this.showAddForm = false;
+  }
 
   selectProduct(product: any) {
     localStorage.setItem('productId', product.id);
@@ -30,10 +59,37 @@ export class ProductSelectionComponent {
     this.router.navigate(['/tester']);
   }
 
-  addProduct() {
-    if (!this.newProductName.trim()) return;
-    const newId = (this.products.length + 1).toString();
-    this.products.push({ id: newId, name: this.newProductName });
-    this.newProductName = '';
+  onRightClick(event: MouseEvent, index: number) {
+    event.preventDefault();
+    this.contextMenuIndex = index;
+    this.menuX = event.clientX;
+    this.menuY = event.clientY;
+  }
+
+  startEdit(index: number) {
+    this.editingIndex = index;
+    this.editedProductName = this.products[index].name;
+    this.contextMenuIndex = null; // Close right-click menu
+  }
+
+  saveEdit(index: number) {
+    if (this.editedProductName.trim()) {
+      this.products[index].name = this.editedProductName.trim();
+    }
+    this.editingIndex = null;
+  }
+
+  cancelEdit() {
+    this.editingIndex = null;
+  }
+
+  deleteProduct(index: number) {
+    if (confirm('Are you sure you want to delete this product?')) {
+      this.products.splice(index, 1);
+    }
+    this.contextMenuIndex = null;
+    if (this.editingIndex === index) {
+      this.editingIndex = null;
+    }
   }
 }

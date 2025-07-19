@@ -1,70 +1,88 @@
-<h2 class="text-center">Add Test Case</h2>
-
 <div class="container-fluid">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-box">
+  <!-- Module row -->
+  <div class="selection-row">
+    <label class="mr-05">Select Module</label>
+    <select [ngModel]="selectedModule()" (ngModelChange)="onModuleChange($event)">
+      <option value="">-- Choose Module --</option>
+      <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
+    </select>
+    <button class="btn-small primary ml-05" (click)="toggleAddModule()">➕ Add Module</button>
+  </div>
 
-    <!-- Module dropdown -->
+  <!-- Add Module form -->
+  <div class="form-box" *ngIf="showAddModuleForm">
+    <div class="form-group"><label>Module Name</label><input [(ngModel)]="newModuleName" /></div>
+    <div class="form-group"><label>Initial Version</label><input [(ngModel)]="newModuleVersion" /></div>
     <div class="form-group">
-      <label>Select Module</label>
-      <select formControlName="moduleId" (change)="onModuleChange($event)">
-        <option value="">-- Choose Module --</option>
-        <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
-      </select>
+      <button class="btn-small success mr-05" (click)="saveModule()">✅ Save</button>
+      <button class="btn-small danger" (click)="cancelAddModule()">❌ Cancel</button>
+    </div>
+  </div>
+
+  <!-- Version row -->
+  <div class="selection-row" *ngIf="selectedModule()">
+    <label class="mr-05">Select Version</label>
+    <select [ngModel]="selectedVersion()" (ngModelChange)="onVersionChange($event)">
+      <option value="">-- Choose Version --</option>
+      <option *ngFor="let v of versions()">{{ v }}</option>
+    </select>
+    <button class="btn-small primary ml-05" (click)="toggleAddVersionForm()">➕ Add Version</button>
+  </div>
+
+  <!-- Add Version form -->
+  <div class="form-box" *ngIf="showAddVersionForm">
+    <div class="form-group"><input [(ngModel)]="newVersionName" placeholder="New version e.g. v1.2" /></div>
+    <button class="btn-small success" (click)="addNewVersion()">✅ Save Version</button>
+  </div>
+
+  <!-- Action row -->
+  <div class="selection-row" *ngIf="selectedModule() && selectedVersion()">
+    <button class="btn-small success mr-05" (click)="openTestCaseForm()">➕ Add Test Case</button>
+    <button class="btn-small warning" (click)="toggleEditSearch()">✏️ Edit Test Cases</button>
+  </div>
+
+  <!-- Search & results -->
+  <div *ngIf="showEditSearch" class="form-box">
+    <label>Search by SlNo / TestCase ID / Use Case</label>
+    <input
+      type="text"
+      [ngModel]="searchQuery()"
+      (ngModelChange)="searchQuery.set($event)"
+      placeholder="e.g. 1 or TC101 or Login"
+    />
+
+    <div *ngIf="filteredResults().length === 0 && searchQuery()">
+      <p style="color:red;">❌ No match found.</p>
     </div>
 
-    <!-- Version dropdown -->
-    <div class="form-group">
-      <label>Select Version</label>
-      <select formControlName="version">
-        <option value="">-- Choose Version --</option>
-        <option *ngFor="let v of versions()">{{ v }}</option>
-      </select>
+    <div *ngFor="let tc of filteredResults()" class="form-box">
+      <strong>#{{ tc.slNo }}</strong> – {{ tc.fixed.testCaseId }} <br />
+      <em>{{ tc.fixed.useCase }}</em>
+      <button class="btn-small primary ml-05" (click)="editTestCase(tc)">✏️ Edit</button>
     </div>
+  </div>
 
-    <!-- Fixed fields -->
+  <!-- Test Case form -->
+  <form *ngIf="showForm" [formGroup]="form" (ngSubmit)="onSubmit()" class="form-box">
     <div formGroupName="fixed">
-      <div class="form-group">
-        <label>Use Case</label>
-        <input type="text" formControlName="useCase" />
-      </div>
-
-      <div class="form-group">
-        <label>Test Case ID</label>
-        <input type="text" formControlName="testCaseId" />
-      </div>
-
-      <div class="form-group">
-        <label>Scenario</label>
-        <input type="text" formControlName="scenario" />
-      </div>
-
-      <div class="form-group">
-        <label>Steps</label>
-        <textarea formControlName="steps"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Expected Result</label>
-        <textarea formControlName="expected"></textarea>
-      </div>
+      <div class="form-group"><label>Use Case</label><input formControlName="useCase" /></div>
+      <div class="form-group"><label>Test Case ID</label><input formControlName="testCaseId" /></div>
+      <div class="form-group"><label>Scenario</label><input formControlName="scenario" /></div>
+      <div class="form-group"><label>Steps</label><textarea formControlName="steps"></textarea></div>
+      <div class="form-group"><label>Expected Result</label><textarea formControlName="expected"></textarea></div>
     </div>
 
-    <!-- Dynamic custom attributes -->
     <div class="form-group">
-      <label>Custom Attributes</label>
-      <div
-        *ngFor="let ctrl of dynamic.controls; let i = index"
-        [formGroupName]="i"
-        class="dynamic-row"
-      >
+      <label>Dynamic Attributes</label>
+      <div *ngFor="let ctrl of dynamic.controls; let i = index" [formGroupName]="i" class="dynamic-row">
         <input formControlName="key" placeholder="Key" />
         <input formControlName="value" placeholder="Value" />
-        <button type="button" (click)="removeDynamicField(i)">❌</button>
+        <button type="button" class="btn-small danger" (click)="removeDynamicField(i)">❌</button>
       </div>
-
-      <button type="button" (click)="addDynamicField()">+ Add Attribute</button>
+      <button type="button" class="btn-small primary" (click)="addDynamicField()">+ Add Attribute</button>
     </div>
 
-    <button type="submit" class="submit-btn">✅ Save Test Case</button>
+    <button type="submit" class="btn-small success full">✅ Save</button>
+    <button type="button" class="btn-small danger full" (click)="closeTestCaseForm()">❌ Cancel</button>
   </form>
 </div>
