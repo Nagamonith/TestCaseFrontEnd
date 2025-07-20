@@ -1,14 +1,96 @@
+/* Container */
+.container-fluid {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.text-center {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Matrix Table */
 .matrix-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
-}
-.matrix-table th,
-.matrix-table td {
   border: 1px solid #ccc;
-  padding: 8px;
+  margin: 0 auto;
+}
+
+/* Table Header */
+.matrix-table thead th {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ccc;
+  font-weight: bold;
+  background-color: #f5f5f5;
+}
+
+.matrix-table thead th:first-child {
+  text-align: left;
+}
+
+.matrix-table thead th div {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: normal;
+  margin-bottom: 3px;
+}
+
+/* Table Body */
+.matrix-table tbody td {
+  padding: 8px 10px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+.matrix-table tbody td:first-child {
+  text-align: left;
+  font-weight: bold;
+}
+
+.matrix-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Table Footer */
+.matrix-table tfoot th,
+.matrix-table tfoot td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  font-weight: bold;
+  background-color: #f5f5f5;
+}
+
+.footer-highlight th {
+  text-align: left;
+}
+
+.footer-highlight td {
   text-align: center;
 }
-.matrix-table th {
-  background-color: #f0f0f0;
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 10px;
+    overflow-x: auto;
+  }
+  
+  .matrix-table {
+    min-width: 500px;
+  }
+  
+  .matrix-table th,
+  .matrix-table td {
+    padding: 6px 8px;
+    font-size: 0.9rem;
+  }
+  
+  .text-center {
+    font-size: 1.3rem;
+  }
 }

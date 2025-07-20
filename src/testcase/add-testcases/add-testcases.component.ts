@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -6,6 +6,7 @@ import {
   ReactiveFormsModule,
   FormsModule,
 } from '@angular/forms';
+import * as XLSX from 'xlsx'; // 📦 Install via npm i xlsx
 
 interface TestCase {
   slNo: number;
@@ -32,23 +33,19 @@ interface TestCase {
 export class AddTestcasesComponent {
   private fb = inject(FormBuilder);
 
-  /* ────────── reactive signals ────────── */
   selectedModule = signal<string | null>(null);
   selectedVersion = signal<string | null>(null);
-  searchQuery = signal('');                               // ✅ was string, now signal
+  searchQuery = signal('');
 
-  /* ────────── ui state flags ────────── */
   showForm = false;
   showAddModuleForm = false;
   showAddVersionForm = false;
   showEditSearch = false;
 
-  /* ────────── temp inputs ────────── */
   newModuleName = '';
   newModuleVersion = '';
   newVersionName = '';
 
-  /* ────────── sample data ────────── */
   modules = [
     { id: 'mod1', name: 'Login Module' },
     { id: 'mod2', name: 'Reports Module' },
@@ -79,7 +76,6 @@ export class AddTestcasesComponent {
     },
   ];
 
-  /* ────────── main form ────────── */
   form = this.fb.group({
     moduleId: '',
     version: '',
@@ -98,14 +94,13 @@ export class AddTestcasesComponent {
     return this.form.get('dynamic') as FormArray;
   }
 
-  /* ────────── computed helpers ────────── */
   versions = computed(() => {
     const id = this.selectedModule();
     return id ? this.versionsByModule[id] ?? [] : [];
   });
 
   filteredResults = computed(() => {
-    const q = this.searchQuery().toLowerCase().trim();    // ✅ use signal value
+    const q = this.searchQuery().toLowerCase().trim();
     const m = this.selectedModule();
     const v = this.selectedVersion();
     if (!q || !m || !v) return [];
@@ -122,7 +117,6 @@ export class AddTestcasesComponent {
     );
   });
 
-  /* ────────── module / version handlers ────────── */
   onModuleChange(id: string) {
     this.selectedModule.set(id || null);
     this.selectedVersion.set(null);
@@ -135,7 +129,6 @@ export class AddTestcasesComponent {
     this.showEditSearch = false;
   }
 
-  /* ----- add module ----- */
   toggleAddModule() { this.showAddModuleForm = true; }
   cancelAddModule() {
     this.showAddModuleForm = false;
@@ -156,9 +149,12 @@ export class AddTestcasesComponent {
     this.cancelAddModule();
   }
 
-  /* ----- add version ----- */
   toggleAddVersionForm() {
     this.showAddVersionForm = true;
+    this.newVersionName = '';
+  }
+  cancelAddVersionForm() {
+    this.showAddVersionForm = false;
     this.newVersionName = '';
   }
   addNewVersion() {
@@ -174,7 +170,6 @@ export class AddTestcasesComponent {
     this.showAddVersionForm = false;
   }
 
-  /* ----- search / edit ----- */
   toggleEditSearch() {
     this.showEditSearch = !this.showEditSearch;
     this.searchQuery.set('');
@@ -195,7 +190,6 @@ export class AddTestcasesComponent {
     this.showEditSearch = false;
   }
 
-  /* ----- new test case ----- */
   openTestCaseForm() {
     this.form.reset();
     this.dynamic.clear();
@@ -208,11 +202,9 @@ export class AddTestcasesComponent {
   }
   closeTestCaseForm() { this.showForm = false; }
 
-  /* ----- dynamic attr helpers ----- */
   addDynamicField() { this.dynamic.push(this.fb.group({ key: '', value: '' })); }
   removeDynamicField(i: number) { this.dynamic.removeAt(i); }
 
-  /* ----- save test case ----- */
   onSubmit() {
     const data = this.form.value as unknown as TestCase;
     const nextSlNo = this.dummyTestCases.length + 1;
@@ -237,7 +229,30 @@ export class AddTestcasesComponent {
     this.showForm = false;
   }
 
-  /* ────────── helpers ────────── */
+  exportModuleToExcel() {
+    const mod = this.selectedModule();
+    if (!mod) return;
+
+    const data = this.dummyTestCases
+      .filter(tc => tc.moduleId === mod)
+      .map(tc => ({
+        SlNo: tc.slNo,
+        Version: tc.version,
+        UseCase: tc.fixed.useCase,
+        TestCaseID: tc.fixed.testCaseId,
+        Scenario: tc.fixed.scenario,
+        Steps: tc.fixed.steps,
+        Expected: tc.fixed.expected,
+        ...Object.fromEntries(tc.dynamic.map(attr => [attr.key, attr.value])),
+      }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'TestCases');
+
+    XLSX.writeFile(workbook, `${mod}-TestCases.xlsx`);
+  }
+
   private resetOverlays() {
     this.showForm = false;
     this.showEditSearch = false;

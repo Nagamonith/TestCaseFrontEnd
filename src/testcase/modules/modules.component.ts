@@ -1,5 +1,4 @@
 import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import {
   FormArray,
   FormBuilder,
@@ -8,8 +7,8 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
-/* --- Test case model matching AddTestcasesComponent --- */
 interface TestCase {
   slNo: number;
   moduleId: string;
@@ -33,16 +32,19 @@ interface TestCase {
   styleUrls: ['./modules.component.css'],
 })
 export class ModulesComponent {
-  /* Dropdown selection */
   selectedModule = signal<string | null>(null);
+  filter = {
+    slNo: '',
+    testCaseId: '',
+    useCase: '',
+    result: '',
+  };
 
-  /* Modules list */
   modules = [
     { id: 'mod1', name: 'Login Module' },
     { id: 'mod2', name: 'Reports Module' },
   ];
 
-  /* Dummy Test Cases (with steps field) */
   testCasePool: TestCase[] = [
     {
       slNo: 1,
@@ -91,30 +93,39 @@ export class ModulesComponent {
     },
   ];
 
-  /* Form for test results */
   formArray = new FormArray<FormGroup>([]);
 
   constructor(private fb: FormBuilder) {}
-
-  /* Filter test cases by selected module */
-  filteredTestCases(): TestCase[] {
-    const mod = this.selectedModule();
-    return mod ? this.testCasePool.filter((tc) => tc.moduleId === mod) : [];
-  }
 
   formGroups(): FormGroup[] {
     return this.formArray.controls as FormGroup[];
   }
 
-  /* Update formArray on module change */
+  filteredTestCases(): TestCase[] {
+    const mod = this.selectedModule();
+    return mod ? this.testCasePool.filter((tc) => tc.moduleId === mod) : [];
+  }
+
+  filteredAndSearchedTestCases(): TestCase[] {
+    const tcs = this.filteredTestCases();
+    return tcs.filter((tc, i) => {
+      const form = this.formGroups()[i];
+      return (
+        (!this.filter.slNo || tc.slNo.toString().includes(this.filter.slNo)) &&
+        (!this.filter.testCaseId || tc.fixed.testCaseId.toLowerCase().includes(this.filter.testCaseId.toLowerCase())) &&
+        (!this.filter.useCase || tc.fixed.useCase.toLowerCase().includes(this.filter.useCase.toLowerCase())) &&
+        (!this.filter.result || form.get('result')?.value === this.filter.result)
+      );
+    });
+  }
+
   onModuleChange(id: string) {
     this.selectedModule.set(id || null);
     this.formArray.clear();
-
     for (const _ of this.filteredTestCases()) {
       this.formArray.push(
         new FormGroup({
-          result: new FormControl(''),
+          result: new FormControl('Pending'),
           actual: new FormControl(''),
           remarks: new FormControl(''),
         })
@@ -122,12 +133,8 @@ export class ModulesComponent {
     }
   }
 
-  /* Dummy save */
   onSave() {
-    console.log(
-      `✅ Saved results for module '${this.selectedModule()}':`,
-      this.formArray.value
-    );
+    console.log(`✅ Saved results for module '${this.selectedModule()}':`, this.formArray.value);
     alert('Results saved (dummy). Check console.');
   }
 }

@@ -1,38 +1,83 @@
 <h2 class="text-center">Results Summary</h2>
 
-<div class="container-fluid">
-  <div class="form-group">
-    <label>Select Module</label>
-    <select [(ngModel)]="selectedModule">
+<div class="container">
+  <!-- Module selector (initially the only element shown) -->
+  <div class="form-section">
+    <label for="moduleSelect">Select Module</label>
+    <select id="moduleSelect"
+            [(ngModel)]="selectedModule"
+            (change)="onModuleChange(selectedModule)">
       <option value="">-- Choose Module --</option>
       <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
     </select>
   </div>
 
-  <div class="form-group">
-    <label>Select Version</label>
-    <select [(ngModel)]="selectedVersion">
-      <option value="">-- Choose Version --</option>
-      <option *ngFor="let v of versionsByModule[selectedModule()] || []">{{ v }}</option>
-    </select>
-  </div>
+  <!-- Metadata + buttons appear after module is chosen -->
+  <div *ngIf="selectedModule">
+    <div class="meta-section">
+      <h4>📊 Module Metadata</h4>
+      <ul>
+        <li>Total Test Cases: {{ stats.total }}</li>
+        <li style="color: green;">✅ Passed: {{ stats.pass }}</li>
+        <li style="color: red;">❌ Failed: {{ stats.fail }}</li>
+        <li style="color: orange;">⏳ Pending: {{ stats.pending }}</li>
+      </ul>
+      <button class="btn-automation">Automation Result</button>
+    </div>
 
-  <div *ngIf="selectedModule() && selectedVersion()">
-    <h4>📊 Test Case Stats</h4>
-    <ul>
-      <li>Total: {{ stats().total }}</li>
-      <li style="color: green;">✅ Pass: {{ stats().pass }}</li>
-      <li style="color: red;">❌ Fail: {{ stats().fail }}</li>
-      <li style="color: orange;">⏳ Pending: {{ stats().pending }}</li>
-    </ul>
+    <!-- Toggle button to show/hide full module table -->
+    <div class="view-btn-container">
+      <button class="btn-view" (click)="showTable = !showTable">
+        {{ showTable ? 'Hide' : 'View' }} Module
+      </button>
+    </div>
 
-    <h4>📄 Azure Report Preview</h4>
-    <iframe
-      *ngIf="azureReportUrl()"
-      [src]="azureReportUrl()"
-      width="100%"
-      height="500px"
-      style="border: 1px solid #ccc;"
-    ></iframe>
+    <!-- Full module test‑case table (read‑only) -->
+    <div *ngIf="showTable">
+      <div class="filter-section">
+        <label for="statusFilter">Filter by Result</label>
+        <select id="statusFilter" [(ngModel)]="filterStatus">
+          <option value="All">All</option>
+          <option value="Pass">Pass</option>
+          <option value="Fail">Fail</option>
+          <option value="Pending">Pending</option>
+        </select>
+      </div>
+
+      <h4 class="table-title">🧪 Test Cases for {{ getModuleName(selectedModule) }}</h4>
+
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>Sl. No</th>
+            <th>Test Case ID</th>
+            <th>Use Case</th>
+            <th>Scenario</th>
+            <th>Steps</th>
+            <th>Expected</th>
+            <th>Actual</th>
+            <th>Result</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of tableData">
+            <td>{{ row.tc.fixed.slNo }}</td>
+            <td>{{ row.tc.fixed.testCaseId }}</td>
+            <td>{{ row.tc.fixed.useCase }}</td>
+            <td>{{ row.tc.fixed.scenario }}</td>
+            <td>{{ row.tc.fixed.steps }}</td>
+            <td>{{ row.tc.fixed.expected }}</td>
+            <td>Actual output {{ row.tc.fixed.slNo }}</td>
+            <td [ngClass]="{
+                  'pass': row.status === 'Pass',
+                  'fail': row.status === 'Fail',
+                  'pending': row.status === 'Pending'
+                }">{{ row.status }}</td>
+            <td>Remarks for test {{ row.tc.fixed.slNo }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

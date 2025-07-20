@@ -4,17 +4,27 @@
   <!-- Module dropdown -->
   <div class="form-group">
     <label>Select Module</label>
-    <select
-      [ngModel]="selectedModule()"
-      (ngModelChange)="onModuleChange($event)"
-    >
+    <select [ngModel]="selectedModule()" (ngModelChange)="onModuleChange($event)">
       <option value="">-- Choose Module --</option>
       <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
     </select>
   </div>
 
-  <!-- Test‑case table -->
-  <div *ngIf="filteredTestCases().length > 0">
+  <!-- Filters -->
+  <div class="filters" *ngIf="filteredTestCases().length > 0">
+    <input type="text" placeholder="Filter by Sl No" [(ngModel)]="filter.slNo" />
+    <input type="text" placeholder="Filter by TestCase ID" [(ngModel)]="filter.testCaseId" />
+    <input type="text" placeholder="Filter by Use Case" [(ngModel)]="filter.useCase" />
+    <select [(ngModel)]="filter.result">
+      <option value="">All Results</option>
+      <option value="Pass">Pass</option>
+      <option value="Fail">Fail</option>
+      <option value="Pending">Pending</option>
+    </select>
+  </div>
+
+  <!-- Test-case table -->
+  <div *ngIf="filteredAndSearchedTestCases().length > 0">
     <table>
       <thead>
         <tr>
@@ -31,17 +41,13 @@
       </thead>
 
       <tbody>
-        <tr
-          *ngFor="let tc of filteredTestCases(); let i = index"
-          [formGroup]="formGroups()[i]"
-        >
+        <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index" [formGroup]="formGroups()[i]">
           <td>{{ tc.slNo }}</td>
           <td>{{ tc.version }}</td>
           <td>{{ tc.fixed.testCaseId }}</td>
           <td class="wrap-text">{{ tc.fixed.scenario }}</td>
           <td class="wrap-text">{{ tc.fixed.steps }}</td>
           <td class="wrap-text">{{ tc.fixed.expected }}</td>
-
           <td>
             <select formControlName="result">
               <option value="Pass">Pass ✅</option>

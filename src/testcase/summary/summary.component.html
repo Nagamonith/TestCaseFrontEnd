@@ -5,7 +5,10 @@
     <thead>
       <tr>
         <th>Module \ Version</th>
-        <th *ngFor="let ver of versions">{{ ver }}</th>
+        <th *ngFor="let ver of versions">
+          <div>Number of scenarios in {{ ver }}</div>
+          {{ ver }}
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -16,5 +19,13 @@
         </td>
       </tr>
     </tbody>
+    <tfoot>
+      <tr class="footer-highlight">
+        <th>Total Scenarios per Version</th>
+        <td *ngFor="let ver of versions">
+          {{ getVersionTotal(ver) }}
+        </td>
+      </tr>
+    </tfoot>
   </table>
 </div>

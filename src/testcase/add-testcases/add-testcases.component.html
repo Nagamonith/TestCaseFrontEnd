@@ -6,7 +6,9 @@
       <option value="">-- Choose Module --</option>
       <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
     </select>
+
     <button class="btn-small primary ml-05" (click)="toggleAddModule()">➕ Add Module</button>
+    <button *ngIf="selectedModule()" class="btn-small export ml-auto" (click)="exportModuleToExcel()">📤 Export</button>
   </div>
 
   <!-- Add Module form -->
@@ -26,13 +28,18 @@
       <option value="">-- Choose Version --</option>
       <option *ngFor="let v of versions()">{{ v }}</option>
     </select>
+
     <button class="btn-small primary ml-05" (click)="toggleAddVersionForm()">➕ Add Version</button>
+    <button *ngIf="showAddVersionForm" class="btn-small danger ml-05" (click)="cancelAddVersionForm()">❌ Cancel</button>
   </div>
 
   <!-- Add Version form -->
   <div class="form-box" *ngIf="showAddVersionForm">
     <div class="form-group"><input [(ngModel)]="newVersionName" placeholder="New version e.g. v1.2" /></div>
-    <button class="btn-small success" (click)="addNewVersion()">✅ Save Version</button>
+    <div class="form-group">
+      <button class="btn-small success mr-05" (click)="addNewVersion()">✅ Save Version</button>
+      <button class="btn-small danger" (click)="cancelAddVersionForm()">❌ Cancel</button>
+    </div>
   </div>
 
   <!-- Action row -->
@@ -44,12 +51,7 @@
   <!-- Search & results -->
   <div *ngIf="showEditSearch" class="form-box">
     <label>Search by SlNo / TestCase ID / Use Case</label>
-    <input
-      type="text"
-      [ngModel]="searchQuery()"
-      (ngModelChange)="searchQuery.set($event)"
-      placeholder="e.g. 1 or TC101 or Login"
-    />
+    <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="e.g. 1 or TC101 or Login" />
 
     <div *ngIf="filteredResults().length === 0 && searchQuery()">
       <p style="color:red;">❌ No match found.</p>
@@ -82,7 +84,9 @@
       <button type="button" class="btn-small primary" (click)="addDynamicField()">+ Add Attribute</button>
     </div>
 
-    <button type="submit" class="btn-small success full">✅ Save</button>
-    <button type="button" class="btn-small danger full" (click)="closeTestCaseForm()">❌ Cancel</button>
+    <div class="form-group">
+      <button type="submit" class="btn-small success mr-05">✅ Save</button>
+      <button type="button" class="btn-small danger ml-05" (click)="closeTestCaseForm()">❌ Cancel</button>
+    </div>
   </form>
 </div>
