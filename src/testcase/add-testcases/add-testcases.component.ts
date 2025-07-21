@@ -1,11 +1,13 @@
-import { Component, signal, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   FormBuilder,
+  FormGroup,
   FormArray,
   ReactiveFormsModule,
   FormsModule,
+  Validators
 } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
 
 interface TestCase {
@@ -28,7 +30,7 @@ interface TestCase {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './add-testcases.component.html',
-  styleUrls: ['./add-testcases.component.css'],
+  styleUrls: ['./add-testcases.component.css']
 })
 export class AddTestcasesComponent {
   private fb = inject(FormBuilder);
@@ -36,7 +38,6 @@ export class AddTestcasesComponent {
   selectedModule = signal<string | null>(null);
   selectedVersion = signal<string | null>(null);
   searchQuery = signal('');
-  
 
   showForm = false;
   showAddModuleForm = false;
@@ -44,19 +45,19 @@ export class AddTestcasesComponent {
   showEditSearch = false;
 
   newModuleName = '';
-  newModuleVersion = '';
+  newModuleVersion = 'v1.0';
   newVersionName = '';
 
   savedDynamicAttributes: { key: string; value: string }[] = [];
 
   modules = [
     { id: 'mod1', name: 'Login Module' },
-    { id: 'mod2', name: 'Reports Module' },
+    { id: 'mod2', name: 'Reports Module' }
   ];
 
   versionsByModule: Record<string, string[]> = {
     mod1: ['v1.0', 'v1.1'],
-    mod2: ['v2.0'],
+    mod2: ['v2.0']
   };
 
   dummyTestCases: TestCase[] = [
@@ -66,32 +67,36 @@ export class AddTestcasesComponent {
       version: 'v1.0',
       fixed: {
         slNo: 1,
-        useCase: 'Login as Admin',
-        testCaseId: 'TC101',
-        scenario: 'Admin logs in with valid creds',
-        steps: '1. Go to login\n2. Enter creds\n3. Click login',
-        expected: 'Admin dashboard opens',
+        useCase: 'User Login',
+        testCaseId: 'TC001',
+        scenario: 'Valid user login',
+        steps: '1. Enter username\n2. Enter password\n3. Click login',
+        expected: 'User should be logged in successfully'
       },
       dynamic: [
         { key: 'Priority', value: 'High' },
-        { key: 'Device', value: 'Chrome' },
-      ],
-    },
+        { key: 'Category', value: 'Authentication' }
+      ]
+    }
   ];
 
   form = this.fb.group({
-    moduleId: '',
-    version: '',
+    moduleId: ['', Validators.required],
+    version: ['', Validators.required],
     fixed: this.fb.group({
-      slNo: 0,
-      useCase: '',
-      testCaseId: '',
-      scenario: '',
-      steps: '',
-      expected: '',
+      slNo: [0],
+      useCase: ['', Validators.required],
+      testCaseId: ['', Validators.required],
+      scenario: ['', Validators.required],
+      steps: ['', Validators.required],
+      expected: ['', Validators.required]
     }),
-    dynamic: this.fb.array([] as any[]),
+    dynamic: this.fb.array([])
   });
+
+  get fixed(): FormGroup {
+    return this.form.get('fixed') as FormGroup;
+  }
 
   get dynamic(): FormArray {
     return this.form.get('dynamic') as FormArray;
@@ -114,65 +119,70 @@ export class AddTestcasesComponent {
         tc.version === v &&
         (
           tc.slNo.toString().includes(q) ||
-          (tc.fixed.testCaseId?.toLowerCase() ?? '').includes(q) ||
-          (tc.fixed.useCase?.toLowerCase() ?? '').includes(q)
+          tc.fixed.testCaseId.toLowerCase().includes(q) ||
+          tc.fixed.useCase.toLowerCase().includes(q)
         )
     );
   });
 
+  // MODULE METHODS
   onModuleChange(id: string) {
     this.selectedModule.set(id || null);
     this.selectedVersion.set(null);
     this.resetOverlays();
   }
 
-  onVersionChange(ver: string) {
-    this.selectedVersion.set(ver || null);
-    this.showForm = false;
-    this.showEditSearch = false;
+  toggleAddModule() {
+    this.showAddModuleForm = !this.showAddModuleForm;
+    this.newModuleName = '';
+    this.newModuleVersion = 'v1.0';
   }
 
-  toggleAddModule() { this.showAddModuleForm = true; }
   cancelAddModule() {
     this.showAddModuleForm = false;
-    this.newModuleName = '';
-    this.newModuleVersion = '';
   }
+
   saveModule() {
     const name = this.newModuleName.trim();
     const version = this.newModuleVersion.trim() || 'v1.0';
     if (!name) return alert('Module name required');
 
-    const id = `${name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+    const id = `mod${this.modules.length + 1}`;
     this.modules.push({ id, name });
     this.versionsByModule[id] = [version];
-
     this.selectedModule.set(id);
     this.selectedVersion.set(version);
     this.cancelAddModule();
   }
 
+  // VERSION METHODS
+  onVersionChange(ver: string) {
+    this.selectedVersion.set(ver || null);
+    this.resetOverlays();
+  }
+
   toggleAddVersionForm() {
-    this.showAddVersionForm = true;
+    this.showAddVersionForm = !this.showAddVersionForm;
     this.newVersionName = '';
   }
+
   cancelAddVersionForm() {
     this.showAddVersionForm = false;
-    this.newVersionName = '';
   }
+
   addNewVersion() {
     const ver = this.newVersionName.trim();
     const mod = this.selectedModule();
-    if (!mod) return;
-    if (!ver) return alert('Version required');
-    if (this.versionsByModule[mod].includes(ver))
+    if (!mod || !ver) return alert('Version required');
+    if (this.versionsByModule[mod].includes(ver)) {
       return alert('Version already exists');
-
+    }
     this.versionsByModule[mod].push(ver);
     this.selectedVersion.set(ver);
-    this.showAddVersionForm = false;
+    this.cancelAddVersionForm();
   }
 
+  // TEST CASE METHODS
   toggleEditSearch() {
     this.showEditSearch = !this.showEditSearch;
     this.searchQuery.set('');
@@ -182,111 +192,152 @@ export class AddTestcasesComponent {
     this.form.patchValue({
       moduleId: tc.moduleId,
       version: tc.version,
-      fixed: { ...tc.fixed },
+      fixed: { ...tc.fixed }
     });
-
-    this.dynamic.clear();
-    tc.dynamic.forEach((attr) =>
-      this.dynamic.push(this.fb.group({ key: attr.key, value: attr.value }))
-    );
-
     this.savedDynamicAttributes = [...tc.dynamic];
     this.showForm = true;
     this.showEditSearch = false;
+  }
+
+  deleteTestCase(tc: TestCase) {
+    if (confirm('Are you sure you want to delete this test case?')) {
+      this.dummyTestCases = this.dummyTestCases.filter(item => item.slNo !== tc.slNo);
+    }
   }
 
   openTestCaseForm() {
     this.form.reset();
     this.dynamic.clear();
     this.savedDynamicAttributes = [];
-
     this.form.patchValue({
       moduleId: this.selectedModule(),
       version: this.selectedVersion(),
-      fixed: { slNo: 0 },
+      fixed: {
+        slNo: this.dummyTestCases.length > 0 ?
+          Math.max(...this.dummyTestCases.map(tc => tc.slNo)) + 1 : 1
+      }
     });
     this.showForm = true;
   }
 
   closeTestCaseForm() {
     this.showForm = false;
+    this.form.reset();
+    this.dynamic.clear();
     this.savedDynamicAttributes = [];
   }
 
+  // DYNAMIC ATTRIBUTE METHODS
   addDynamicField() {
-    this.dynamic.push(this.fb.group({ key: '', value: '' }));
+    this.dynamic.push(this.fb.group({
+      key: ['Attribute ' + (this.dynamic.length + 1), Validators.required],
+      value: ['']
+    }));
   }
 
-  removeDynamicField(i: number) {
-    this.dynamic.removeAt(i);
-  }
+  saveDynamicAttributes() {
+    const newAttrs = this.dynamic.controls
+      .filter(ctrl => ctrl.get('key')?.value?.trim())
+      .map(ctrl => ({
+        key: ctrl.get('key')?.value?.trim() || 'Unnamed Attribute',
+        value: ctrl.get('value')?.value?.trim() || ''
+      }));
 
-  onSubmit() {
-    const data = this.form.value as unknown as TestCase;
-    const nextSlNo = this.dummyTestCases.length + 1;
-    const inputSlNo = data.fixed?.slNo ?? 0;
-    const finalSlNo = inputSlNo > 0 ? inputSlNo : nextSlNo;
-
-    data.slNo = finalSlNo;
-    data.fixed.slNo = finalSlNo;
-
-    const idx = this.dummyTestCases.findIndex(
-      (tc) =>
-        tc.moduleId === data.moduleId &&
-        tc.version === data.version &&
-        tc.fixed.testCaseId === data.fixed.testCaseId
-    );
-
-    if (idx >= 0) {
-      this.dummyTestCases[idx] = data;
-    } else {
-      this.dummyTestCases.push(data);
-    }
-
-    this.savedDynamicAttributes = [...data.dynamic];
-
-    alert('✅ Test case saved!');
+    this.savedDynamicAttributes = [
+      ...this.savedDynamicAttributes,
+      ...newAttrs
+    ];
     this.dynamic.clear();
   }
 
+  saveDynamicAttribute(): void {
+    this.saveDynamicAttributes();
+  }
+
+  cancelDynamicAttribute(): void {
+    this.dynamic.clear();
+  }
+
+  removeDynamicField(index: number) {
+    this.dynamic.removeAt(index);
+  }
+
+  removeSavedAttribute(index: number) {
+    this.savedDynamicAttributes.splice(index, 1);
+  }
+
+  // FORM SUBMISSION
+  onSubmit(): void {
+    if (this.dynamic.length > 0) {
+      this.saveDynamicAttributes();
+    }
+
+    if (this.form.invalid) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    const formData = this.form.value;
+    const testCase: TestCase = {
+      slNo: formData.fixed?.slNo || 0,
+      moduleId: formData.moduleId || '',
+      version: formData.version || '',
+      fixed: {
+        slNo: formData.fixed?.slNo || 0,
+        useCase: formData.fixed?.useCase || '',
+        testCaseId: formData.fixed?.testCaseId || '',
+        scenario: formData.fixed?.scenario || '',
+        steps: formData.fixed?.steps || '',
+        expected: formData.fixed?.expected || ''
+      },
+      dynamic: [...this.savedDynamicAttributes]
+    };
+
+    const existingIndex = this.dummyTestCases.findIndex(tc => tc.slNo === testCase.slNo);
+    if (existingIndex >= 0) {
+      this.dummyTestCases[existingIndex] = testCase;
+    } else {
+      this.dummyTestCases.push(testCase);
+    }
+
+    alert('✅ Test case saved!');
+    this.closeTestCaseForm();
+  }
+  get dynamicFirstGroup(): FormGroup {
+  return this.dynamic.at(0) as FormGroup;
+}
+
+
+  // EXPORT TO EXCEL
   exportModuleToExcel() {
     const mod = this.selectedModule();
     if (!mod) return;
 
+    const moduleName = this.modules.find(m => m.id === mod)?.name || mod;
+    const version = this.selectedVersion();
+
     const data = this.dummyTestCases
-      .filter(tc => tc.moduleId === mod)
+      .filter(tc => tc.moduleId === mod && (!version || tc.version === version))
       .map(tc => ({
-        SlNo: tc.slNo,
-        Version: tc.version,
-        UseCase: tc.fixed.useCase,
-        TestCaseID: tc.fixed.testCaseId,
-        Scenario: tc.fixed.scenario,
-        Steps: tc.fixed.steps,
-        Expected: tc.fixed.expected,
-        ...Object.fromEntries(tc.dynamic.map(attr => [attr.key, attr.value])),
+        'Sl.No': tc.slNo,
+        'Version': tc.version,
+        'Use Case': tc.fixed.useCase,
+        'Test Case ID': tc.fixed.testCaseId,
+        'Scenario': tc.fixed.scenario,
+        'Steps': tc.fixed.steps,
+        'Expected Result': tc.fixed.expected,
+        ...Object.fromEntries(tc.dynamic.map(attr => [attr.key, attr.value]))
       }));
 
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'TestCases');
-
-    XLSX.writeFile(workbook, `${mod}-TestCases.xlsx`);
+    XLSX.writeFile(workbook, `${moduleName}-TestCases.xlsx`);
   }
 
   private resetOverlays() {
     this.showForm = false;
     this.showEditSearch = false;
     this.showAddVersionForm = false;
-    this.savedDynamicAttributes = [];
   }
-
-
-saveOnlyDynamicAttributes() {
-  this.savedDynamicAttributes = this.dynamic.controls.map(ctrl => ({
-    key: ctrl.get('key')?.value,
-    value: ctrl.get('value')?.value,
-  }));
-  this.dynamic.clear();
-}
-
 }

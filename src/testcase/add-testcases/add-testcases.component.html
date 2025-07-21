@@ -1,107 +1,124 @@
 <div class="container-fluid">
-  <!-- Module row -->
+  <!-- Module Selection -->
   <div class="selection-row">
     <label class="mr-05">Select Module</label>
     <select [ngModel]="selectedModule()" (ngModelChange)="onModuleChange($event)">
       <option value="">-- Choose Module --</option>
       <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
     </select>
-
     <button class="btn-small primary ml-05" (click)="toggleAddModule()">➕ Add Module</button>
     <button *ngIf="selectedModule()" class="btn-small export ml-auto" (click)="exportModuleToExcel()">📤 Export</button>
   </div>
 
-  <!-- Add Module form -->
+  <!-- Add Module Form -->
   <div class="form-box" *ngIf="showAddModuleForm">
-    <div class="form-group"><label>Module Name</label><input [(ngModel)]="newModuleName" /></div>
-    <div class="form-group"><label>Initial Version</label><input [(ngModel)]="newModuleVersion" /></div>
+    <div class="form-group">
+      <label>Module Name</label>
+      <input [(ngModel)]="newModuleName" />
+    </div>
+    <div class="form-group">
+      <label>Initial Version</label>
+      <input [(ngModel)]="newModuleVersion" />
+    </div>
     <div class="form-group">
       <button class="btn-small success mr-05" (click)="saveModule()">✅ Save</button>
       <button class="btn-small danger" (click)="cancelAddModule()">❌ Cancel</button>
     </div>
   </div>
 
-  <!-- Version row -->
+  <!-- Version Selection -->
   <div class="selection-row" *ngIf="selectedModule()">
     <label class="mr-05">Select Version</label>
     <select [ngModel]="selectedVersion()" (ngModelChange)="onVersionChange($event)">
       <option value="">-- Choose Version --</option>
-      <option *ngFor="let v of versions()">{{ v }}</option>
+      <option *ngFor="let v of versions()" [value]="v">{{ v }}</option>
     </select>
-
     <button class="btn-small primary ml-05" (click)="toggleAddVersionForm()">➕ Add Version</button>
-    <button *ngIf="showAddVersionForm" class="btn-small danger ml-05" (click)="cancelAddVersionForm()">❌ Cancel</button>
   </div>
 
-  <!-- Add Version form -->
+  <!-- Add Version Form -->
   <div class="form-box" *ngIf="showAddVersionForm">
-    <div class="form-group"><input [(ngModel)]="newVersionName" placeholder="New version e.g. v1.2" /></div>
+    <div class="form-group">
+      <input [(ngModel)]="newVersionName" placeholder="New version (e.g. v1.2)" />
+    </div>
     <div class="form-group">
       <button class="btn-small success mr-05" (click)="addNewVersion()">✅ Save Version</button>
       <button class="btn-small danger" (click)="cancelAddVersionForm()">❌ Cancel</button>
     </div>
   </div>
 
-  <!-- Action row -->
+  <!-- Action Buttons -->
   <div class="selection-row" *ngIf="selectedModule() && selectedVersion()">
     <button class="btn-small success mr-05" (click)="openTestCaseForm()">➕ Add Test Case</button>
     <button class="btn-small warning" (click)="toggleEditSearch()">✏️ Edit Test Cases</button>
   </div>
 
-  <!-- Search & results -->
+  <!-- Edit Search -->
   <div *ngIf="showEditSearch" class="form-box">
     <label>Search by SlNo / TestCase ID / Use Case</label>
     <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="e.g. 1 or TC101 or Login" />
-
     <div *ngIf="filteredResults().length === 0 && searchQuery()">
       <p style="color:red;">❌ No match found.</p>
     </div>
-
     <div *ngFor="let tc of filteredResults()" class="form-box">
       <strong>#{{ tc.slNo }}</strong> – {{ tc.fixed.testCaseId }} <br />
       <em>{{ tc.fixed.useCase }}</em>
       <button class="btn-small primary ml-05" (click)="editTestCase(tc)">✏️ Edit</button>
-    </div>
-  </div>
-<!-- Test Case form -->
-<form *ngIf="showForm" [formGroup]="form" (ngSubmit)="onSubmit()" class="form-box">
-  <div formGroupName="fixed">
-    <div class="form-group"><label>Use Case</label><input formControlName="useCase" /></div>
-    <div class="form-group"><label>Test Case ID</label><input formControlName="testCaseId" /></div>
-    <div class="form-group"><label>Scenario</label><textarea formControlName="scenario"></textarea></div>
-    <div class="form-group"><label>Steps</label><textarea formControlName="steps"></textarea></div>
-    <div class="form-group"><label>Expected Result</label><textarea formControlName="expected"></textarea></div>
-
-    <!-- Saved Dynamic Attributes -->
-    <div class="form-group" *ngIf="savedDynamicAttributes.length > 0">
-      <div *ngFor="let attr of savedDynamicAttributes; let i = index" class="form-group">
-        <label>{{ attr.key }}</label>
-        <textarea
-          [(ngModel)]="savedDynamicAttributes[i].value"
-          [ngModelOptions]="{ standalone: true }"
-          name="savedAttr{{ i }}"
-        ></textarea>
-      </div>
+      <button class="btn-small danger ml-05" (click)="deleteTestCase(tc)">🗑️ Delete</button>
     </div>
   </div>
 
-  <!-- Dynamic attribute input fields -->
-<!-- ✅ FIX: Add this wrapper -->
-<div formArrayName="dynamic" class="form-group">
-  <label>Add Dynamic Attributes</label>
-  <div *ngFor="let ctrl of dynamic.controls; let i = index" [formGroupName]="i" class="form-group">
-    <label>Attribute Key</label>
-    <input formControlName="key" placeholder="e.g. Browser" />
-    <label>Attribute Value</label>
-    <textarea formControlName="value" placeholder="e.g. Chrome"></textarea>
-  </div>
-  <button type="button" class="btn-small primary mt-1" (click)="addDynamicField()">➕ Add Attribute</button>
-  <button type="button" class="btn-small success ml-05 mt-1" (click)="saveOnlyDynamicAttributes()">💾 Save Attributes</button>
-</div>
+  <!-- Test Case Form -->
+  <form *ngIf="showForm" [formGroup]="form" (ngSubmit)="onSubmit()" class="form-box">
+    <table class="form-table">
+      <thead>
+        <tr>
+          <th>Use Case</th>
+          <th>Test Case ID</th>
+          <th>Scenario</th>
+          <th>Steps</th>
+          <th>Expected</th>
+          <th *ngFor="let attr of savedDynamicAttributes">{{ attr.key }}</th>
+          <th *ngIf="dynamic.controls.length > 0">New Attribute</th>
+        </tr>
+      </thead>
 
+      <tbody>
+        <tr [formGroup]="fixed">
+          <td><input formControlName="useCase" required /></td>
+          <td><input formControlName="testCaseId" required /></td>
+          <td><textarea formControlName="scenario" required></textarea></td>
+          <td><textarea formControlName="steps" required></textarea></td>
+          <td><textarea formControlName="expected" required></textarea></td>
 
+          <!-- Saved Dynamic Attributes -->
+          <td *ngFor="let attr of savedDynamicAttributes; let i = index">
+            <textarea
+              [(ngModel)]="attr.value"
+              [ngModelOptions]="{ standalone: true }"
+            ></textarea>
+            <button type="button" class="btn-small danger" (click)="removeSavedAttribute(i)">❌ Remove</button>
+          </td>
+
+          <!-- Input Row for New Attribute -->
+        <td *ngIf="dynamic.controls.length > 0" [formGroup]="dynamicFirstGroup">
+  <input formControlName="key" placeholder="Attribute name" required />
+  <textarea formControlName="value" placeholder="Attribute value" required></textarea>
   <div class="form-group">
-    <button type="submit" class="btn-small success mr-05">✅ Save</button>
-    <button type="button" class="btn-small danger ml-05" (click)="closeTestCaseForm()">❌ Cancel</button>
+    <button type="button" class="btn-small success mr-05" (click)="saveDynamicAttribute()">💾 Save</button>
+    <button type="button" class="btn-small danger" (click)="cancelDynamicAttribute()">❌ Cancel</button>
   </div>
-</form>
+</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="form-group">
+      <button type="button" class="btn-small primary" (click)="addDynamicField()" *ngIf="dynamic.controls.length === 0">
+        ➕ Add Attribute
+      </button>
+      <button type="submit" class="btn-small success mr-05">✅ Save Test Case</button>
+      <button type="button" class="btn-small danger ml-05" (click)="closeTestCaseForm()">❌ Cancel</button>
+    </div>
+  </form>
+</div>
