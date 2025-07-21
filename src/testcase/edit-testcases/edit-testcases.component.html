@@ -1,0 +1,82 @@
+<h2 class="text-center">Edit Test Cases</h2>
+
+<!-- Selected context -->
+<p class="context">
+  Module: <strong>{{ getModuleName() }}</strong> —
+  Version: <strong>{{ selectedVersion }}</strong>
+</p>
+
+<!-- Filters -->
+<div class="filters" *ngIf="filteredTestCases().length > 0">
+  <input placeholder="Sl No" [(ngModel)]="filter.slNo" />
+  <input placeholder="TestCase ID" [(ngModel)]="filter.testCaseId" />
+  <input placeholder="Use Case" [(ngModel)]="filter.useCase" />
+  <select [(ngModel)]="filter.result">
+    <option value="">All Results</option>
+    <option value="Pass">Pass</option>
+    <option value="Fail">Fail</option>
+    <option value="Pending">Pending</option>
+  </select>
+</div>
+
+<!-- Table -->
+<div *ngIf="filteredAndSearched().length > 0">
+  <table>
+    <thead>
+      <tr>
+        <th>Sl No</th>
+        <th>Use Case</th>
+        <th>TestCase ID</th>
+        <th>Scenario</th>
+        <th>Steps</th>
+        <th>Expected</th>
+        <th *ngFor="let k of dynamicKeys()">{{ k }}</th>
+        <th>Result</th>
+        <th>Actual</th>
+        <th>Remarks</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr
+        *ngFor="let tc of filteredAndSearched(); let i = index"
+        [formGroup]="formGroups()[i]"
+      >
+        <td>{{ tc.slNo }}</td>
+        <td class="wrap">{{ tc.fixed.useCase }}</td>
+        <td>{{ tc.fixed.testCaseId }}</td>
+        <td class="wrap">{{ tc.fixed.scenario }}</td>
+        <td class="wrap">{{ tc.fixed.steps }}</td>
+        <td class="wrap">{{ tc.fixed.expected }}</td>
+
+        <!-- Dynamic attrs (will not render if empty) -->
+        <td *ngFor="let k of dynamicKeys()">
+          {{ getDynamicValue(tc, k) }}
+        </td>
+
+        <!-- Editable -->
+        <td>
+          <select formControlName="result">
+            <option value="Pass">Pass ✅</option>
+            <option value="Fail">Fail ❌</option>
+            <option value="Pending">Pending ⏳</option>
+          </select>
+        </td>
+        <td><input formControlName="actual" /></td>
+        <td><input formControlName="remarks" /></td>
+        <td class="actions">
+          <button (click)="editRow(tc)">✏️</button>
+          <button (click)="deleteRow(tc)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="btn-save" (click)="onSave()">💾 Save Results</button>
+</div>
+
+<!-- Empty state -->
+<p *ngIf="filteredTestCases().length === 0">
+  Select a module + version from the previous screen.
+</p>
