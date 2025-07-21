@@ -63,30 +63,45 @@
       <button class="btn-small primary ml-05" (click)="editTestCase(tc)">✏️ Edit</button>
     </div>
   </div>
+<!-- Test Case form -->
+<form *ngIf="showForm" [formGroup]="form" (ngSubmit)="onSubmit()" class="form-box">
+  <div formGroupName="fixed">
+    <div class="form-group"><label>Use Case</label><input formControlName="useCase" /></div>
+    <div class="form-group"><label>Test Case ID</label><input formControlName="testCaseId" /></div>
+    <div class="form-group"><label>Scenario</label><textarea formControlName="scenario"></textarea></div>
+    <div class="form-group"><label>Steps</label><textarea formControlName="steps"></textarea></div>
+    <div class="form-group"><label>Expected Result</label><textarea formControlName="expected"></textarea></div>
 
-  <!-- Test Case form -->
-  <form *ngIf="showForm" [formGroup]="form" (ngSubmit)="onSubmit()" class="form-box">
-    <div formGroupName="fixed">
-      <div class="form-group"><label>Use Case</label><input formControlName="useCase" /></div>
-      <div class="form-group"><label>Test Case ID</label><input formControlName="testCaseId" /></div>
-      <div class="form-group"><label>Scenario</label><input formControlName="scenario" /></div>
-      <div class="form-group"><label>Steps</label><textarea formControlName="steps"></textarea></div>
-      <div class="form-group"><label>Expected Result</label><textarea formControlName="expected"></textarea></div>
-    </div>
-
-    <div class="form-group">
-      <label>Dynamic Attributes</label>
-      <div *ngFor="let ctrl of dynamic.controls; let i = index" [formGroupName]="i" class="dynamic-row">
-        <input formControlName="key" placeholder="Key" />
-        <input formControlName="value" placeholder="Value" />
-        <button type="button" class="btn-small danger" (click)="removeDynamicField(i)">❌</button>
+    <!-- Saved Dynamic Attributes -->
+    <div class="form-group" *ngIf="savedDynamicAttributes.length > 0">
+      <div *ngFor="let attr of savedDynamicAttributes; let i = index" class="form-group">
+        <label>{{ attr.key }}</label>
+        <textarea
+          [(ngModel)]="savedDynamicAttributes[i].value"
+          [ngModelOptions]="{ standalone: true }"
+          name="savedAttr{{ i }}"
+        ></textarea>
       </div>
-      <button type="button" class="btn-small primary" (click)="addDynamicField()">+ Add Attribute</button>
     </div>
+  </div>
 
-    <div class="form-group">
-      <button type="submit" class="btn-small success mr-05">✅ Save</button>
-      <button type="button" class="btn-small danger ml-05" (click)="closeTestCaseForm()">❌ Cancel</button>
-    </div>
-  </form>
+  <!-- Dynamic attribute input fields -->
+<!-- ✅ FIX: Add this wrapper -->
+<div formArrayName="dynamic" class="form-group">
+  <label>Add Dynamic Attributes</label>
+  <div *ngFor="let ctrl of dynamic.controls; let i = index" [formGroupName]="i" class="form-group">
+    <label>Attribute Key</label>
+    <input formControlName="key" placeholder="e.g. Browser" />
+    <label>Attribute Value</label>
+    <textarea formControlName="value" placeholder="e.g. Chrome"></textarea>
+  </div>
+  <button type="button" class="btn-small primary mt-1" (click)="addDynamicField()">➕ Add Attribute</button>
+  <button type="button" class="btn-small success ml-05 mt-1" (click)="saveOnlyDynamicAttributes()">💾 Save Attributes</button>
 </div>
+
+
+  <div class="form-group">
+    <button type="submit" class="btn-small success mr-05">✅ Save</button>
+    <button type="button" class="btn-small danger ml-05" (click)="closeTestCaseForm()">❌ Cancel</button>
+  </div>
+</form>

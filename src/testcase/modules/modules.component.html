@@ -30,6 +30,7 @@
         <tr>
           <th>Sl No</th>
           <th>Version</th>
+          <th>Use Case</th>
           <th>Test Case ID</th>
           <th>Scenario</th>
           <th>Steps</th>
@@ -44,6 +45,7 @@
         <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index" [formGroup]="formGroups()[i]">
           <td>{{ tc.slNo }}</td>
           <td>{{ tc.version }}</td>
+          <td class="wrap-text">{{ tc.fixed.useCase }}</td>
           <td>{{ tc.fixed.testCaseId }}</td>
           <td class="wrap-text">{{ tc.fixed.scenario }}</td>
           <td class="wrap-text">{{ tc.fixed.steps }}</td>

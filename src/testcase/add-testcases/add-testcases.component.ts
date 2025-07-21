@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
   FormsModule,
 } from '@angular/forms';
-import * as XLSX from 'xlsx'; // 📦 Install via npm i xlsx
+import * as XLSX from 'xlsx';
 
 interface TestCase {
   slNo: number;
@@ -36,6 +36,7 @@ export class AddTestcasesComponent {
   selectedModule = signal<string | null>(null);
   selectedVersion = signal<string | null>(null);
   searchQuery = signal('');
+  
 
   showForm = false;
   showAddModuleForm = false;
@@ -45,6 +46,8 @@ export class AddTestcasesComponent {
   newModuleName = '';
   newModuleVersion = '';
   newVersionName = '';
+
+  savedDynamicAttributes: { key: string; value: string }[] = [];
 
   modules = [
     { id: 'mod1', name: 'Login Module' },
@@ -174,6 +177,7 @@ export class AddTestcasesComponent {
     this.showEditSearch = !this.showEditSearch;
     this.searchQuery.set('');
   }
+
   editTestCase(tc: TestCase) {
     this.form.patchValue({
       moduleId: tc.moduleId,
@@ -186,6 +190,7 @@ export class AddTestcasesComponent {
       this.dynamic.push(this.fb.group({ key: attr.key, value: attr.value }))
     );
 
+    this.savedDynamicAttributes = [...tc.dynamic];
     this.showForm = true;
     this.showEditSearch = false;
   }
@@ -193,6 +198,8 @@ export class AddTestcasesComponent {
   openTestCaseForm() {
     this.form.reset();
     this.dynamic.clear();
+    this.savedDynamicAttributes = [];
+
     this.form.patchValue({
       moduleId: this.selectedModule(),
       version: this.selectedVersion(),
@@ -200,10 +207,19 @@ export class AddTestcasesComponent {
     });
     this.showForm = true;
   }
-  closeTestCaseForm() { this.showForm = false; }
 
-  addDynamicField() { this.dynamic.push(this.fb.group({ key: '', value: '' })); }
-  removeDynamicField(i: number) { this.dynamic.removeAt(i); }
+  closeTestCaseForm() {
+    this.showForm = false;
+    this.savedDynamicAttributes = [];
+  }
+
+  addDynamicField() {
+    this.dynamic.push(this.fb.group({ key: '', value: '' }));
+  }
+
+  removeDynamicField(i: number) {
+    this.dynamic.removeAt(i);
+  }
 
   onSubmit() {
     const data = this.form.value as unknown as TestCase;
@@ -221,12 +237,16 @@ export class AddTestcasesComponent {
         tc.fixed.testCaseId === data.fixed.testCaseId
     );
 
-    idx >= 0 ? (this.dummyTestCases[idx] = data) : this.dummyTestCases.push(data);
+    if (idx >= 0) {
+      this.dummyTestCases[idx] = data;
+    } else {
+      this.dummyTestCases.push(data);
+    }
+
+    this.savedDynamicAttributes = [...data.dynamic];
 
     alert('✅ Test case saved!');
-    this.form.reset();
     this.dynamic.clear();
-    this.showForm = false;
   }
 
   exportModuleToExcel() {
@@ -257,5 +277,16 @@ export class AddTestcasesComponent {
     this.showForm = false;
     this.showEditSearch = false;
     this.showAddVersionForm = false;
+    this.savedDynamicAttributes = [];
   }
+
+
+saveOnlyDynamicAttributes() {
+  this.savedDynamicAttributes = this.dynamic.controls.map(ctrl => ({
+    key: ctrl.get('key')?.value,
+    value: ctrl.get('value')?.value,
+  }));
+  this.dynamic.clear();
+}
+
 }
