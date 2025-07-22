@@ -1,3 +1,4 @@
+// ✅ edit-testcases.component.ts
 import { Component, computed, inject, signal } from '@angular/core';
 import {
   FormBuilder,
@@ -33,38 +34,86 @@ export class EditTestcasesComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  /** ── Signals ──────────────────────────────────────────── */
   searchQuery = signal('');
   selectedModule = signal<string>('');
   selectedVersion = signal<string>('');
   showForm = signal(false);
   editingId = signal<string | null>(null);
 
-  /** ── Sample master data ───────────────────────────────── */
   modules = [
     { id: 'mod1', name: 'Login Module' },
     { id: 'mod2', name: 'Reporting Module' },
   ];
 
-  /** ── Test cases (demo) ───────────────────────────────── */
   testCases = signal<TestCase[]>([
     {
       id: '1',
       moduleId: 'mod1',
       version: 'v1.0',
-      useCase: 'User Login',
+      useCase: 'Login success',
       testCaseId: 'TC001',
-      scenario: 'Valid user login',
-      steps: '1. Enter username\n2. Enter password\n3. Click login',
-      expected: 'User should be logged in successfully',
-      attributes: [
-        { key: 'Priority', value: 'High' },
-        { key: 'Category', value: 'Authentication' },
-      ],
+      scenario: 'Valid credentials',
+      steps: 'Enter username, password, click login',
+      expected: 'Dashboard opens',
+      attributes: [],
+    },
+    {
+      id: '2',
+      moduleId: 'mod1',
+      version: 'v1.0',
+      useCase: 'Login fail',
+      testCaseId: 'TC002',
+      scenario: 'Invalid password',
+      steps: 'Enter wrong password, click login',
+      expected: 'Show error message',
+      attributes: [],
+    },
+    {
+      id: '3',
+      moduleId: 'mod1',
+      version: 'v1.1',
+      useCase: 'Password reset',
+      testCaseId: 'TC003',
+      scenario: 'Forgot password link',
+      steps: 'Click forgot password, enter email',
+      expected: 'Reset link sent',
+      attributes: [],
+    },
+    {
+      id: '4',
+      moduleId: 'mod2',
+      version: 'v2.0',
+      useCase: 'Generate report',
+      testCaseId: 'TC004',
+      scenario: 'Select date range',
+      steps: 'Pick dates, click generate',
+      expected: 'PDF download',
+      attributes: [],
+    },
+    {
+      id: '5',
+      moduleId: 'mod2',
+      version: 'v2.0',
+      useCase: 'Filter report',
+      testCaseId: 'TC005',
+      scenario: 'Apply filters',
+      steps: 'Select filter, click apply',
+      expected: 'Filtered data shown',
+      attributes: [],
+    },
+    {
+      id: '6',
+      moduleId: 'mod2',
+      version: 'v2.0',
+      useCase: 'Download report',
+      testCaseId: 'TC006',
+      scenario: 'Download in Excel',
+      steps: 'Click export button',
+      expected: 'Excel file downloaded',
+      attributes: [],
     },
   ]);
 
-  /** ── Form ─────────────────────────────────────────────── */
   form = this.fb.group({
     id: [''],
     moduleId: ['', Validators.required],
@@ -77,11 +126,10 @@ export class EditTestcasesComponent {
     attributes: this.fb.array([]),
   });
 
-  /** ── Init: grab URL params ───────────────────────────── */
   constructor() {
     const moduleId = this.route.snapshot.paramMap.get('moduleId');
     const version = this.route.snapshot.paramMap.get('version');
-    
+
     if (moduleId) {
       this.selectedModule.set(moduleId);
       this.form.patchValue({ moduleId });
@@ -92,12 +140,10 @@ export class EditTestcasesComponent {
     }
   }
 
-  /** ── Form‑array getter ───────────────────────────────── */
   get attributes(): FormArray {
     return this.form.get('attributes') as FormArray;
   }
 
-  /** ── Computed list with filters ──────────────────────── */
   filteredTestCases = computed(() => {
     const query = this.searchQuery().toLowerCase();
     const moduleId = this.selectedModule();
@@ -110,18 +156,17 @@ export class EditTestcasesComponent {
         (!query ||
           tc.testCaseId.toLowerCase().includes(query) ||
           tc.useCase.toLowerCase().includes(query) ||
-          tc.scenario.toLowerCase().includes(query)),
+          tc.scenario.toLowerCase().includes(query))
     );
   });
 
-  /** ── Helpers ───────────────────────────────────────── */
   getModuleName(id: string): string {
-    return this.modules.find(m => m.id === id)?.name || id;
+    return this.modules.find((m) => m.id === id)?.name || id;
   }
 
   getUniqueAttributes(): string[] {
     const allKeys = this.testCases().flatMap((tc) =>
-      tc.attributes.map((attr) => attr.key),
+      tc.attributes.map((attr) => attr.key)
     );
     return Array.from(new Set(allKeys));
   }
@@ -135,13 +180,12 @@ export class EditTestcasesComponent {
     return attr;
   }
 
-  /** ── Dynamic attribute controls ─────────────────────── */
   addAttribute(key = '', value = '') {
     this.attributes.push(
       this.fb.group({
         key: [key, Validators.required],
         value: [value],
-      }),
+      })
     );
   }
 
@@ -149,11 +193,10 @@ export class EditTestcasesComponent {
     this.attributes.removeAt(index);
   }
 
-  /** ── CRUD helpers ────────────────────────────────────── */
   openForm() {
     this.form.reset({
       moduleId: this.selectedModule(),
-      version: this.selectedVersion()
+      version: this.selectedVersion(),
     });
     this.attributes.clear();
     this.editingId.set(null);
@@ -164,7 +207,7 @@ export class EditTestcasesComponent {
     this.form.patchValue({ ...testCase });
     this.attributes.clear();
     testCase.attributes.forEach((attr) =>
-      this.addAttribute(attr.key, attr.value),
+      this.addAttribute(attr.key, attr.value)
     );
     this.editingId.set(testCase.id);
     this.showForm.set(true);
@@ -176,8 +219,10 @@ export class EditTestcasesComponent {
       return;
     }
 
-    const attrRaw = this.attributes
-      .getRawValue() as { key: string; value: string }[];
+    const attrRaw = this.attributes.getRawValue() as {
+      key: string;
+      value: string;
+    }[];
     const v = this.form.value;
 
     const testCase: TestCase = {

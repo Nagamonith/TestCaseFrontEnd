@@ -234,6 +234,10 @@ textarea {
 .btn:hover {
   opacity: 0.9;
 }
+.btn-small-back{
+  background-color: beige;
+  border-color:#2c3e50;
+}
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
