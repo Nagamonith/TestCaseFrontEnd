@@ -1,13 +1,12 @@
-.container,
-:host {
-  display: block;
+/* edit-testcases.component.css */
+.container {
   max-width: 98%;
   margin: 25px auto;
   padding: 20px;
   background: #f7f9fc;
   border-radius: 12px;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
-  font-family: Segoe UI, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   overflow-x: auto;
 }
 
@@ -17,9 +16,25 @@
   color: #333;
 }
 
-.context {
-  margin-bottom: 10px;
-  font-size: 15px;
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #444;
+}
+
+select,
+input[type='text'] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #c9d1dc;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
 }
 
 .filters {
@@ -27,15 +42,12 @@
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 10px;
   margin-bottom: 16px;
+  align-items: end;
 }
 
-input,
-select {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #c9d1dc;
-  border-radius: 8px;
-  background: #fff;
+.filters input,
+.filters select {
+  margin-bottom: 0;
 }
 
 table {
@@ -50,41 +62,194 @@ th,
 td {
   border: 1px solid #d0d7e2;
   padding: 8px 10px;
-  vertical-align: top;
   text-align: left;
+  vertical-align: top;
 }
 
 thead th {
   background: #eaf1ff;
   font-weight: 600;
+  color: #2c3e50;
 }
 
 tbody tr:nth-child(odd) {
   background: #fafbfd;
 }
 
-.wrap {
+.wrap-text {
   white-space: pre-wrap;
   word-break: break-word;
-}
-
-.actions button {
-  margin-right: 4px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
 }
 
 .btn-save {
   margin-top: 16px;
   background: #007bff;
   color: #fff;
-  padding: 10px 18px;
   border: none;
+  padding: 10px 18px;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  transition: background 0.25s;
 }
 
 .btn-save:hover {
   background: #005ec2;
+}
+
+.btn-cancel {
+  margin-top: 16px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.25s;
+}
+
+.btn-cancel:hover {
+  background: #bb2d3b;
+}
+
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  margin: 10px 0;
+}
+
+/* Form overlay */
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.test-case-form {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.test-case-form h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #c9d1dc;
+  border-radius: 8px;
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Attributes section */
+.attributes-section {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+}
+
+.attributes-section h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.attribute-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.attribute-item input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.attribute-item textarea {
+  min-height: 60px;
+}
+
+/* Form actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.actions {
+  display: flex;
+  gap: 5px;
+}
+
+.btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn.small {
+  padding: 4px 8px;
+}
+
+.btn.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn.danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+  
+  table {
+    font-size: 13px;
+  }
+  
+  th, td {
+    padding: 6px 8px;
+  }
+  
+  .attribute-item {
+    flex-direction: column;
+  }
 }

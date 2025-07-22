@@ -1,4 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
@@ -28,7 +29,7 @@ interface TestCase {
 @Component({
   selector: 'app-add-testcases',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule,RouterModule,],
   templateUrl: './add-testcases.component.html',
   styleUrls: ['./add-testcases.component.css']
 })

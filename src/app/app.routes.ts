@@ -50,7 +50,7 @@ export const routes: Routes = [
     ]
   },
 
-  /* ───────── Tester Dashboard section (same layout, but separate) ───────── */
+  /* ───────── Tester Dashboard section ───────── */
   {
     path: '',
     component: LayoutsComponent,
@@ -61,6 +61,11 @@ export const routes: Routes = [
         component: TesterDashboardComponent,
         children: [
           { path: 'add-testcases', component: AddTestcasesComponent },
+          {
+            path: 'edit-testcases/:moduleId/:version',
+            loadComponent: () =>
+              import('../testcase/edit-testcases/edit-testcases.component').then(m => m.EditTestcasesComponent),
+          },
           { path: 'import-excel', component: ImportExcelComponent },
           { path: 'modules', component: ModulesComponent },
           { path: 'results', component: ResultsComponent },

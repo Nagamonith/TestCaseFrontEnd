@@ -1,82 +1,132 @@
-<h2 class="text-center">Edit Test Cases</h2>
+<div class="container">
+  <h2 class="text-center">Test Case Management</h2>
 
-<!-- Selected context -->
-<p class="context">
-  Module: <strong>{{ getModuleName() }}</strong> —
-  Version: <strong>{{ selectedVersion }}</strong>
-</p>
+  <!-- Module dropdown -->
+  <div class="form-group">
+    <label>Select Module</label>
+    <select [ngModel]="selectedModule()" (ngModelChange)="selectedModule.set($event)">
+      <option value="">-- All Modules --</option>
+      <option *ngFor="let module of modules" [value]="module.id">{{ module.name }}</option>
+    </select>
+  </div>
 
-<!-- Filters -->
-<div class="filters" *ngIf="filteredTestCases().length > 0">
-  <input placeholder="Sl No" [(ngModel)]="filter.slNo" />
-  <input placeholder="TestCase ID" [(ngModel)]="filter.testCaseId" />
-  <input placeholder="Use Case" [(ngModel)]="filter.useCase" />
-  <select [(ngModel)]="filter.result">
-    <option value="">All Results</option>
-    <option value="Pass">Pass</option>
-    <option value="Fail">Fail</option>
-    <option value="Pending">Pending</option>
-  </select>
+  <!-- Filters -->
+  <div class="filters" *ngIf="filteredTestCases().length > 0">
+    <input 
+  type="text" 
+  placeholder="Filter by TestCase ID" 
+  [ngModel]="searchQuery()" 
+  (ngModelChange)="searchQuery.set($event)" 
+/>
+    <input type="text" placeholder="Filter by Use Case" />
+    <select [ngModel]="selectedVersion()" (ngModelChange)="selectedVersion.set($event)">
+      <option value="">All Versions</option>
+      <option *ngFor="let version of versions" [value]="version.id">{{ version.name }}</option>
+    </select>
+  </div>
+
+  <!-- Test-case table -->
+  <div *ngIf="filteredTestCases().length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Version</th>
+          <th>Use Case</th>
+          <th>Scenario</th>
+          <th>Steps</th>
+          <th>Expected</th>
+          <th *ngFor="let attr of getUniqueAttributes(); trackBy: trackByAttribute">{{ attr }}</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let testCase of filteredTestCases()">
+          <td>{{ testCase.testCaseId }}</td>
+          <td>{{ testCase.version }}</td>
+          <td class="wrap-text">{{ testCase.useCase }}</td>
+          <td class="wrap-text">{{ testCase.scenario }}</td>
+          <td class="wrap-text">{{ testCase.steps }}</td>
+          <td class="wrap-text">{{ testCase.expected }}</td>
+          <td *ngFor="let attr of getUniqueAttributes(); trackBy: trackByAttribute">
+            {{ getAttributeValue(testCase, attr) }}
+          </td>
+          <td class="actions">
+            <button class="btn small" (click)="editTestCase(testCase)">Edit</button>
+            <button class="btn small danger" (click)="deleteTestCase(testCase.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="filteredTestCases().length === 0" class="no-results">
+    No test cases found.
+  </div>
+
+  <button class="btn-save" (click)="openForm()">➕ Add New Test Case</button>
+
+  <!-- Test Case Form -->
+  <div *ngIf="showForm()" class="form-overlay">
+    <form [formGroup]="form" (ngSubmit)="saveTestCase()" class="test-case-form">
+      <h3>{{ editingId() ? 'Edit' : 'Add' }} Test Case</h3>
+
+      <div class="form-group">
+        <label>Module:</label>
+        <select formControlName="moduleId">
+          <option *ngFor="let module of modules" [value]="module.id">{{ module.name }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Version:</label>
+        <select formControlName="version">
+          <option *ngFor="let version of versions" [value]="version.id">{{ version.name }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Test Case ID:</label>
+        <input type="text" formControlName="testCaseId">
+      </div>
+
+      <div class="form-group">
+        <label>Use Case:</label>
+        <input type="text" formControlName="useCase">
+      </div>
+
+      <div class="form-group">
+        <label>Scenario:</label>
+        <textarea formControlName="scenario" rows="3"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Steps:</label>
+        <textarea formControlName="steps" rows="5"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Expected Result:</label>
+        <textarea formControlName="expected" rows="3"></textarea>
+      </div>
+
+      <div class="attributes-section">
+        <h4>Attributes</h4>
+        <div formArrayName="attributes">
+          <div *ngFor="let attr of attributes.controls; let i = index" [formGroupName]="i" class="attribute-item">
+            <input formControlName="key" placeholder="Attribute name">
+            <textarea formControlName="value" placeholder="Value"></textarea>
+            <button type="button" class="btn small danger" (click)="removeAttribute(i)">Remove</button>
+          </div>
+        </div>
+        <button type="button" class="btn small primary" (click)="addAttribute()">Add Attribute</button>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-save">Save</button>
+        <button type="button" class="btn-cancel" (click)="cancelForm()">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>
-
-<!-- Table -->
-<div *ngIf="filteredAndSearched().length > 0">
-  <table>
-    <thead>
-      <tr>
-        <th>Sl No</th>
-        <th>Use Case</th>
-        <th>TestCase ID</th>
-        <th>Scenario</th>
-        <th>Steps</th>
-        <th>Expected</th>
-        <th *ngFor="let k of dynamicKeys()">{{ k }}</th>
-        <th>Result</th>
-        <th>Actual</th>
-        <th>Remarks</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr
-        *ngFor="let tc of filteredAndSearched(); let i = index"
-        [formGroup]="formGroups()[i]"
-      >
-        <td>{{ tc.slNo }}</td>
-        <td class="wrap">{{ tc.fixed.useCase }}</td>
-        <td>{{ tc.fixed.testCaseId }}</td>
-        <td class="wrap">{{ tc.fixed.scenario }}</td>
-        <td class="wrap">{{ tc.fixed.steps }}</td>
-        <td class="wrap">{{ tc.fixed.expected }}</td>
-
-        <!-- Dynamic attrs (will not render if empty) -->
-        <td *ngFor="let k of dynamicKeys()">
-          {{ getDynamicValue(tc, k) }}
-        </td>
-
-        <!-- Editable -->
-        <td>
-          <select formControlName="result">
-            <option value="Pass">Pass ✅</option>
-            <option value="Fail">Fail ❌</option>
-            <option value="Pending">Pending ⏳</option>
-          </select>
-        </td>
-        <td><input formControlName="actual" /></td>
-        <td><input formControlName="remarks" /></td>
-        <td class="actions">
-          <button (click)="editRow(tc)">✏️</button>
-          <button (click)="deleteRow(tc)">🗑️</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <button class="btn-save" (click)="onSave()">💾 Save Results</button>
-</div>
-
-<!-- Empty state -->
-<p *ngIf="filteredTestCases().length === 0">
-  Select a module + version from the previous screen.
-</p>

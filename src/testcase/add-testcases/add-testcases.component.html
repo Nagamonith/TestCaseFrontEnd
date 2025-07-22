@@ -50,7 +50,11 @@
   <!-- Action Buttons -->
   <div class="selection-row" *ngIf="selectedModule() && selectedVersion()">
     <button class="btn-small success mr-05" (click)="openTestCaseForm()">➕ Add Test Case</button>
-    <button class="btn-small warning" (click)="toggleEditSearch()">✏️ Edit Test Cases</button>
+    <button
+  class="btn-small warning"[routerLink]="['/tester/edit-testcases', selectedModule(), selectedVersion()]"[disabled]="!selectedModule() || !selectedVersion()">
+  ✏️ Edit Test Cases
+</button>
+
   </div>
 
   <!-- Edit Search -->
