@@ -1,13 +1,10 @@
-<h2 class="text-center">Start Testing</h2>
+<h2 class="text-center">Test Management</h2>
 
 <div class="container">
   <!-- Module dropdown -->
   <div class="form-group">
     <label>Select Module</label>
-    <select
-      [ngModel]="selectedModule()"
-      (ngModelChange)="onModuleChange($event)"
-    >
+    <select [ngModel]="selectedModule()" (ngModelChange)="onModuleChange($event)">
       <option value="">-- Choose Module --</option>
       <option *ngFor="let m of modules" [value]="m.id">
         {{ m.name }}
@@ -15,79 +12,114 @@
     </select>
   </div>
 
-  <!-- Filters -->
-  <div class="filters" *ngIf="filteredTestCases().length">
-    <input
-      type="text"
-      placeholder="Filter by Sl No"
-      [(ngModel)]="filter.slNo"
-    />
-    <input
-      type="text"
-      placeholder="Filter by TestCase ID"
-      [(ngModel)]="filter.testCaseId"
-    />
-    <input
-      type="text"
-      placeholder="Filter by Use Case"
-      [(ngModel)]="filter.useCase"
-    />
-    <select [(ngModel)]="filter.result">
-      <option value="">All Results</option>
-      <option value="Pass">Pass</option>
-      <option value="Fail">Fail</option>
-      <option value="Pending">Pending</option>
-    </select>
+  <!-- Action buttons (shown when module is selected) -->
+  <div class="action-buttons" *ngIf="selectedModule()">
+    <button class="btn-view" (click)="showViewTestCases = true; showStartTesting = false">
+      View Test Cases
+    </button>
+    <button class="btn-start" (click)="showStartTesting = true; showViewTestCases = false">
+      Start Testing
+    </button>
   </div>
 
-  <!-- Test‑case table -->
-  <div *ngIf="filteredAndSearchedTestCases().length">
-    <table>
-      <thead>
-        <tr>
-          <th>Sl No</th>
-          <th>Version</th>
-          <th>Use Case</th>
-          <th>Test Case ID</th>
-          <th>Scenario</th>
-          <th>Steps</th>
-          <th>Expected</th>
-          <th>Result</th>
-          <th>Actual</th>
-          <th>Remarks</th>
-        </tr>
-      </thead>
+  <!-- View Test Cases Section -->
+  <div *ngIf="showViewTestCases">
+    <div class="form-group" *ngIf="availableVersions.length">
+      <label>Select Version</label>
+      <select [(ngModel)]="selectedVersion" (ngModelChange)="onVersionChange()">
+        <option value="">-- Choose Version --</option>
+        <option *ngFor="let v of availableVersions" [value]="v">
+          {{ v }}
+        </option>
+      </select>
+    </div>
 
-      <tbody>
-        <tr
-          *ngFor="
-            let tc of filteredAndSearchedTestCases();
-            let i = index
-          "
-          [formGroup]="formGroups()[i]"
-        >
-          <td>{{ tc.slNo }}</td>
-          <td>{{ tc.version }}</td>
-          <td class="wrap-text">{{ tc.fixed.useCase }}</td>
-          <td>{{ tc.fixed.testCaseId }}</td>
-          <td class="wrap-text">{{ tc.fixed.scenario }}</td>
-          <td class="wrap-text">{{ tc.fixed.steps }}</td>
-          <td class="wrap-text">{{ tc.fixed.expected }}</td>
-          <td>
-            <select formControlName="result">
-              <option value="Pass">Pass ✅</option>
-              <option value="Fail">Fail ❌</option>
-              <option value="Pending">Pending ⏳</option>
-            </select>
-          </td>
-          <td><input type="text" formControlName="actual" /></td>
-          <td><input type="text" formControlName="remarks" /></td>
-        </tr>
-      </tbody>
-    </table>
+    <div *ngIf="selectedVersion && versionTestCases.length">
+      <h3>Test Cases for Version {{ selectedVersion }}</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Sl No</th>
+            <th>Use Case</th>
+            <th>Test Case ID</th>
+            <th>Scenario</th>
+            <th>Steps</th>
+            <th>Expected</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tc of versionTestCases">
+            <td>{{ tc.fixed.slNo }}</td>
+            <td class="wrap-text">{{ tc.fixed.useCase }}</td>
+            <td>{{ tc.fixed.testCaseId }}</td>
+            <td class="wrap-text">{{ tc.fixed.scenario }}</td>
+            <td class="wrap-text">{{ tc.fixed.steps }}</td>
+            <td class="wrap-text">{{ tc.fixed.expected }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-    <button class="btn-save" (click)="onSave()">
-      ✅ Save Results
-    </button>
+  <!-- Start Testing Section -->
+  <div *ngIf="showStartTesting">
+    <!-- Filters -->
+    <div class="filters" *ngIf="filteredTestCases().length">
+      <input type="text" placeholder="Filter by Sl No" [(ngModel)]="filter.slNo" />
+      <input type="text" placeholder="Filter by TestCase ID" [(ngModel)]="filter.testCaseId" />
+      <input type="text" placeholder="Filter by Use Case" [(ngModel)]="filter.useCase" />
+      <select [(ngModel)]="filter.result">
+        <option value="">All Results</option>
+        <option value="Pass">Pass</option>
+        <option value="Fail">Fail</option>
+        <option value="Pending">Pending</option>
+      </select>
+    </div>
+
+    <!-- Test‑case table -->
+    <div *ngIf="filteredAndSearchedTestCases().length">
+      <table>
+        <thead>
+          <tr>
+            <th>Sl No</th>
+            <th>Version</th>
+            <th>Use Case</th>
+            <th>Test Case ID</th>
+            <th>Scenario</th>
+            <th>Steps</th>
+            <th>Expected</th>
+            <th>Result</th>
+            <th>Actual</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index"
+              [formGroup]="formGroups()[i]">
+            <td>{{ tc.slNo }}</td>
+            <td>{{ tc.version }}</td>
+            <td class="wrap-text">{{ tc.fixed.useCase }}</td>
+            <td>{{ tc.fixed.testCaseId }}</td>
+            <td class="wrap-text">{{ tc.fixed.scenario }}</td>
+            <td class="wrap-text">{{ tc.fixed.steps }}</td>
+            <td class="wrap-text">{{ tc.fixed.expected }}</td>
+            <td>
+              <select formControlName="result">
+                <option value="Pass">Pass ✅</option>
+                <option value="Fail">Fail ❌</option>
+                <option value="Pending">Pending ⏳</option>
+              </select>
+            </td>
+            <td><input type="text" formControlName="actual" /></td>
+            <td><input type="text" formControlName="remarks" /></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <button class="btn-save" (click)="onSave()">
+        ✅ Save Results
+      </button>
+    </div>
   </div>
 </div>

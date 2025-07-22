@@ -1,4 +1,3 @@
-// tester-dashboard.component.ts
 import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -21,6 +20,7 @@ export class TesterDashboardComponent {
   ];
 
   expandedProductId: string | null = null;
+  expandedResultsProductId: string | null = null;
   sidebarOpen = true;
   currentProductName: string | null = null;
 
@@ -37,6 +37,17 @@ export class TesterDashboardComponent {
   }
 
   toggleProduct(productId: string) {
-    this.expandedProductId = this.expandedProductId === productId ? null : productId;
+    this.expandedProductId =
+      this.expandedProductId === productId ? null : productId;
+    this.expandedResultsProductId = null; // close sub-submenu when toggling product
+  }
+
+  toggleResults(productId: string) {
+    this.expandedResultsProductId =
+      this.expandedResultsProductId === productId ? null : productId;
+  }
+
+  onAutomationClick() {
+    alert('Automation Results feature coming soon!');
   }
 }

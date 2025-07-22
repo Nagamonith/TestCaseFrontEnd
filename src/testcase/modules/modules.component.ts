@@ -39,6 +39,13 @@ interface TestCase {
 export class ModulesComponent implements OnInit {
   /** Route‑driven selected module */
   selectedModule = signal<string | null>(null);
+  selectedVersion: string = '';
+  availableVersions: string[] = [];
+  versionTestCases: TestCase[] = [];
+  
+  // View toggles
+  showViewTestCases: boolean = false;
+  showStartTesting: boolean = false;
 
   filter = {
     slNo: '',
@@ -52,7 +59,7 @@ export class ModulesComponent implements OnInit {
     { id: 'mod2', name: 'Reports Module' },
   ];
 
-  // --- Test‑case data -------------------------------------------------------
+  // Test‑case data
   testCasePool: TestCase[] = [
     {
       slNo: 1,
@@ -63,8 +70,7 @@ export class ModulesComponent implements OnInit {
         useCase: 'Login as Admin',
         testCaseId: 'TC101',
         scenario: 'Admin logs in with valid credentials',
-        steps:
-          '1. Open login page\n2. Enter username/password\n3. Click login',
+        steps: '1. Open login page\n2. Enter username/password\n3. Click login',
         expected: 'Admin dashboard opens',
       },
       dynamic: [
@@ -80,13 +86,25 @@ export class ModulesComponent implements OnInit {
         slNo: 2,
         useCase: 'Remember Me Feature',
         testCaseId: 'TC102',
-        scenario:
-          'User remains logged in when remember me is checked',
-        steps:
-          '1. Check "Remember Me"\n2. Login\n3. Close tab\n4. Reopen site',
+        scenario: 'User remains logged in when remember me is checked',
+        steps: '1. Check "Remember Me"\n2. Login\n3. Close tab\n4. Reopen site',
         expected: 'User remains logged in',
       },
       dynamic: [{ key: 'Priority', value: 'Medium' }],
+    },
+    {
+      slNo: 3,
+      moduleId: 'mod1',
+      version: 'v1.1',
+      fixed: {
+        slNo: 3,
+        useCase: 'Password Reset',
+        testCaseId: 'TC103',
+        scenario: 'User resets forgotten password',
+        steps: '1. Click "Forgot Password"\n2. Enter email\n3. Click reset link\n4. Set new password',
+        expected: 'Password is changed and user can login with new password',
+      },
+      dynamic: [{ key: 'Priority', value: 'High' }],
     },
     {
       slNo: 1,
@@ -96,13 +114,25 @@ export class ModulesComponent implements OnInit {
         slNo: 1,
         useCase: 'Monthly Report Generation',
         testCaseId: 'TC201',
-        scenario:
-          'User generates a PDF report for current month',
-        steps:
-          '1. Go to Reports\n2. Select current month\n3. Click Generate',
+        scenario: 'User generates a PDF report for current month',
+        steps: '1. Go to Reports\n2. Select current month\n3. Click Generate',
         expected: 'PDF report is downloaded',
       },
       dynamic: [{ key: 'Browser', value: 'Firefox' }],
+    },
+    {
+      slNo: 2,
+      moduleId: 'mod2',
+      version: 'v2.1',
+      fixed: {
+        slNo: 2,
+        useCase: 'Custom Date Range Report',
+        testCaseId: 'TC202',
+        scenario: 'User generates report for custom date range',
+        steps: '1. Go to Reports\n2. Select custom date range\n3. Click Generate',
+        expected: 'PDF report for selected dates is downloaded',
+      },
+      dynamic: [{ key: 'Browser', value: 'Chrome' }],
     },
   ];
 
@@ -113,32 +143,21 @@ export class ModulesComponent implements OnInit {
     private route: ActivatedRoute,
   ) {}
 
-  /* --------------------------------------------------------------------- */
-  /* Lifecycle                                                             */
-  /* --------------------------------------------------------------------- */
-
   ngOnInit(): void {
-    // Read :moduleId whenever the route changes
     this.route.paramMap.subscribe((pm: ParamMap) => {
       const modId = pm.get('moduleId');
       if (modId && this.isValidModule(modId)) {
         this.onModuleChange(modId);
       } else {
-        // Clear selection if url has no / invalid module id
         this.onModuleChange('');
       }
     });
   }
 
-  /* --------------------------------------------------------------------- */
-  /* View helpers                                                          */
-  /* --------------------------------------------------------------------- */
-
   formGroups(): FormGroup[] {
     return this.formArray.controls as FormGroup[];
   }
 
-  /** All test‑cases for the selected module (or empty list) */
   filteredTestCases(): TestCase[] {
     const mod = this.selectedModule();
     return mod
@@ -146,7 +165,6 @@ export class ModulesComponent implements OnInit {
       : [];
   }
 
-  /** Filtered using search boxes + result filter */
   filteredAndSearchedTestCases(): TestCase[] {
     return this.filteredTestCases().filter((tc, i) => {
       const form = this.formGroups()[i];
@@ -167,12 +185,23 @@ export class ModulesComponent implements OnInit {
     });
   }
 
-  /* --------------------------------------------------------------------- */
-  /* Actions                                                               */
-  /* --------------------------------------------------------------------- */
-
   onModuleChange(id: string): void {
     this.selectedModule.set(id || null);
+    this.selectedVersion = '';
+    this.versionTestCases = [];
+    this.showViewTestCases = false;
+    this.showStartTesting = false;
+
+    if (id) {
+      // Get unique versions for the selected module
+      this.availableVersions = [...new Set(
+        this.testCasePool
+          .filter(tc => tc.moduleId === id)
+          .map(tc => tc.version)
+      )];
+    } else {
+      this.availableVersions = [];
+    }
 
     // Reset & rebuild formArray to match rows
     this.formArray.clear();
@@ -187,6 +216,17 @@ export class ModulesComponent implements OnInit {
     }
   }
 
+  onVersionChange(): void {
+    if (this.selectedVersion && this.selectedModule()) {
+      this.versionTestCases = this.testCasePool.filter(
+        tc => tc.moduleId === this.selectedModule() && 
+              tc.version === this.selectedVersion
+      );
+    } else {
+      this.versionTestCases = [];
+    }
+  }
+
   onSave(): void {
     console.log(
       `✅ Saved results for module '${this.selectedModule()}':`,
@@ -194,10 +234,6 @@ export class ModulesComponent implements OnInit {
     );
     alert('Results saved (dummy). Check console.');
   }
-
-  /* --------------------------------------------------------------------- */
-  /* Utilities                                                             */
-  /* --------------------------------------------------------------------- */
 
   private isValidModule(id: string): boolean {
     return this.modules.some((m) => m.id === id);
