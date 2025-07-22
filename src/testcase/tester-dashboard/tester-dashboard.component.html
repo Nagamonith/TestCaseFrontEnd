@@ -1,26 +1,72 @@
-<div class="container-fluid">
-  <div class="dashboard-header">
-    <h2>Testing Dashboard</h2>
-    <div class="product-info">Product: <strong>{{ productName }}</strong></div>
+<!-- tester-dashboard.component.html -->
+<div class="dashboard-wrapper">
+  <!-- Toggle Arrow -->
+  <button class="toggle-button" (click)="toggleSidebar()">
+    <span>{{ sidebarOpen ? '◀' : '▶' }}</span>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" [class.closed]="!sidebarOpen">
+    <h3>📦 Products</h3>
+    <ul class="product-list">
+      <li *ngFor="let product of products">
+        <!-- Product title with toggle -->
+        <div class="product-title" (click)="toggleProduct(product.id)">
+          {{ product.name }}
+          <span class="arrow">{{ expandedProductId === product.id ? '▼' : '▶' }}</span>
+        </div>
+
+        <!-- Tree menu if expanded -->
+        <ul *ngIf="expandedProductId === product.id" class="submenu">
+          <li>
+            <a [routerLink]="['/tester/add-testcases']"
+               [queryParams]="{ productId: product.id, productName: product.name }">
+              ➕ Add Test Cases
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['/tester/import-excel']"
+               [queryParams]="{ productId: product.id, productName: product.name }">
+              📥 Import Excel
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['/tester/modules']"
+               [queryParams]="{ productId: product.id, productName: product.name }">
+              � Modules
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['/tester/results']"
+               [queryParams]="{ productId: product.id, productName: product.name }">
+              📊 Results
+            </a>
+          </li>
+          <li>
+            <a [routerLink]="['/tester/summary']"
+               [queryParams]="{ productId: product.id, productName: product.name }">
+              📈 Summary
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
   </div>
 
-  <div class="card-container">
-    <div class="card" routerLink="add-testcases">
-      ➕ Test Cases
+  <!-- Main content area -->
+  <div class="main-content">
+    <div *ngIf="currentProductName" class="current-product">
+      🔧 Product: <strong>{{ currentProductName }}</strong>
     </div>
-    <div class="card" routerLink="import-excel">
-      📥 Import Excel
-    </div>
-    <div class="card" routerLink="modules">
-      🧪 Modules
-    </div>
-    <div class="card" routerLink="results">
-      📊 Results
-    </div>
-    <div class="card" routerLink="summary">
-      📈 Summary
-    </div>
-  </div>
 
-  <router-outlet></router-outlet>
+    <!-- Show message when no product is selected -->
+    <div *ngIf="!currentProductName" class="no-product-selected">
+      <div class="icon">📋</div>
+      <h3>Please Select a Product</h3>
+      
+    </div>
+
+    <!-- Router outlet -->
+    <router-outlet></router-outlet>
+  </div>
 </div>

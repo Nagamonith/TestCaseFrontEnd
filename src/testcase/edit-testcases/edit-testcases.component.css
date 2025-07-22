@@ -1,6 +1,6 @@
 /* edit-testcases.component.css */
 .container {
-  max-width: 98%;
+  max-width: 120%;
   margin: 25px auto;
   padding: 20px;
   background: #f7f9fc;
@@ -220,6 +220,10 @@ textarea {
 .btn.small {
   padding: 4px 8px;
 }
+.btn-small{
+  background-color:gold;
+
+}
 
 .btn.primary {
   background-color: #007bff;
@@ -235,8 +239,9 @@ textarea {
   opacity: 0.9;
 }
 .btn-small-back{
-  background-color: beige;
+  background-color: rgb(81, 62, 176);
   border-color:#2c3e50;
+  color:#eaf1ff;
 }
 
 /* Responsive adjustments */
