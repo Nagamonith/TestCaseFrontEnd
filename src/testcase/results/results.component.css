@@ -263,10 +263,15 @@
     padding: 8px 6px;
   }
 }
+.btn-export{
+  background-color:rgb(150, 78, 218);
+  color:#ddd;
+}
 
 /* Smooth transitions */
 * {
   box-sizing: border-box;
+  
 }
 
 .form-section,

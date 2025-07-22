@@ -1,7 +1,7 @@
 <h2 class="text-center">Results Summary</h2>
 
 <div class="container">
-  <!-- Module selector (initially the only element shown) -->
+  <!-- Module selector -->
   <div class="form-section">
     <label for="moduleSelect">Select Module</label>
     <select id="moduleSelect"
@@ -25,14 +25,19 @@
       <button class="btn-automation">Automation Result</button>
     </div>
 
-    <!-- Toggle button to show/hide full module table -->
+    <!-- Toggle View Module -->
     <div class="view-btn-container">
       <button class="btn-view" (click)="showTable = !showTable">
         {{ showTable ? 'Hide' : 'View' }} Module
       </button>
     </div>
 
-    <!-- Full module test‑case table (read‑only) -->
+    <!-- Export button -->
+    <div *ngIf="showTable && tableData.length" class="export-btn-container">
+      <button class="btn-export" (click)="exportToExcel()">⬇️ Export Results</button>
+    </div>
+
+    <!-- Table -->
     <div *ngIf="showTable">
       <div class="filter-section">
         <label for="statusFilter">Filter by Result</label>
