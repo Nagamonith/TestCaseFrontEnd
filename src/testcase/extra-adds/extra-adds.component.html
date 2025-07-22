@@ -1,0 +1,78 @@
+<div class="container">
+  <h2 class="header">✨ Module Management</h2>
+
+  <div class="actions-container">
+    <!-- Add Module Section -->
+    <div class="action-section">
+      <button class="btn btn-primary" (click)="toggleAddModule()">
+        <span class="icon">➕</span> Add Module
+      </button>
+
+      <div *ngIf="showAddModuleForm" class="form-box slide-down">
+        <div class="form-group">
+          <label>Module Name</label>
+          <input [(ngModel)]="newModuleName" placeholder="e.g. Payment Module" />
+        </div>
+        <div class="form-group">
+          <label>Initial Version</label>
+          <input [(ngModel)]="newModuleVersion" placeholder="v1.0" />
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-success" (click)="saveModule()">
+            <span class="icon">✅</span> Save Module
+          </button>
+          <button class="btn btn-secondary" (click)="toggleAddModule()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Version Section -->
+    <div class="action-section">
+      <div class="form-group">
+        <label>Select Module</label>
+        <select [(ngModel)]="selectedModuleId" class="form-select">
+          <option value="" disabled selected>Select a module</option>
+          <option *ngFor="let mod of modules()" [value]="mod.id">{{ mod.name }}</option>
+        </select>
+      </div>
+
+      <button 
+        class="btn btn-primary" 
+        (click)="toggleAddVersionForm()"
+        [disabled]="!selectedModuleId">
+        <span class="icon">➕</span> Add Version
+      </button>
+
+      <div *ngIf="showAddVersionForm" class="form-box slide-down">
+        <div class="form-group">
+          <input [(ngModel)]="newVersionName" placeholder="New Version (e.g. v1.2)" />
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-success" (click)="saveVersion()">
+            <span class="icon">✅</span> Save Version
+          </button>
+          <button class="btn btn-secondary" (click)="toggleAddVersionForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Module Cards -->
+  <div class="modules-grid">
+    <div *ngFor="let mod of modules()" class="module-card">
+      <div class="card-header">
+        <h4>{{ mod.name }}</h4>
+        <span class="module-id">ID: {{ mod.id }}</span>
+      </div>
+      <div class="card-body">
+        <div class="versions-list">
+          <span class="versions-label">Versions:</span>
+          <span *ngIf="!(versionsByModule()[mod.id]?.length)">None</span>
+          <div *ngFor="let ver of versionsByModule()[mod.id]" class="version-badge">
+            {{ ver }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
