@@ -11,14 +11,26 @@
         </th>
       </tr>
     </thead>
+
     <tbody>
       <tr *ngFor="let mod of modules">
-        <td><strong>{{ mod.name }}</strong></td>
+        <!-- Clickable link that routes to /modules/:moduleId -->
+        <td>
+          <a
+  class="link-primary fw-bold"
+  [routerLink]="['/tester/modules', mod.id]"
+  routerLinkActive="text-decoration-underline"
+>
+  {{ mod.name }}
+</a>
+
+        </td>
         <td *ngFor="let ver of versions">
           {{ getCount(mod.id, ver) }}
         </td>
       </tr>
     </tbody>
+
     <tfoot>
       <tr class="footer-highlight">
         <th>Total Scenarios per Version</th>

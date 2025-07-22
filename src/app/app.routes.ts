@@ -68,7 +68,13 @@ export const routes: Routes = [
                 .then(m => m.EditTestcasesComponent)
           },
           { path: 'import-excel', component: ImportExcelComponent },
+          
+          // ✅ Existing module view (no param)
           { path: 'modules', component: ModulesComponent },
+          
+          // ✅ New route with moduleId param for clicking from Summary
+          { path: 'modules/:moduleId', component: ModulesComponent },
+
           { path: 'results', component: ResultsComponent },
           { path: 'summary', component: SummaryComponent },
           { path: '', redirectTo: 'add-testcases', pathMatch: 'full' }

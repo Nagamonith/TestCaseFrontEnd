@@ -4,17 +4,34 @@
   <!-- Module dropdown -->
   <div class="form-group">
     <label>Select Module</label>
-    <select [ngModel]="selectedModule()" (ngModelChange)="onModuleChange($event)">
+    <select
+      [ngModel]="selectedModule()"
+      (ngModelChange)="onModuleChange($event)"
+    >
       <option value="">-- Choose Module --</option>
-      <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
+      <option *ngFor="let m of modules" [value]="m.id">
+        {{ m.name }}
+      </option>
     </select>
   </div>
 
   <!-- Filters -->
-  <div class="filters" *ngIf="filteredTestCases().length > 0">
-    <input type="text" placeholder="Filter by Sl No" [(ngModel)]="filter.slNo" />
-    <input type="text" placeholder="Filter by TestCase ID" [(ngModel)]="filter.testCaseId" />
-    <input type="text" placeholder="Filter by Use Case" [(ngModel)]="filter.useCase" />
+  <div class="filters" *ngIf="filteredTestCases().length">
+    <input
+      type="text"
+      placeholder="Filter by Sl No"
+      [(ngModel)]="filter.slNo"
+    />
+    <input
+      type="text"
+      placeholder="Filter by TestCase ID"
+      [(ngModel)]="filter.testCaseId"
+    />
+    <input
+      type="text"
+      placeholder="Filter by Use Case"
+      [(ngModel)]="filter.useCase"
+    />
     <select [(ngModel)]="filter.result">
       <option value="">All Results</option>
       <option value="Pass">Pass</option>
@@ -23,8 +40,8 @@
     </select>
   </div>
 
-  <!-- Test-case table -->
-  <div *ngIf="filteredAndSearchedTestCases().length > 0">
+  <!-- Test‑case table -->
+  <div *ngIf="filteredAndSearchedTestCases().length">
     <table>
       <thead>
         <tr>
@@ -42,7 +59,13 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index" [formGroup]="formGroups()[i]">
+        <tr
+          *ngFor="
+            let tc of filteredAndSearchedTestCases();
+            let i = index
+          "
+          [formGroup]="formGroups()[i]"
+        >
           <td>{{ tc.slNo }}</td>
           <td>{{ tc.version }}</td>
           <td class="wrap-text">{{ tc.fixed.useCase }}</td>
@@ -63,6 +86,8 @@
       </tbody>
     </table>
 
-    <button class="btn-save" (click)="onSave()">✅ Save Results</button>
+    <button class="btn-save" (click)="onSave()">
+      ✅ Save Results
+    </button>
   </div>
 </div>
