@@ -1,4 +1,3 @@
-// ✅ edit-testcases.component.ts
 import { Component, computed, inject, signal } from '@angular/core';
 import {
   FormBuilder,
@@ -22,6 +21,12 @@ interface TestCase {
   attributes: { key: string; value: string }[];
 }
 
+type TestCaseFilter = {
+  slNo: string;
+  testCaseId: string;
+  useCase: string;
+};
+
 @Component({
   selector: 'app-edit-testcases',
   standalone: true,
@@ -34,11 +39,16 @@ export class EditTestcasesComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  searchQuery = signal('');
   selectedModule = signal<string>('');
   selectedVersion = signal<string>('');
   showForm = signal(false);
   editingId = signal<string | null>(null);
+
+  filter = signal<TestCaseFilter>({
+    slNo: '',
+    testCaseId: '',
+    useCase: '',
+  });
 
   modules = [
     { id: 'mod1', name: 'Login Module' },
@@ -101,17 +111,6 @@ export class EditTestcasesComponent {
       expected: 'Filtered data shown',
       attributes: [],
     },
-    {
-      id: '6',
-      moduleId: 'mod2',
-      version: 'v2.0',
-      useCase: 'Download report',
-      testCaseId: 'TC006',
-      scenario: 'Download in Excel',
-      steps: 'Click export button',
-      expected: 'Excel file downloaded',
-      attributes: [],
-    },
   ]);
 
   form = this.fb.group({
@@ -145,20 +144,25 @@ export class EditTestcasesComponent {
   }
 
   filteredTestCases = computed(() => {
-    const query = this.searchQuery().toLowerCase();
     const moduleId = this.selectedModule();
     const version = this.selectedVersion();
+    const f = this.filter();
 
-    return this.testCases().filter(
-      (tc) =>
-        tc.moduleId === moduleId &&
-        tc.version === version &&
-        (!query ||
-          tc.testCaseId.toLowerCase().includes(query) ||
-          tc.useCase.toLowerCase().includes(query) ||
-          tc.scenario.toLowerCase().includes(query))
-    );
+    return this.testCases()
+      .filter((tc) => tc.moduleId === moduleId && tc.version === version)
+      .filter((tc, index) =>
+        (!f.slNo || (index + 1).toString().includes(f.slNo)) &&
+        (!f.testCaseId || tc.testCaseId.toLowerCase().includes(f.testCaseId.toLowerCase())) &&
+        (!f.useCase || tc.useCase.toLowerCase().includes(f.useCase.toLowerCase()))
+      );
   });
+
+  updateFilter<K extends keyof TestCaseFilter>(key: K, value: string) {
+    this.filter.set({
+      ...this.filter(),
+      [key]: value,
+    });
+  }
 
   getModuleName(id: string): string {
     return this.modules.find((m) => m.id === id)?.name || id;

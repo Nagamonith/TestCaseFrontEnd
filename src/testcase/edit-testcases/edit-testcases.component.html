@@ -1,7 +1,7 @@
 <div class="container">
   <h2 class="text-center">Test Case Management</h2>
 
-  <!-- Module and Version display (readonly) -->
+  <!-- Module and Version display -->
   <div class="module-info">
     <div><strong>Module:</strong> {{ getModuleName(selectedModule()) }}</div>
     <div><strong>Version:</strong> {{ selectedVersion() }}</div>
@@ -9,15 +9,28 @@
   </div>
 
   <!-- Filters -->
-   <label>Search</label>
-  <div class="filters" *ngIf="filteredTestCases().length > 0">
+   <label>Search Filters</label>
+  <div class="filters">
     
-    <input
-      type="text"
-      placeholder="Filter by TestCase ID / Use‑case / Scenario"
-      [ngModel]="searchQuery()"
-      (ngModelChange)="searchQuery.set($event)"
-    />
+  <input
+  type="text"
+  placeholder="Filter by Sl No"
+  [ngModel]="filter().slNo"
+  (ngModelChange)="updateFilter('slNo', $event)"
+ />
+<input
+  type="text"
+  placeholder="Filter by TestCase ID"
+  [ngModel]="filter().testCaseId"
+  (ngModelChange)="updateFilter('testCaseId', $event)"
+ />
+<input
+  type="text"
+  placeholder="Filter by Use Case"
+  [ngModel]="filter().useCase"
+  (ngModelChange)="updateFilter('useCase', $event)"
+ />
+
   </div>
 
   <!-- Test case table -->
@@ -54,17 +67,16 @@
           </td>
           <td class="actions">
             <button class="btn small" (click)="editTestCase(testCase)">Edit</button>
-            <button class="btn small danger" (click)="deleteTestCase(testCase.id)">
-              Delete
-            </button>
+            <button class="btn small danger" (click)="deleteTestCase(testCase.id)">Delete</button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
 
+  <!-- No results message -->
   <div *ngIf="filteredTestCases().length === 0" class="no-results">
-    No test cases found for this module/version.
+    No test cases found. Try changing filters.
   </div>
 
   <button class="btn-save" (click)="openForm()">➕ Add New Test Case</button>
@@ -109,7 +121,7 @@
         <textarea formControlName="expected" rows="3"></textarea>
       </div>
 
-      <!-- Dynamic Attributes Section -->
+      <!-- Dynamic Attributes -->
       <div class="attributes-section">
         <h4>Attributes</h4>
         <div formArrayName="attributes">
@@ -125,12 +137,9 @@
             </button>
           </div>
         </div>
-        <button type="button" class="btn small primary" (click)="addAttribute()">
-          Add Attribute
-        </button>
+        <button type="button" class="btn small primary" (click)="addAttribute()">Add Attribute</button>
       </div>
 
-      <!-- Actions -->
       <div class="form-actions">
         <button type="submit" class="btn-save">Save</button>
         <button type="button" class="btn-cancel" (click)="cancelForm()">Cancel</button>
