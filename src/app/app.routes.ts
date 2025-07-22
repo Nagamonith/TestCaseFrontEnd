@@ -64,7 +64,8 @@ export const routes: Routes = [
           {
             path: 'edit-testcases/:moduleId/:version',
             loadComponent: () =>
-              import('../testcase/edit-testcases/edit-testcases.component').then(m => m.EditTestcasesComponent),
+              import('../testcase/edit-testcases/edit-testcases.component')
+                .then(m => m.EditTestcasesComponent)
           },
           { path: 'import-excel', component: ImportExcelComponent },
           { path: 'modules', component: ModulesComponent },

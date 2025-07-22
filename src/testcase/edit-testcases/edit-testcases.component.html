@@ -1,42 +1,44 @@
 <div class="container">
   <h2 class="text-center">Test Case Management</h2>
 
-  <!-- Module dropdown -->
-  <div class="form-group">
-    <label>Select Module</label>
-    <select [ngModel]="selectedModule()" (ngModelChange)="selectedModule.set($event)">
-      <option value="">-- All Modules --</option>
-      <option *ngFor="let module of modules" [value]="module.id">{{ module.name }}</option>
-    </select>
+  <!-- Module and Version display (readonly) -->
+  <div class="module-info">
+    <div>
+      <strong>Module:</strong> {{ getModuleName(selectedModule()) }}
+    </div>
+    <div>
+      <strong>Version:</strong> {{ selectedVersion() }}
+    </div>
+    <button class="btn-small back" (click)="goBack()">
+      🔙 Back to Modules
+    </button>
   </div>
 
   <!-- Filters -->
   <div class="filters" *ngIf="filteredTestCases().length > 0">
-    <input 
-  type="text" 
-  placeholder="Filter by TestCase ID" 
-  [ngModel]="searchQuery()" 
-  (ngModelChange)="searchQuery.set($event)" 
-/>
-    <input type="text" placeholder="Filter by Use Case" />
-    <select [ngModel]="selectedVersion()" (ngModelChange)="selectedVersion.set($event)">
-      <option value="">All Versions</option>
-      <option *ngFor="let version of versions" [value]="version.id">{{ version.name }}</option>
-    </select>
+    <input
+      type="text"
+      placeholder="Filter by TestCase ID / Use‑case / Scenario"
+      [ngModel]="searchQuery()"
+      (ngModelChange)="searchQuery.set($event)"
+    />
   </div>
 
-  <!-- Test-case table -->
+  <!-- Test‑case table -->
   <div *ngIf="filteredTestCases().length > 0">
     <table>
       <thead>
         <tr>
           <th>ID</th>
-          <th>Version</th>
           <th>Use Case</th>
           <th>Scenario</th>
           <th>Steps</th>
           <th>Expected</th>
-          <th *ngFor="let attr of getUniqueAttributes(); trackBy: trackByAttribute">{{ attr }}</th>
+          <th
+            *ngFor="let attr of getUniqueAttributes(); trackBy: trackByAttribute"
+          >
+            {{ attr }}
+          </th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -44,17 +46,25 @@
       <tbody>
         <tr *ngFor="let testCase of filteredTestCases()">
           <td>{{ testCase.testCaseId }}</td>
-          <td>{{ testCase.version }}</td>
           <td class="wrap-text">{{ testCase.useCase }}</td>
           <td class="wrap-text">{{ testCase.scenario }}</td>
           <td class="wrap-text">{{ testCase.steps }}</td>
           <td class="wrap-text">{{ testCase.expected }}</td>
-          <td *ngFor="let attr of getUniqueAttributes(); trackBy: trackByAttribute">
+          <td
+            *ngFor="let attr of getUniqueAttributes(); trackBy: trackByAttribute"
+          >
             {{ getAttributeValue(testCase, attr) }}
           </td>
           <td class="actions">
-            <button class="btn small" (click)="editTestCase(testCase)">Edit</button>
-            <button class="btn small danger" (click)="deleteTestCase(testCase.id)">Delete</button>
+            <button class="btn small" (click)="editTestCase(testCase)">
+              Edit
+            </button>
+            <button
+              class="btn small danger"
+              (click)="deleteTestCase(testCase.id)"
+            >
+              Delete
+            </button>
           </td>
         </tr>
       </tbody>
@@ -62,38 +72,38 @@
   </div>
 
   <div *ngIf="filteredTestCases().length === 0" class="no-results">
-    No test cases found.
+    No test cases found for this module/version.
   </div>
 
   <button class="btn-save" (click)="openForm()">➕ Add New Test Case</button>
 
   <!-- Test Case Form -->
   <div *ngIf="showForm()" class="form-overlay">
-    <form [formGroup]="form" (ngSubmit)="saveTestCase()" class="test-case-form">
+    <form
+      [formGroup]="form"
+      (ngSubmit)="saveTestCase()"
+      class="test-case-form"
+    >
       <h3>{{ editingId() ? 'Edit' : 'Add' }} Test Case</h3>
 
       <div class="form-group">
         <label>Module:</label>
-        <select formControlName="moduleId">
-          <option *ngFor="let module of modules" [value]="module.id">{{ module.name }}</option>
-        </select>
+        <div class="readonly-value">{{ getModuleName(selectedModule()) }}</div>
       </div>
 
       <div class="form-group">
         <label>Version:</label>
-        <select formControlName="version">
-          <option *ngFor="let version of versions" [value]="version.id">{{ version.name }}</option>
-        </select>
+        <div class="readonly-value">{{ selectedVersion() }}</div>
       </div>
 
       <div class="form-group">
         <label>Test Case ID:</label>
-        <input type="text" formControlName="testCaseId">
+        <input type="text" formControlName="testCaseId" />
       </div>
 
       <div class="form-group">
         <label>Use Case:</label>
-        <input type="text" formControlName="useCase">
+        <input type="text" formControlName="useCase" />
       </div>
 
       <div class="form-group">
@@ -114,18 +124,39 @@
       <div class="attributes-section">
         <h4>Attributes</h4>
         <div formArrayName="attributes">
-          <div *ngFor="let attr of attributes.controls; let i = index" [formGroupName]="i" class="attribute-item">
-            <input formControlName="key" placeholder="Attribute name">
+          <div
+            *ngFor="
+              let attr of attributes.controls;
+              let i = index
+            "
+            [formGroupName]="i"
+            class="attribute-item"
+          >
+            <input formControlName="key" placeholder="Attribute name" />
             <textarea formControlName="value" placeholder="Value"></textarea>
-            <button type="button" class="btn small danger" (click)="removeAttribute(i)">Remove</button>
+            <button
+              type="button"
+              class="btn small danger"
+              (click)="removeAttribute(i)"
+            >
+              Remove
+            </button>
           </div>
         </div>
-        <button type="button" class="btn small primary" (click)="addAttribute()">Add Attribute</button>
+        <button
+          type="button"
+          class="btn small primary"
+          (click)="addAttribute()"
+        >
+          Add Attribute
+        </button>
       </div>
 
       <div class="form-actions">
         <button type="submit" class="btn-save">Save</button>
-        <button type="button" class="btn-cancel" (click)="cancelForm()">Cancel</button>
+        <button type="button" class="btn-cancel" (click)="cancelForm()">
+          Cancel
+        </button>
       </div>
     </form>
   </div>
