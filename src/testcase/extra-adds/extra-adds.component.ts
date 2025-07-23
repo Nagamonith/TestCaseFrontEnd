@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DUMMY_TEST_CASES } from 'src/app/shared/data/dummy-testcases';
 
 interface Module {
   id: string;
@@ -21,9 +22,7 @@ interface Product {
   styleUrls: ['./extra-adds.component.css']
 })
 export class ExtraAddsComponent {
-  // Products for dropdown
   products: Product[] = [
-    // { id: 'p1', name: 'General' },
     { id: 'p2', name: 'Wizard' },
     { id: 'p3', name: 'Qualis SPC' },
     { id: 'p4', name: 'MSA' },
@@ -33,16 +32,37 @@ export class ExtraAddsComponent {
 
   selectedProductId = '';
 
-  // Modules and versions state
-  modules = signal<Module[]>([
-    { id: 'mod1', name: 'Login Module' },
-    { id: 'mod2', name: 'Reports Module' }
-  ]);
+  // Extracted modules and versions from DUMMY_TEST_CASES
+  private rawModules = Array.from(
+    new Set(DUMMY_TEST_CASES.map(tc => tc.moduleId))
+  );
 
-  versionsByModule = signal<Record<string, string[]>>({
-    mod1: ['v1.0', 'v1.1'],
-    mod2: ['v2.0', 'v2.1']
-  });
+  private moduleNamesMap: Record<string, string> = {
+    mod1: 'Login Module',
+    mod2: 'Reports Module',
+    mod3: 'Profile Module',
+    mod4: 'Cart Module',
+    mod5: 'Search Module',
+    mod6: 'Upload Module',
+    mod7: 'Settings Module'
+  };
+
+  modules = signal<Module[]>(
+    this.rawModules.map(id => ({
+      id,
+      name: this.moduleNamesMap[id] || id
+    }))
+  );
+
+  versionsByModule = signal<Record<string, string[]>>(
+    DUMMY_TEST_CASES.reduce((acc, tc) => {
+      if (!acc[tc.moduleId]) acc[tc.moduleId] = [];
+      if (!acc[tc.moduleId].includes(tc.version)) {
+        acc[tc.moduleId].push(tc.version);
+      }
+      return acc;
+    }, {} as Record<string, string[]>)
+  );
 
   // UI state
   showModulesList = false;
@@ -55,12 +75,10 @@ export class ExtraAddsComponent {
   newVersionName = '';
   selectedModuleId = '';
 
-  /** Toggle module list display */
   toggleModulesList() {
     this.showModulesList = !this.showModulesList;
   }
 
-  /** Save a new module and its initial version */
   saveModule() {
     const name = this.newModuleName.trim();
     const version = this.newModuleVersion.trim() || 'v1.0';
@@ -83,17 +101,14 @@ export class ExtraAddsComponent {
     this.showAddModuleForm = false;
   }
 
-  /** Enable editing for selected module */
   startEditing(module: Module) {
     this.modules.update(mods =>
       mods.map(m => m.id === module.id ? { ...m, editing: true } : m)
     );
   }
 
-  /** Save changes made to a module */
   saveEditing(module: Module) {
     const name = module.name.trim();
-
     if (!name) {
       alert('Module name cannot be empty');
       return;
@@ -104,7 +119,6 @@ export class ExtraAddsComponent {
     );
   }
 
-  /** Delete a module and its versions */
   deleteModule(moduleId: string) {
     if (confirm('Are you sure you want to delete this module?')) {
       this.modules.update(mods => mods.filter(m => m.id !== moduleId));
@@ -117,7 +131,6 @@ export class ExtraAddsComponent {
     }
   }
 
-  /** Show add version form */
   initAddVersion() {
     if (this.modules().length === 0) {
       alert('No modules available. Please add a module first.');
@@ -129,7 +142,6 @@ export class ExtraAddsComponent {
     this.showAddVersionForm = true;
   }
 
-  /** Save new version for selected module */
   saveVersion() {
     const version = this.newVersionName.trim();
 

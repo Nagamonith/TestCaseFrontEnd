@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { DUMMY_TEST_CASES, TestCase } from 'src/app/shared/data/dummy-testcases';
 
 @Component({
   selector: 'app-summary',
@@ -10,28 +11,50 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./summary.component.css'],
 })
 export class SummaryComponent {
-  modules = [
-    { id: 'mod1', name: 'Login Module' },
-    { id: 'mod2', name: 'Reports Module' },
-  ];
+  testCases: TestCase[] = DUMMY_TEST_CASES;
 
-  versions = ['v1.0', 'v1.1', 'v2.0'];
+  // Dynamically derived modules
+  get modules(): { id: string; name: string }[] {
+    const uniqueIds = Array.from(new Set(this.testCases.map(tc => tc.moduleId)));
+    return uniqueIds.map(id => ({
+      id,
+      name: this.getModuleName(id),
+    }));
+  }
 
-  /** key = "<moduleId>-<version>", value = #scenarios */
-  testMatrix: Record<string, number> = {
-    'mod1-v1.0': 5,
-    'mod1-v1.1': 3,
-    'mod2-v2.0': 7,
-  };
+  // Dynamically derived versions
+  get versions(): string[] {
+    return Array.from(new Set(this.testCases.map(tc => tc.version)));
+  }
+
+  // Test count matrix by module-version
+  get testMatrix(): Record<string, number> {
+    const map: Record<string, number> = {};
+    for (const tc of this.testCases) {
+      const key = `${tc.moduleId}-${tc.version}`;
+      map[key] = (map[key] || 0) + 1;
+    }
+    return map;
+  }
 
   getCount(modId: string, ver: string): number {
     return this.testMatrix[`${modId}-${ver}`] ?? 0;
   }
 
   getVersionTotal(ver: string): number {
-    return this.modules.reduce(
-      (sum, mod) => sum + this.getCount(mod.id, ver),
-      0,
-    );
+    return this.modules.reduce((sum, mod) => sum + this.getCount(mod.id, ver), 0);
+  }
+
+  getModuleName(id: string): string {
+    const names: Record<string, string> = {
+      mod1: 'Login Module',
+      mod2: 'Reports Module',
+      mod3: 'Profile Module',
+      mod4: 'Cart Module',
+      mod5: 'Search Module',
+      mod6: 'Upload Module',
+      mod7: 'Settings Module',
+    };
+    return names[id] || `Module ${id}`;
   }
 }

@@ -9,17 +9,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 
-interface TestCase {
-  id: string;
-  moduleId: string;
-  version: string;
-  useCase: string;
-  testCaseId: string;
-  scenario: string;
-  steps: string;
-  expected: string;
-  attributes: { key: string; value: string }[];
-}
+import { DUMMY_TEST_CASES, TestCase } from 'src/app/shared/data/dummy-testcases';
 
 type TestCaseFilter = {
   slNo: string;
@@ -55,63 +45,7 @@ export class EditTestcasesComponent {
     { id: 'mod2', name: 'Reporting Module' },
   ];
 
-  testCases = signal<TestCase[]>([
-    {
-      id: '1',
-      moduleId: 'mod1',
-      version: 'v1.0',
-      useCase: 'Login success',
-      testCaseId: 'TC001',
-      scenario: 'Valid credentials',
-      steps: 'Enter username, password, click login',
-      expected: 'Dashboard opens',
-      attributes: [],
-    },
-    {
-      id: '2',
-      moduleId: 'mod1',
-      version: 'v1.0',
-      useCase: 'Login fail',
-      testCaseId: 'TC002',
-      scenario: 'Invalid password',
-      steps: 'Enter wrong password, click login',
-      expected: 'Show error message',
-      attributes: [],
-    },
-    {
-      id: '3',
-      moduleId: 'mod1',
-      version: 'v1.1',
-      useCase: 'Password reset',
-      testCaseId: 'TC003',
-      scenario: 'Forgot password link',
-      steps: 'Click forgot password, enter email',
-      expected: 'Reset link sent',
-      attributes: [],
-    },
-    {
-      id: '4',
-      moduleId: 'mod2',
-      version: 'v2.0',
-      useCase: 'Generate report',
-      testCaseId: 'TC004',
-      scenario: 'Select date range',
-      steps: 'Pick dates, click generate',
-      expected: 'PDF download',
-      attributes: [],
-    },
-    {
-      id: '5',
-      moduleId: 'mod2',
-      version: 'v2.0',
-      useCase: 'Filter report',
-      testCaseId: 'TC005',
-      scenario: 'Apply filters',
-      steps: 'Select filter, click apply',
-      expected: 'Filtered data shown',
-      attributes: [],
-    },
-  ]);
+  testCases = signal<TestCase[]>(DUMMY_TEST_CASES);
 
   form = this.fb.group({
     id: [''],
@@ -150,8 +84,8 @@ export class EditTestcasesComponent {
 
     return this.testCases()
       .filter((tc) => tc.moduleId === moduleId && tc.version === version)
-      .filter((tc, index) =>
-        (!f.slNo || (index + 1).toString().includes(f.slNo)) &&
+      .filter((tc) =>
+        (!f.slNo || tc.slNo.toString().includes(f.slNo)) &&
         (!f.testCaseId || tc.testCaseId.toLowerCase().includes(f.testCaseId.toLowerCase())) &&
         (!f.useCase || tc.useCase.toLowerCase().includes(f.useCase.toLowerCase()))
       );
@@ -229,7 +163,16 @@ export class EditTestcasesComponent {
     }[];
     const v = this.form.value;
 
+    const currentList = this.testCases();
+    const nextSlNo =
+      v.id && currentList.find((tc) => tc.id === v.id)?.slNo
+        ? currentList.find((tc) => tc.id === v.id)!.slNo
+        : currentList.length
+        ? Math.max(...currentList.map((tc) => tc.slNo)) + 1
+        : 1;
+
     const testCase: TestCase = {
+      slNo: nextSlNo,
       id: v.id || Date.now().toString(),
       moduleId: this.selectedModule(),
       version: this.selectedVersion(),
@@ -245,7 +188,7 @@ export class EditTestcasesComponent {
       attributes: attrRaw,
     };
 
-    const list = [...this.testCases()];
+    const list = [...currentList];
     const idx = list.findIndex((tc) => tc.id === testCase.id);
     idx >= 0 ? (list[idx] = testCase) : list.push(testCase);
     this.testCases.set(list);

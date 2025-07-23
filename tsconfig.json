@@ -3,6 +3,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./src",                       // ✅ Enables 'src/' absolute imports
+    "paths": {
+      "src/*": ["*"]                          // ✅ Tells TS how to resolve 'src/'
+    },
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,

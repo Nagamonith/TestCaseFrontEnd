@@ -7,6 +7,7 @@
     <select [ngModel]="selectedModule()" (ngModelChange)="onModuleChange($event)">
       <option value="">-- Choose Module --</option>
       <option *ngFor="let m of modules" [value]="m.id">
+
         {{ m.name }}
       </option>
     </select>
@@ -34,7 +35,7 @@
       </select>
     </div>
 
-    <div *ngIf="selectedVersion && versionTestCases.length">
+    <div *ngIf="selectedVersion && versionTestCases().length">
       <h3>Test Cases for Version {{ selectedVersion }}</h3>
       <table>
         <thead>
@@ -48,13 +49,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let tc of versionTestCases">
-            <td>{{ tc.fixed.slNo }}</td>
-            <td class="wrap-text">{{ tc.fixed.useCase }}</td>
-            <td>{{ tc.fixed.testCaseId }}</td>
-            <td class="wrap-text">{{ tc.fixed.scenario }}</td>
-            <td class="wrap-text">{{ tc.fixed.steps }}</td>
-            <td class="wrap-text">{{ tc.fixed.expected }}</td>
+          <tr *ngFor="let tc of versionTestCases()">
+            <td>{{ tc.slNo }}</td>
+            <td class="wrap-text">{{ tc.useCase }}</td>
+            <td>{{ tc.testCaseId }}</td>
+            <td class="wrap-text">{{ tc.scenario }}</td>
+            <td class="wrap-text">{{ tc.steps }}</td>
+            <td class="wrap-text">{{ tc.expected }}</td>
           </tr>
         </tbody>
       </table>
@@ -76,7 +77,7 @@
       </select>
     </div>
 
-    <!-- Test‑case table -->
+    <!-- Test-case table -->
     <div *ngIf="filteredAndSearchedTestCases().length">
       <table>
         <thead>
@@ -93,17 +94,16 @@
             <th>Remarks</th>
           </tr>
         </thead>
-
         <tbody>
           <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index"
               [formGroup]="formGroups()[i]">
             <td>{{ tc.slNo }}</td>
             <td>{{ tc.version }}</td>
-            <td class="wrap-text">{{ tc.fixed.useCase }}</td>
-            <td>{{ tc.fixed.testCaseId }}</td>
-            <td class="wrap-text">{{ tc.fixed.scenario }}</td>
-            <td class="wrap-text">{{ tc.fixed.steps }}</td>
-            <td class="wrap-text">{{ tc.fixed.expected }}</td>
+            <td class="wrap-text">{{ tc.useCase }}</td>
+            <td>{{ tc.testCaseId }}</td>
+            <td class="wrap-text">{{ tc.scenario }}</td>
+            <td class="wrap-text">{{ tc.steps }}</td>
+            <td class="wrap-text">{{ tc.expected }}</td>
             <td>
               <select formControlName="result">
                 <option value="Pass">Pass ✅</option>

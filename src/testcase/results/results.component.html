@@ -67,19 +67,19 @@
         </thead>
         <tbody>
           <tr *ngFor="let row of tableData">
-            <td>{{ row.tc.fixed.slNo }}</td>
-            <td>{{ row.tc.fixed.testCaseId }}</td>
-            <td>{{ row.tc.fixed.useCase }}</td>
-            <td>{{ row.tc.fixed.scenario }}</td>
-            <td>{{ row.tc.fixed.steps }}</td>
-            <td>{{ row.tc.fixed.expected }}</td>
-            <td>Actual output {{ row.tc.fixed.slNo }}</td>
+            <td>{{ row.tc.slNo }}</td>
+            <td>{{ row.tc.testCaseId }}</td>
+            <td>{{ row.tc.useCase }}</td>
+            <td>{{ row.tc.scenario }}</td>
+            <td>{{ row.tc.steps }}</td>
+            <td>{{ row.tc.expected }}</td>
+            <td>Actual output {{ row.tc.slNo }}</td>
             <td [ngClass]="{
                   'pass': row.status === 'Pass',
                   'fail': row.status === 'Fail',
                   'pending': row.status === 'Pending'
                 }">{{ row.status }}</td>
-            <td>Remarks for test {{ row.tc.fixed.slNo }}</td>
+            <td>Remarks for test {{ row.tc.slNo }}</td>
           </tr>
         </tbody>
       </table>

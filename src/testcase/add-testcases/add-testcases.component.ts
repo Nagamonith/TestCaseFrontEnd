@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import * as XLSX from 'xlsx';
+import { DUMMY_TEST_CASES } from 'src/app/shared/data/dummy-testcases';
+
+
 
 @Component({
   selector: 'app-add-testcases',
@@ -22,6 +25,8 @@ export class AddTestcasesComponent {
   newModuleVersion = 'v1.0';
   newVersionName = '';
 
+  testCases = DUMMY_TEST_CASES; // ✅ store dummy test cases
+
   modules = [
     { id: 'mod1', name: 'Login Module' },
     { id: 'mod2', name: 'Reports Module' },
@@ -29,7 +34,7 @@ export class AddTestcasesComponent {
 
   versionsByModule: Record<string, string[]> = {
     mod1: ['v1.0', 'v1.1'],
-    mod2: ['v2.0'],
+    mod2: ['v2.0', 'v2.1'],
   };
 
   versions = computed(() => {
@@ -115,19 +120,25 @@ export class AddTestcasesComponent {
 
     const wb = XLSX.utils.book_new();
 
-    versions.forEach((version, index) => {
-      const rows = [
-        {
-          'Sl.No': 1,
-          'Module Name': moduleName,
-          Version: version,
-          'Use Case': 'Example Use Case',
-          'Test Case ID': `TC00${index + 1}`,
-          Scenario: 'Example scenario',
-          Steps: 'Step 1\nStep 2',
-          'Expected Result': 'It should work',
-        },
-      ];
+    versions.forEach((version) => {
+      const filteredTestCases = this.testCases.filter(
+        tc => tc.moduleId === modId && tc.version === version
+      );
+
+      if (filteredTestCases.length === 0) return;
+
+      const rows = filteredTestCases.map((tc, index) => ({
+        'Sl.No': index + 1,
+        'Module Name': moduleName,
+        Version: version,
+        'Use Case': tc.useCase,
+        'Test Case ID': tc.testCaseId,
+        Scenario: tc.scenario,
+        Steps: tc.steps,
+        'Expected Result': tc.expected,
+        ...tc.attributes // export dynamic attributes
+      }));
+
       const ws = XLSX.utils.json_to_sheet(rows);
       XLSX.utils.book_append_sheet(wb, ws, `Version-${version}`);
     });
