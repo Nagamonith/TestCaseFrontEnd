@@ -1,15 +1,10 @@
+// src/app/tester/edit-testcases/edit-testcases.component.ts
 import { Component, computed, inject, signal } from '@angular/core';
-import {
-  FormBuilder,
-  FormArray,
-  Validators,
-  ReactiveFormsModule,
-  FormsModule,
-} from '@angular/forms';
+import { FormBuilder, FormArray, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-
-import { DUMMY_TEST_CASES, TestCase } from 'src/app/shared/data/dummy-testcases';
+import { TestCaseService } from 'src/app/shared/services/test-case.service';
+import { TestCase } from 'src/app/shared/data/dummy-testcases';
 
 type TestCaseFilter = {
   slNo: string;
@@ -28,24 +23,20 @@ export class EditTestcasesComponent {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private testCaseService = inject(TestCaseService);
 
   selectedModule = signal<string>('');
   selectedVersion = signal<string>('');
   showForm = signal(false);
   editingId = signal<string | null>(null);
-
   filter = signal<TestCaseFilter>({
     slNo: '',
     testCaseId: '',
     useCase: '',
   });
 
-  modules = [
-    { id: 'mod1', name: 'Login Module' },
-    { id: 'mod2', name: 'Reporting Module' },
-  ];
-
-  testCases = signal<TestCase[]>(DUMMY_TEST_CASES);
+  modules = this.testCaseService.getModules();
+  testCases = signal<TestCase[]>(this.testCaseService.getTestCases());
 
   form = this.fb.group({
     id: [''],
@@ -163,43 +154,36 @@ export class EditTestcasesComponent {
     }[];
     const v = this.form.value;
 
-    const currentList = this.testCases();
-    const nextSlNo =
-      v.id && currentList.find((tc) => tc.id === v.id)?.slNo
-        ? currentList.find((tc) => tc.id === v.id)!.slNo
-        : currentList.length
-        ? Math.max(...currentList.map((tc) => tc.slNo)) + 1
-        : 1;
-
     const testCase: TestCase = {
-      slNo: nextSlNo,
+      slNo: v.id ? this.testCases().find(tc => tc.id === v.id)?.slNo || 0 : 
+            this.testCases().length > 0 ? 
+            Math.max(...this.testCases().map(tc => tc.slNo)) + 1 : 1,
       id: v.id || Date.now().toString(),
       moduleId: this.selectedModule(),
       version: this.selectedVersion(),
       useCase: v.useCase!,
-      testCaseId:
-        v.testCaseId?.trim() ||
-        `TC${Math.floor(Math.random() * 1000)
-          .toString()
-          .padStart(3, '0')}`,
+      testCaseId: v.testCaseId?.trim() ||
+        `TC${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
       scenario: v.scenario!,
       steps: v.steps!,
       expected: v.expected!,
       attributes: attrRaw,
     };
 
-    const list = [...currentList];
-    const idx = list.findIndex((tc) => tc.id === testCase.id);
-    idx >= 0 ? (list[idx] = testCase) : list.push(testCase);
-    this.testCases.set(list);
+    if (v.id) {
+      this.testCaseService.updateTestCase(testCase);
+    } else {
+      this.testCaseService.addTestCase(testCase);
+    }
 
+    this.testCases.set(this.testCaseService.getTestCases());
     this.showForm.set(false);
   }
 
   deleteTestCase(id: string) {
     if (confirm('Are you sure you want to delete this test case?')) {
-      const updated = this.testCases().filter((tc) => tc.id !== id);
-      this.testCases.set(updated);
+      this.testCaseService.deleteTestCase(id);
+      this.testCases.set(this.testCaseService.getTestCases());
     }
   }
 

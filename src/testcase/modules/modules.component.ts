@@ -1,15 +1,10 @@
-import { Component, OnInit, signal } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+// src/app/tester/modules/modules.component.ts
+import { Component, OnInit, signal, inject } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, RouterModule } from '@angular/router';
-import { DUMMY_TEST_CASES, TestCase } from 'src/app/shared/data/dummy-testcases';
+import { TestCaseService } from 'src/app/shared/services/test-case.service';
+import { TestCase } from 'src/app/shared/data/dummy-testcases';
 
 interface Filter {
   slNo: string;
@@ -26,11 +21,14 @@ interface Filter {
   styleUrls: ['./modules.component.css'],
 })
 export class ModulesComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private testCaseService = inject(TestCaseService);
+
   selectedModule = signal<string | null>(null);
   selectedVersion = '';
   availableVersions: string[] = [];
   versionTestCases = signal<TestCase[]>([]);
-
   showViewTestCases = false;
   showStartTesting = false;
 
@@ -41,29 +39,11 @@ export class ModulesComponent implements OnInit {
     result: '',
   };
 
-  moduleNameMap: Record<string, string> = {
-    mod1: 'Login Module',
-    mod2: 'Reports Module',
-    mod3: 'Profile Module',
-    mod4: 'Cart Module',
-    mod5: 'Search Module',
-    mod6: 'Upload Module',
-    mod7: 'Settings Module',
-  };
-
-  modules: { id: string; name: string }[] = [];
-  testCasePool = DUMMY_TEST_CASES;
+  modules = this.testCaseService.getModules();
+  testCasePool = this.testCaseService.getTestCases();
   formArray = new FormArray<FormGroup>([]);
 
-  constructor(private fb: FormBuilder, private route: ActivatedRoute) {}
-
   ngOnInit(): void {
-    const moduleIds = Array.from(new Set(this.testCasePool.map(tc => tc.moduleId)));
-    this.modules = moduleIds.map(id => ({
-      id,
-      name: this.moduleNameMap[id] ?? id,
-    }));
-
     this.route.paramMap.subscribe((pm: ParamMap) => {
       const modId = pm.get('moduleId');
       const fallback = this.modules.length ? this.modules[0].id : null;
@@ -93,7 +73,7 @@ export class ModulesComponent implements OnInit {
   }
 
   onModuleChange(id: string): void {
-    if (!this.isValidModule(id)) return;
+    if (!this.modules.some(m => m.id === id)) return;
 
     this.selectedModule.set(id);
     this.selectedVersion = '';
@@ -102,13 +82,7 @@ export class ModulesComponent implements OnInit {
     this.showStartTesting = false;
 
     if (id) {
-      this.availableVersions = [
-        ...new Set(
-          this.testCasePool
-            .filter(tc => tc.moduleId === id)
-            .map(tc => tc.version)
-        ),
-      ];
+      this.availableVersions = this.testCaseService.getVersionsByModule(id);
     } else {
       this.availableVersions = [];
     }
@@ -116,10 +90,10 @@ export class ModulesComponent implements OnInit {
     this.formArray.clear();
     for (const _ of this.filteredTestCases()) {
       this.formArray.push(
-        new FormGroup({
-          result: new FormControl('Pending'),
-          actual: new FormControl(''),
-          remarks: new FormControl(''),
+        this.fb.group({
+          result: ['Pending'],
+          actual: [''],
+          remarks: [''],
         })
       );
     }
@@ -142,7 +116,8 @@ export class ModulesComponent implements OnInit {
     alert('Results saved (dummy). Check console.');
   }
 
-  private isValidModule(id: string): boolean {
-    return this.modules.some(m => m.id === id);
+  getModuleName(id: string): string {
+    const mod = this.modules.find(m => m.id === id);
+    return mod ? mod.name : `Module ${id}`;
   }
 }

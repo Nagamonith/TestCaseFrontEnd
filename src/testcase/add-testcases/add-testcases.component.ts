@@ -1,11 +1,10 @@
-import { Component, computed, signal } from '@angular/core';
+// src/app/tester/add-testcases/add-testcases.component.ts
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import * as XLSX from 'xlsx';
-import { DUMMY_TEST_CASES } from 'src/app/shared/data/dummy-testcases';
-
-
+import { TestCaseService } from 'src/app/shared/services/test-case.service';
 
 @Component({
   selector: 'app-add-testcases',
@@ -15,31 +14,22 @@ import { DUMMY_TEST_CASES } from 'src/app/shared/data/dummy-testcases';
   styleUrls: ['./add-testcases.component.css'],
 })
 export class AddTestcasesComponent {
+  private testCaseService = inject(TestCaseService);
+
   selectedModule = signal<string | null>(null);
   selectedVersion = signal<string | null>(null);
-
   showAddModuleForm = false;
   showAddVersionForm = false;
-
   newModuleName = '';
   newModuleVersion = 'v1.0';
   newVersionName = '';
 
-  testCases = DUMMY_TEST_CASES; // ✅ store dummy test cases
-
-  modules = [
-    { id: 'mod1', name: 'Login Module' },
-    { id: 'mod2', name: 'Reports Module' },
-  ];
-
-  versionsByModule: Record<string, string[]> = {
-    mod1: ['v1.0', 'v1.1'],
-    mod2: ['v2.0', 'v2.1'],
-  };
+  modules = this.testCaseService.getModules();
+  testCases = this.testCaseService.getTestCases();
 
   versions = computed(() => {
     const id = this.selectedModule();
-    return id ? this.versionsByModule[id] ?? [] : [];
+    return id ? this.testCaseService.getVersionsByModule(id) : [];
   });
 
   onModuleChange(id: string) {
@@ -71,11 +61,8 @@ export class AddTestcasesComponent {
       return;
     }
 
-    const id = `mod${this.modules.length + 1}`;
-    this.modules.push({ id, name });
-    this.versionsByModule[id] = [version];
-
-    this.selectedModule.set(id);
+    const newId = this.testCaseService.addModule(name, version);
+    this.selectedModule.set(newId);
     this.selectedVersion.set(version);
     this.cancelAddModule();
   }
@@ -97,13 +84,12 @@ export class AddTestcasesComponent {
       return;
     }
 
-    const versions = this.versionsByModule[mod] || [];
-    if (versions.includes(version)) {
+    if (this.versions().includes(version)) {
       alert('Version already exists');
       return;
     }
 
-    this.versionsByModule[mod].push(version);
+    this.testCaseService.addVersion(mod, version);
     this.selectedVersion.set(version);
     this.cancelAddVersionForm();
   }
@@ -115,12 +101,13 @@ export class AddTestcasesComponent {
       return;
     }
 
-    const moduleName = this.modules.find(m => m.id === modId)?.name || modId;
-    const versions = this.versionsByModule[modId] || [];
+    const module = this.modules.find(m => m.id === modId);
+    if (!module) return;
 
+    const versions = this.testCaseService.getVersionsByModule(modId);
     const wb = XLSX.utils.book_new();
 
-    versions.forEach((version) => {
+    versions.forEach(version => {
       const filteredTestCases = this.testCases.filter(
         tc => tc.moduleId === modId && tc.version === version
       );
@@ -129,21 +116,24 @@ export class AddTestcasesComponent {
 
       const rows = filteredTestCases.map((tc, index) => ({
         'Sl.No': index + 1,
-        'Module Name': moduleName,
+        'Module Name': module.name,
         Version: version,
         'Use Case': tc.useCase,
         'Test Case ID': tc.testCaseId,
         Scenario: tc.scenario,
         Steps: tc.steps,
         'Expected Result': tc.expected,
-        ...tc.attributes // export dynamic attributes
+        ...tc.attributes.reduce((acc, attr) => {
+          acc[attr.key] = attr.value;
+          return acc;
+        }, {} as Record<string, string>)
       }));
 
       const ws = XLSX.utils.json_to_sheet(rows);
       XLSX.utils.book_append_sheet(wb, ws, `Version-${version}`);
     });
 
-    XLSX.writeFile(wb, `${moduleName.replace(/\s+/g, '_')}_All_Versions.xlsx`);
+    XLSX.writeFile(wb, `${module.name.replace(/\s+/g, '_')}_All_Versions.xlsx`);
   }
 
   private resetOverlays() {

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+// src/app/tester/summary/summary.component.ts
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { DUMMY_TEST_CASES, TestCase } from 'src/app/shared/data/dummy-testcases';
+import { TestCaseService } from 'src/app/shared/services/test-case.service';
 
 @Component({
   selector: 'app-summary',
@@ -11,23 +12,15 @@ import { DUMMY_TEST_CASES, TestCase } from 'src/app/shared/data/dummy-testcases'
   styleUrls: ['./summary.component.css'],
 })
 export class SummaryComponent {
-  testCases: TestCase[] = DUMMY_TEST_CASES;
+  private testCaseService = inject(TestCaseService);
 
-  // Dynamically derived modules
-  get modules(): { id: string; name: string }[] {
-    const uniqueIds = Array.from(new Set(this.testCases.map(tc => tc.moduleId)));
-    return uniqueIds.map(id => ({
-      id,
-      name: this.getModuleName(id),
-    }));
-  }
+  testCases = this.testCaseService.getTestCases();
+  modules = this.testCaseService.getModules();
 
-  // Dynamically derived versions
   get versions(): string[] {
     return Array.from(new Set(this.testCases.map(tc => tc.version)));
   }
 
-  // Test count matrix by module-version
   get testMatrix(): Record<string, number> {
     const map: Record<string, number> = {};
     for (const tc of this.testCases) {
@@ -46,15 +39,7 @@ export class SummaryComponent {
   }
 
   getModuleName(id: string): string {
-    const names: Record<string, string> = {
-      mod1: 'Login Module',
-      mod2: 'Reports Module',
-      mod3: 'Profile Module',
-      mod4: 'Cart Module',
-      mod5: 'Search Module',
-      mod6: 'Upload Module',
-      mod7: 'Settings Module',
-    };
-    return names[id] || `Module ${id}`;
+    const mod = this.modules.find(m => m.id === id);
+    return mod ? mod.name : `Module ${id}`;
   }
 }
