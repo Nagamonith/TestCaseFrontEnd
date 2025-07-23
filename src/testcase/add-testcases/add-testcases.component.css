@@ -4,7 +4,9 @@
   margin: 30px auto;
   padding: 20px;
   font-family: 'Segoe UI', sans-serif;
-  background: #e8f8f8;
+ background: linear-gradient(270deg, #f7ffff, #daf2fe, #d5ecf7, #f7ffff);
+background-size: 300% 300%;
+animation: skySlide 8s ease infinite;
 }
 
 /* Card Layout */
@@ -135,4 +137,15 @@
    background-color:rgb(132, 30, 227);
   color:#eee
 
+}
+@keyframes aquaFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes skySlide {
+  0% { background-position: 100% 0%; }
+  50% { background-position: 0% 100%; }
+  100% { background-position: 100% 0%; }
 }
