@@ -134,6 +134,34 @@ export class ModulesComponent implements OnInit {
       },
       dynamic: [{ key: 'Browser', value: 'Chrome' }],
     },
+    {
+    slNo: 3,
+    moduleId: 'mod2',
+    version: 'v2.1',
+    fixed: {
+      slNo: 3,
+      useCase: 'Login with Valid Credentials',
+      testCaseId: 'TC203',
+      scenario: 'User logs in with valid email and password',
+      steps: '1. Open Login Page\n2. Enter valid credentials\n3. Click Login',
+      expected: 'User is redirected to the dashboard',
+    },
+    dynamic: [{ key: 'Browser', value: 'Firefox' }],
+  },
+  {
+    slNo: 4,
+    moduleId: 'mod2',
+    version: 'v2.1',
+    fixed: {
+      slNo: 4,
+      useCase: 'Login with Invalid Password',
+      testCaseId: 'TC204',
+      scenario: 'User enters incorrect password',
+      steps: '1. Open Login Page\n2. Enter wrong password\n3. Click Login',
+      expected: 'Error message "Invalid credentials" is displayed',
+    },
+    dynamic: [{ key: 'Browser', value: 'Edge' }],
+  },
   ];
 
   formArray = new FormArray<FormGroup>([]);

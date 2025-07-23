@@ -4,6 +4,7 @@
   margin: 30px auto;
   padding: 20px;
   font-family: 'Segoe UI', sans-serif;
+  background: #e8f8f8;
 }
 
 /* Card Layout */
@@ -43,6 +44,7 @@
 /* Form Group Styling */
 .form-group {
   margin-bottom: 15px;
+  
 }
 
 .form-label {
