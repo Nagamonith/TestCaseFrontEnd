@@ -8,67 +8,57 @@
   <div class="sidebar" [class.closed]="!sidebarOpen">
     <h3>📦 Products</h3>
     <ul class="product-list">
+      <!-- Per-product Menu -->
       <li *ngFor="let product of products">
-        <!-- Product title with toggle -->
         <div class="product-title" (click)="toggleProduct(product.id)">
           {{ product.name }}
           <span class="arrow">{{ expandedProductId === product.id ? '▼' : '▶' }}</span>
         </div>
 
-        <!-- Tree menu if expanded -->
         <ul *ngIf="expandedProductId === product.id" class="submenu">
           <li>
-            <a [routerLink]="['/tester/add-testcases']" [queryParams]="{ productId: product.id, productName: product.name }">➕ Add Test Cases</a>
+            <a [routerLink]="['/tester/add-testcases']" [queryParams]="{ productId: product.id, productName: product.name }">➕ Test Cases</a>
           </li>
           <li>
             <a [routerLink]="['/tester/import-excel']" [queryParams]="{ productId: product.id, productName: product.name }">📥 Import Excel</a>
           </li>
           <li>
-            <a [routerLink]="['/tester/modules']" [queryParams]="{ productId: product.id, productName: product.name }">🧪 Modules</a>
+            <a [routerLink]="['/tester/modules']" [queryParams]="{ productId: product.id, productName: product.name }"> 🗃️ Modules</a>
           </li>
-
-          <!-- 📊 Results with dropdown -->
-         <li>
-  <div class="submenu-toggle" (click)="toggleResults(product.id)">
-    📊 Results
-    <span class="arrow">
-      {{ expandedResultsProductId === product.id ? '▼' : '▶' }}
-    </span>
-  </div>
-
-  <ul *ngIf="expandedResultsProductId === product.id" class="submenu">
-    <li>
-      <a
-        [routerLink]="['/tester/results']"
-        [queryParams]="{ productId: product.id, productName: product.name }"
-      >
-        🧑‍💻 Manual Results
-      </a>
-    </li>
-    <li>
-      <a href="javascript:void(0)" (click)="onAutomationClick()">
-        🤖 Automation Results
-      </a>
-    </li>
-  </ul>
-</li>
-
-
-
+          <li>
+            <div class="submenu-toggle" (click)="toggleResults(product.id)">
+              📊 Results
+              <span class="arrow">
+                {{ expandedResultsProductId === product.id ? '▶' : '▼' }}
+              </span>
+            </div>
+            <ul *ngIf="expandedResultsProductId === product.id" class="submenu">
+              <li>
+                <a [routerLink]="['/tester/results']" [queryParams]="{ productId: product.id, productName: product.name }">
+                  🧑‍💻 Manual Results
+                </a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" (click)="onAutomationClick()">🤖 Automation Results</a>
+              </li>
+            </ul>
+          </li>
           <li>
             <a [routerLink]="['/tester/summary']" [queryParams]="{ productId: product.id, productName: product.name }">📈 Summary</a>
           </li>
-
-          <!-- Extra Adds (placeholder) -->
-          <li>
-            <a href="javascript:void(0)">✨ Extra Adds</a>
-          </li>
         </ul>
+      </li>
+
+      <!-- 🔽 General Section AFTER All Products -->
+      <li class="general-item">
+        <a [routerLink]="['/tester/extra-adds']" [queryParams]="{ productId: '', productName: 'General' }">
+          ✨ General
+        </a>
       </li>
     </ul>
   </div>
 
-  <!-- Main content -->
+  <!-- Main Content -->
   <div class="main-content">
     <div *ngIf="currentProductName" class="current-product">
       🔧 Product: <strong>{{ currentProductName }}</strong>

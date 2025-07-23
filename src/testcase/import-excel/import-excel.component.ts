@@ -32,10 +32,10 @@ export class ImportExcelComponent {
         allSheets[sheet] = rows;
       });
 
-      // ✅ Save only sheet names to show in UI
+      // Save only sheet names to show in UI
       this.sheetNames.set(workbook.SheetNames);
 
-      // ✅ Keep actual sheet data internally (simulate storing to DB)
+      // Keep actual sheet data internally (simulate storing to DB)
       this.sheetData.set(allSheets);
     };
 
@@ -43,7 +43,7 @@ export class ImportExcelComponent {
   }
 
   saveData() {
-    alert('✅ Dummy save done. Check console.');
+    alert('Dummy save done. Check console.');
     console.log('📦 Final sheet data (to be sent to backend):', this.sheetData());
   }
 }

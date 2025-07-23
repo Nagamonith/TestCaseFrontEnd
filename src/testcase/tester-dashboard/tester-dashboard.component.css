@@ -219,3 +219,23 @@
     left: 10px;
   }
 }
+.general-item {
+  margin-top: 20px;
+}
+
+.general-item a {
+  display: block;
+  padding: 12px 15px;
+  background-color: rgba(64, 50, 216, 0.8); /* same as .product-title */
+  color: white;
+  border-radius: 6px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.general-item a:hover {
+  background-color: rgba(59, 64, 73, 0.9); /* same hover as .product-title:hover */
+  transform: translateX(2px);
+}

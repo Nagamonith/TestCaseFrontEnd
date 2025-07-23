@@ -64,19 +64,30 @@ export const routes: Routes = [
           {
             path: 'edit-testcases/:moduleId/:version',
             loadComponent: () =>
-              import('../testcase/edit-testcases/edit-testcases.component')
-                .then(m => m.EditTestcasesComponent)
+              import('../testcase/edit-testcases/edit-testcases.component').then(
+                m => m.EditTestcasesComponent
+              )
           },
           { path: 'import-excel', component: ImportExcelComponent },
-          
+
           // ✅ Existing module view (no param)
           { path: 'modules', component: ModulesComponent },
-          
+
           // ✅ New route with moduleId param for clicking from Summary
           { path: 'modules/:moduleId', component: ModulesComponent },
 
           { path: 'results', component: ResultsComponent },
           { path: 'summary', component: SummaryComponent },
+
+          // ✅ New extra-adds route moved outside of add-testcases
+          {
+            path: 'extra-adds',
+            loadComponent: () =>
+              import('../testcase/extra-adds/extra-adds.component').then(
+                m => m.ExtraAddsComponent
+              )
+          },
+
           { path: '', redirectTo: 'add-testcases', pathMatch: 'full' }
         ]
       }

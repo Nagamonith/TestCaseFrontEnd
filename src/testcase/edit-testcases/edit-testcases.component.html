@@ -67,7 +67,7 @@
           </td>
           <td class="actions">
             <button class="btn-small" (click)="editTestCase(testCase)">Edit</button>
-            <button class="btn small danger" (click)="deleteTestCase(testCase.id)">Delete</button>
+            <button class="btn-small-danger" (click)="deleteTestCase(testCase.id)">Delete</button>
           </td>
         </tr>
       </tbody>
@@ -132,7 +132,7 @@
           >
             <input formControlName="key" placeholder="Attribute name" />
             <textarea formControlName="value" placeholder="Value"></textarea>
-            <button type="button" class="btn small danger" (click)="removeAttribute(i)">
+            <button type="button" class="btn-small-danger" (click)="removeAttribute(i)">
               Remove
             </button>
           </div>
@@ -142,7 +142,7 @@
 
       <div class="form-actions">
         <button type="submit" class="btn-save">Save</button>
-        <button type="button" class="btn-cancel" (click)="cancelForm()">Cancel</button>
+        <button type="button" class="btn-small-danger" (click)="cancelForm()">Cancel</button>
       </div>
     </form>
   </div>

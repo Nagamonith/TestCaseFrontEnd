@@ -21,6 +21,7 @@ export class TesterDashboardComponent {
 
   expandedProductId: string | null = null;
   expandedResultsProductId: string | null = null;
+  generalExpanded: boolean = false;
   sidebarOpen = true;
   currentProductName: string | null = null;
 
@@ -39,12 +40,16 @@ export class TesterDashboardComponent {
   toggleProduct(productId: string) {
     this.expandedProductId =
       this.expandedProductId === productId ? null : productId;
-    this.expandedResultsProductId = null; // close sub-submenu when toggling product
+    this.expandedResultsProductId = null;
   }
 
   toggleResults(productId: string) {
     this.expandedResultsProductId =
       this.expandedResultsProductId === productId ? null : productId;
+  }
+
+  toggleGeneral() {
+    this.generalExpanded = !this.generalExpanded;
   }
 
   onAutomationClick() {
