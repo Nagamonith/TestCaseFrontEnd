@@ -3,22 +3,19 @@
 <!-- Module dropdown -->
 <div class="form-group">
   <label>Select Module</label>
-  <select [ngModel]="selectedModule()" (ngModelChange)="onModuleChange($event)" [ngModelOptions]="{standalone: true}">
+  <select class="select-dropdown"
+          [ngModel]="selectedModule()"
+          (ngModelChange)="onModuleChange($event)"
+          [ngModelOptions]="{standalone: true}">
     <option value="">-- Choose Module --</option>
-    <option *ngFor="let m of modules" [value]="m.id">
-      {{ m.name }}
-    </option>
+    <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
   </select>
 </div>
 
 <!-- Action buttons -->
 <div class="action-buttons" *ngIf="selectedModule()">
-  <button class="btn-view" (click)="showViewTestCases = true; showStartTesting = false">
-    View Test Cases
-  </button>
-  <button class="btn-start" (click)="showStartTesting = true; showViewTestCases = false">
-    Start Testing
-  </button>
+  <button class="btn-view" (click)="showViewTestCases = true; showStartTesting = false">View Test Cases</button>
+  <button class="btn-start" (click)="showStartTesting = true; showViewTestCases = false">Start Testing</button>
 </div>
 
 <!-- View Test Cases Section -->
@@ -27,50 +24,55 @@
     <label>Select Version</label>
     <select [(ngModel)]="selectedVersion" (ngModelChange)="onVersionChange()" [ngModelOptions]="{standalone: true}">
       <option value="">-- Choose Version --</option>
-      <option *ngFor="let v of availableVersions" [value]="v">
-        {{ v }}
-      </option>
+      <option *ngFor="let v of availableVersions" [value]="v">{{ v }}</option>
     </select>
   </div>
 
   <div *ngIf="selectedVersion && versionTestCases().length">
     <h3>Test Cases for Version {{ selectedVersion }}</h3>
-    
+
     <!-- Attribute filter -->
     <div class="filters">
-      <input *ngIf="filter.attributeKey" type="text" placeholder="Attribute value" 
+      <input *ngIf="filter.attributeKey" type="text" placeholder="Attribute value"
              [(ngModel)]="filter.attributeValue" [ngModelOptions]="{standalone: true}">
     </div>
 
-    <div class="table-container">
-      <table class="resizable-table">
-        <thead>
-          <tr>
-            <th *ngFor="let col of viewColumns" 
-                [style.width.px]="col.width" 
-                (mousedown)="startResize($event, col)">
-              {{ col.header }}
-              <div class="resize-handle" *ngIf="!col.noResize"></div>
-            </th>
-            <th *ngFor="let col of attributeColumns" 
-                [style.width.px]="col.width" 
-                (mousedown)="startResize($event, col)">
-              {{ col.header }}
-              <div class="resize-handle"></div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let tc of versionTestCases()">
-            <td *ngFor="let col of viewColumns" class="wrap-text" [style.width.px]="col.width">
-              {{ getCellValue(tc, col.field) }}
-            </td>
-            <td *ngFor="let col of attributeColumns" class="wrap-text" [style.width.px]="col.width">
-              {{ getCellValue(tc, col.field) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Table wrapper with scroll -->
+    <div class="table-scroll-container">
+      <button class="scroll-button scroll-left" (click)="scrollTable(-200)" [class.hidden]="!canScrollLeft">&larr;</button>
+      
+      <div class="table-container" #tableContainer>
+        <table class="resizable-table">
+          <thead>
+            <tr>
+              <th *ngFor="let col of viewColumns"
+                  [style.width.px]="col.width"
+                  (mousedown)="startResize($event, col)">
+                {{ col.header }}
+                <div class="resize-handle" *ngIf="!col.noResize"></div>
+              </th>
+              <th *ngFor="let col of attributeColumns"
+                  [style.width.px]="col.width"
+                  (mousedown)="startResize($event, col)">
+                {{ col.header }}
+                <div class="resize-handle"></div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tc of versionTestCases()">
+              <td *ngFor="let col of viewColumns" class="wrap-text" [style.width.px]="col.width">
+                {{ getCellValue(tc, col.field) }}
+              </td>
+              <td *ngFor="let col of attributeColumns" class="wrap-text" [style.width.px]="col.width">
+                {{ getCellValue(tc, col.field) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <button class="scroll-button scroll-right" (click)="scrollTable(200)" [class.hidden]="!canScrollRight">&rarr;</button>
     </div>
   </div>
 </div>
@@ -92,107 +94,107 @@
       <option value="">-- Filter by Attribute --</option>
       <option *ngFor="let attr of availableAttributes" [value]="attr">{{ attr }}</option>
     </select>
-    <input *ngIf="filter.attributeKey" type="text" placeholder="Attribute value" 
+    <input *ngIf="filter.attributeKey" type="text" placeholder="Attribute value"
            [(ngModel)]="filter.attributeValue" [ngModelOptions]="{standalone: true}">
   </div>
 
-  <!-- Test-case table -->
+  <!-- Test Case Table -->
   <div *ngIf="filteredAndSearchedTestCases().length">
-    <div class="table-container">
-      <table class="resizable-table">
-        <thead>
-          <tr>
-            <th *ngFor="let col of testColumns" 
-                [style.width.px]="col.width" 
-                (mousedown)="startResize($event, col)">
-              {{ col.header }}
-              <div class="resize-handle" *ngIf="!col.noResize"></div>
-            </th>
-            <th *ngFor="let col of attributeColumns" 
-                [style.width.px]="col.width" 
-                (mousedown)="startResize($event, col)">
-              {{ col.header }}
-              <div class="resize-handle"></div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index" [formGroup]="formGroups()[i]">
-            <td *ngFor="let col of testColumns" 
-                class="wrap-text"
-                [style.width.px]="col.width">
-              <ng-container [ngSwitch]="col.field">
-                <!-- Regular fields -->
-                <ng-container *ngSwitchCase="'slNo'">{{ tc.slNo }}</ng-container>
-                <ng-container *ngSwitchCase="'version'">{{ tc.version }}</ng-container>
-                <ng-container *ngSwitchCase="'useCase'">{{ tc.useCase }}</ng-container>
-                <ng-container *ngSwitchCase="'testCaseId'">{{ tc.testCaseId }}</ng-container>
-                <ng-container *ngSwitchCase="'scenario'">{{ tc.scenario }}</ng-container>
-                <ng-container *ngSwitchCase="'steps'">{{ tc.steps }}</ng-container>
-                <ng-container *ngSwitchCase="'expected'">{{ tc.expected }}</ng-container>
+    <div class="table-scroll-container">
+      <button class="scroll-button scroll-left" (click)="scrollTable(-200)" [class.hidden]="!canScrollLeft">&larr;</button>
+      
+      <div class="table-container" #tableContainer>
+        <table class="resizable-table">
+          <thead>
+            <tr>
+              <th *ngFor="let col of testColumns"
+                  [style.width.px]="col.width"
+                  (mousedown)="startResize($event, col)">
+                {{ col.header }}
+                <div class="resize-handle" *ngIf="!col.noResize"></div>
+              </th>
+              <th *ngFor="let col of attributeColumns"
+                  [style.width.px]="col.width"
+                  (mousedown)="startResize($event, col)">
+                {{ col.header }}
+                <div class="resize-handle"></div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index" [formGroup]="formGroups()[i]">
+              <td *ngFor="let col of testColumns" class="wrap-text" [style.width.px]="col.width">
+                <ng-container [ngSwitch]="col.field">
+                  <ng-container *ngSwitchCase="'slNo'">{{ tc.slNo }}</ng-container>
+                  <ng-container *ngSwitchCase="'version'">{{ tc.version }}</ng-container>
+                  <ng-container *ngSwitchCase="'useCase'">{{ tc.useCase }}</ng-container>
+                  <ng-container *ngSwitchCase="'testCaseId'">{{ tc.testCaseId }}</ng-container>
+                  <ng-container *ngSwitchCase="'scenario'">{{ tc.scenario }}</ng-container>
+                  <ng-container *ngSwitchCase="'steps'">{{ tc.steps }}</ng-container>
+                  <ng-container *ngSwitchCase="'expected'">{{ tc.expected }}</ng-container>
+
                 
-                <!-- Special fields -->
-                <ng-container *ngSwitchCase="'result'">
-                  <select formControlName="result">
-                    <option value="Pass">Pass</option>
-                    <option value="Fail">Fail</option>
-                    <option value="Pending"></option>
-                  </select>
-                </ng-container>
-                
-                <ng-container *ngSwitchCase="'actual'">
-                  <div class="popup-cell" (click)="openPopup(i, 'actual', $event)">
-                    <span>{{ getFormControl(i, 'actual').value || 'Click to enter' }}</span>
-                    <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'actual'" class="popup-box">
-                      <textarea [formControl]="getFormControl(i, 'actual')" rows="5" cols="40"></textarea>
-                      <div class="popup-actions">
-                        <button (click)="closePopup(i)">Save</button>
+
+                  <ng-container *ngSwitchCase="'actual'">
+                    <div class="popup-cell" (click)="openPopup(i, 'actual', $event)">
+                      <span>{{ getFormControl(i, 'actual').value || 'Click to enter' }}</span>
+                      <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'actual'" class="popup-box">
+                        <textarea [formControl]="getFormControl(i, 'actual')" rows="5" cols="40"></textarea>
+                        <div class="popup-actions">
+                          <button (click)="closePopup(i)">Save</button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </ng-container>
-                
-                <ng-container *ngSwitchCase="'remarks'">
-                  <div class="popup-cell" (click)="openPopup(i, 'remarks', $event)">
-                    <span>{{ getFormControl(i, 'remarks').value || 'Click to enter' }}</span>
-                    <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'remarks'" class="popup-box">
-                      <textarea [formControl]="getFormControl(i, 'remarks')" rows="5" cols="40"></textarea>
-                      <div class="popup-actions">
-                        <button (click)="closePopup(i)">Save</button>
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'remarks'">
+                    <div class="popup-cell" (click)="openPopup(i, 'remarks', $event)">
+                      <span>{{ getFormControl(i, 'remarks').value || 'Click to enter' }}</span>
+                      <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'remarks'" class="popup-box">
+                        <textarea [formControl]="getFormControl(i, 'remarks')" rows="5" cols="40"></textarea>
+                        <div class="popup-actions">
+                          <button (click)="closePopup(i)">Save</button>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </ng-container>
+                    <ng-container *ngSwitchCase="'result'">
+                    <select formControlName="result">
+                      <option value="Pass">Pass</option>
+                      <option value="Fail">Fail</option>
+                      <option value="Pending"></option>
+                    </select>
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'uploads'">
+                    <input type="file" (change)="onUpload($event, i)" accept="image/*" multiple>
+                    <div *ngFor="let file of uploads[i]" class="upload-preview">
+                      <img [src]="file" alt="Uploaded Screenshot" width="50" height="50">
+                    </div>
+                  </ng-container>
                 </ng-container>
-                
-                <ng-container *ngSwitchCase="'uploads'">
-                  <input type="file" (change)="onUpload($event, i)" accept="image/*" multiple>
-                  <div *ngFor="let file of uploads[i]" class="upload-preview">
-                    <img [src]="file" alt="Uploaded Screenshot" width="50" height="50">
-                  </div>
-                </ng-container>
-              </ng-container>
-            </td>
-            <td *ngFor="let col of attributeColumns" class="wrap-text" [style.width.px]="col.width">
-              {{ getCellValue(tc, col.field) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+
+              <td *ngFor="let col of attributeColumns" class="wrap-text" [style.width.px]="col.width">
+                {{ getCellValue(tc, col.field) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <button class="scroll-button scroll-right" (click)="scrollTable(200)" [class.hidden]="!canScrollRight">&rarr;</button>
     </div>
 
-    <button class="btn-save" (click)="onSave()">
-      ✅ Save Results
-    </button>
+    <button class="btn-save" (click)="onSave()">✅ Save Results</button>
   </div>
 </div>
 
-<!-- Add Attribute Column Button -->
+<!-- Add Attribute Column -->
 <div *ngIf="availableAttributes.length" class="add-attribute">
   <select #newAttribute>
     <option value="">-- Add Attribute Column --</option>
     <option *ngFor="let attr of availableAttributes" [value]="attr">{{ attr }}</option>
   </select>
-  <button (click)="addAttributeColumn(newAttribute.value); newAttribute.value = ''">
-    Add Column
-  </button>
+  <button (click)="addAttributeColumn(newAttribute.value); newAttribute.value = ''">Add Column</button>
 </div>

@@ -1,8 +1,12 @@
 /* Base styles */
 .form-group {
   margin-bottom: 1rem;
+  
 }
-
+.select-dropdown {
+  background-color: #ecf4fc;
+  border-radius: 20px;
+}
 select, input {
   padding: 0.5rem;
   margin-right: 0.5rem;
@@ -38,15 +42,18 @@ select, input {
   margin-top: 1rem;
 }
 
-/* Table styles */
+/* Table container allows horizontal scrolling */
 .table-container {
   overflow-x: auto;
   margin: 1rem 0;
 }
 
+/* Table styles */
 .resizable-table {
-  width: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   border-collapse: collapse;
+  table-layout: auto; /* allows column width based on content */
+  min-width: max-content; /* enables horizontal scroll if too wide */
 }
 
 .resizable-table th, .resizable-table td {
@@ -56,9 +63,11 @@ select, input {
 }
 
 .resizable-table th {
-  background-color: #b7cff5;
+  background-color: #3768b7;
+  color:#cfd8e1;
   text-align: left;
   cursor: col-resize;
+  white-space: nowrap; /* makes headers single-line */
 }
 
 .wrap-text {
@@ -76,6 +85,7 @@ select, input {
   cursor: col-resize;
 }
 
+/* Popup styles */
 /* Popup styles */
 .popup-cell {
   position: relative;
