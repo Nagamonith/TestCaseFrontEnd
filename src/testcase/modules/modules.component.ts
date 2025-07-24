@@ -81,7 +81,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
   startX = 0;
   startWidth = 0;
 
-  // ✅ Bound methods
+  // Bound methods
   private boundHandleClick = this.handleDocumentClick.bind(this);
   private boundOnResize = this.onResize.bind(this);
   private boundStopResize = this.stopResize.bind(this);
@@ -193,6 +193,7 @@ export class ModulesComponent implements OnInit, OnDestroy {
   openPopup(index: number, field: 'actual' | 'remarks', event: MouseEvent) {
     event.stopPropagation();
 
+    // Close any existing popup
     if (this.isPopupOpen && this.popupIndex !== null) {
       this.closePopup(this.popupIndex);
     }

@@ -1,277 +1,146 @@
-/* General Styles */
-.text-center {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #2c3e50;
-}
-
+/* Base styles */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1rem;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #34495e;
-}
-
-.form-group select,
-.form-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
+select, input {
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 14px;
-  transition: border-color 0.3s;
 }
 
-.form-group select:focus,
-.form-group input:focus {
-  outline: none;
-  border-color: #3498db;
-}
-
-/* Action Buttons */
 .action-buttons {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 25px;
+  margin: 1rem 0;
 }
 
-.btn-view,
-.btn-start {
-  padding: 10px 20px;
+.btn-view, .btn-start, .btn-save {
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
   border: none;
   border-radius: 4px;
-  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
 }
 
 .btn-view {
-  background-color: #3498db;
+  background-color: #4CAF50;
   color: white;
 }
 
 .btn-start {
-  background-color: #2ecc71;
+  background-color: #2196F3;
   color: white;
 }
 
-.btn-view:hover {
-  background-color: #2980b9;
+.btn-save {
+  background-color: #ff9800;
+  color: white;
+  margin-top: 1rem;
 }
 
-.btn-start:hover {
-  background-color: #27ae60;
-}
-
-/* Filters */
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-  align-items: center;
-}
-
-.filters select,
-.filters input {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-/* Table Styles */
+/* Table styles */
 .table-container {
   overflow-x: auto;
-  margin-bottom: 20px;
-  border: 1px solid #100909;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin: 1rem 0;
 }
 
 .resizable-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
-  border: 1px solid #201f1f;
+}
+
+.resizable-table th, .resizable-table td {
+  border: 1px solid #242424;
+  padding: 8px;
+  position: relative;
 }
 
 .resizable-table th {
-  background-color: #597cef;
-  color: #e1e2e4;
-  font-weight: 600;
+  background-color: #b7cff5;
   text-align: left;
-  padding: 12px 15px;
-  border-bottom: 2px solid #c0bcbc;
-  position: relative;
-  user-select: none;
-  border-right: 1px solid #120b0b;
+  cursor: col-resize;
 }
 
-.resizable-table td {
-  padding: 10px 15px;
-  border-bottom: 1px solid #e0e0e0;
-  vertical-align: top;
-  border-right: 1px solid #5c5b5b;
+.wrap-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
-/* Remove left border from first column */
-.resizable-table th:first-child,
-.resizable-table td:first-child {
-  border-left: none;
-}
-
-/* Remove right border from last column */
-.resizable-table th:last-child,
-.resizable-table td:last-child {
-  border-right: none;
-}
-
-.resizable-table tr:hover td {
-  background-color: #f5f5f5;
-}
-
-/* Zebra striping for better readability */
-.resizable-table tr:nth-child(even) td {
-  background-color: #f9f9f9;
-}
-
-.resizable-table tr:nth-child(even):hover td {
-  background-color: #f0f0f0;
-}
-
-/* Resizable Columns */
 .resize-handle {
   position: absolute;
   top: 0;
   right: 0;
   width: 5px;
   height: 100%;
-  background-color: transparent;
+  background-color: #ddd;
   cursor: col-resize;
 }
 
-.resize-handle:hover {
-  background-color: #3498db;
+/* Popup styles */
+.popup-cell {
+  position: relative;
+  cursor: pointer;
+  min-height: 20px;
 }
 
-/* Text Wrapping */
-.wrap-text {
-  white-space: normal;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-
-/* Popup Styles */
 .popup-box {
-  position: absolute;
-  top: 100%;
-  left: 0;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  min-width: 300px;
+  width: 400px;
 }
 
 .popup-box textarea {
   width: 100%;
-  padding: 10px;
+  margin-bottom: 10px;
+  padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin-bottom: 10px;
-  resize: vertical;
 }
 
-.popup-box button {
-  padding: 8px 15px;
-  background-color: #3498db;
+.popup-actions {
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.popup-actions button {
+  padding: 5px 15px;
+  background: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-.popup-box button:hover {
-  background-color: #2980b9;
+.popup-actions button:hover {
+  background: #0056b3;
 }
 
-/* Upload Preview */
+/* Upload preview styles */
 .upload-preview {
   display: inline-block;
-  margin-right: 5px;
-  margin-top: 5px;
+  margin: 5px;
 }
 
-.upload-preview img {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-/* Save Button */
-.btn-save {
-  padding: 10px 20px;
-  background-color: #27ae60;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 20px;
-}
-
-.btn-save:hover {
-  background-color: #219653;
-}
-
-/* Add Attribute Column */
-.add-attribute {
+/* Filters section */
+.filters {
+  margin-bottom: 1rem;
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.add-attribute select {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.add-attribute button {
-  padding: 8px 15px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.add-attribute button:hover {
-  background-color: #2980b9;
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .filters {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .action-buttons {
-    flex-direction: column;
-  }
-  
-  .btn-view,
-  .btn-start {
-    width: 100%;
-  }
+/* Add attribute section */
+.add-attribute {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
 }
