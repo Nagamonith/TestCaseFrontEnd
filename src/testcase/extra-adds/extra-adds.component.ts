@@ -50,6 +50,7 @@ export class ExtraAddsComponent implements OnInit {
   showModuleList = false;
   pendingAction: PendingAction = null;
   showProductList = false;
+  showProducts = false;
 
   newModuleName = '';
   newModuleVersion = 'v1.0';
@@ -71,14 +72,17 @@ export class ExtraAddsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadProducts();
+    this.modules.set(this.testCaseService.getModules());
+  }
+
+  loadProducts(): void {
     this.productService.getProducts().subscribe((products) => {
       this.products.set(products);
-      if (!this.selectedProductId()) {
-        this.selectedProductId.set(products[0]?.id || '');
+      if (!this.selectedProductId() && products.length > 0) {
+        this.selectedProductId.set(products[0].id);
       }
     });
-
-    this.modules.set(this.testCaseService.getModules());
   }
 
   // Product methods
@@ -93,6 +97,7 @@ export class ExtraAddsComponent implements OnInit {
     this.productService.addProduct(name);
     this.newProductName = '';
     this.showAddProductForm = false;
+    this.loadProducts(); // Refresh the product list
   }
 
   // Module methods
@@ -146,7 +151,7 @@ export class ExtraAddsComponent implements OnInit {
   deleteModule(moduleId: string) {
     if (confirm('Are you sure you want to delete this module and all its versions?')) {
       this.modules.update(mods => mods.filter(m => m.id !== moduleId));
-      // Note: TestCaseService doesn’t support module deletion
+      // Note: TestCaseService doesn't support module deletion
     }
   }
 
@@ -226,5 +231,43 @@ export class ExtraAddsComponent implements OnInit {
     this.pendingAction = null;
     this.showProductSelectorModal = false;
   }
-  
+
+  saveProductEdit(product: Product) {
+    const trimmedName = product.name.trim();
+    if (!trimmedName) {
+      alert('Product name cannot be empty');
+      return;
+    }
+
+    product.editing = false;
+    
+    this.productService.updateProduct(product).subscribe({
+      next: () => {
+        this.loadProducts(); // Refresh the list
+      },
+      error: (err) => {
+        console.error('Failed to update product:', err);
+        product.editing = true; // Revert to edit mode if error occurs
+      }
+    });
+  }
+
+  deleteProduct(productId: string) {
+    if (confirm('Are you sure you want to delete this product?')) {
+      this.productService.deleteProduct(productId).subscribe({
+        next: () => {
+          this.loadProducts(); // Refresh the list
+          
+          // Reset selected product if it was deleted
+          if (this.selectedProductId() === productId) {
+            this.selectedProductId.set('');
+          }
+        },
+        error: (err) => {
+          console.error('Failed to delete product:', err);
+          alert('Failed to delete product. Please try again.');
+        }
+      });
+    }
+  }
 }

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 export interface Product {
   id: string;
   name: string;
+  editing?: boolean; // Optional field for UI state
 }
 
 @Injectable({ providedIn: 'root' })
@@ -22,10 +23,25 @@ export class ProductService {
     return this.productsSubject.asObservable();
   }
 
-  addProduct(newProductName: string) {
+  addProduct(newProductName: string): void {
     const newId = (Math.max(...this.products.map(p => +p.id)) + 1).toString();
-    const newProduct = { id: newId, name: newProductName };
+    const newProduct = { id: newId, name: newProductName.trim() };
     this.products.push(newProduct);
-    this.productsSubject.next(this.products); // push new value
+    this.productsSubject.next([...this.products]);
+  }
+
+  updateProduct(updatedProduct: Product): Observable<void> {
+    const index = this.products.findIndex(p => p.id === updatedProduct.id);
+    if (index !== -1) {
+      this.products[index] = { ...updatedProduct };
+      this.productsSubject.next([...this.products]);
+    }
+    return of(undefined);
+  }
+
+  deleteProduct(productId: string): Observable<void> {
+    this.products = this.products.filter(p => p.id !== productId);
+    this.productsSubject.next([...this.products]);
+    return of(undefined);
   }
 }
