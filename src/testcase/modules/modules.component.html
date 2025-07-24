@@ -141,25 +141,47 @@
                   </select>
                 </ng-container>
                 
-                <ng-container *ngSwitchCase="'actual'">
-                  <div (click)="openPopup(i, 'actual', $event)" style="position: relative; cursor: pointer;">
-                    {{ getFormControl(i, 'actual').value }}
-                    <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'actual'" class="popup-box" (click)="$event.stopPropagation()">
-                      <textarea [formControl]="getFormControl(i, 'actual')" (blur)="closePopup(i)" autofocus rows="5" cols="40"></textarea>
-                      <button (click)="closePopup(i)">Save</button>
-                    </div>
-                  </div>
-                </ng-container>
+               <ng-container *ngSwitchCase="'actual'">
+  <div class="popup-cell" (click)="openPopup(i, 'actual', $event)">
+    <span>{{ getFormControl(i, 'actual').value || 'Click to enter' }}</span>
+    <div
+      *ngIf="isPopupOpen && popupIndex === i && popupField === 'actual'"
+      class="popup-box"
+      (click)="$event.stopPropagation()"
+    >
+      <textarea
+        [formControl]="getFormControl(i, 'actual')"
+        rows="5"
+        cols="40"
+        (click)="$event.stopPropagation()"
+      ></textarea>
+      <div class="popup-actions">
+        <button (click)="closePopup(i)">Save</button>
+      </div>
+    </div>
+  </div>
+</ng-container>
                 
-                <ng-container *ngSwitchCase="'remarks'">
-                  <div (click)="openPopup(i, 'remarks', $event)" style="position: relative; cursor: pointer;">
-                    {{ getFormControl(i, 'remarks').value }}
-                    <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'remarks'" class="popup-box" (click)="$event.stopPropagation()">
-                      <textarea [formControl]="getFormControl(i, 'remarks')" (blur)="closePopup(i)" autofocus rows="5" cols="40"></textarea>
-                      <button (click)="closePopup(i)">Save</button>
-                    </div>
-                  </div>
-                </ng-container>
+               <ng-container *ngSwitchCase="'remarks'">
+  <div class="popup-cell" (click)="openPopup(i, 'remarks', $event)">
+    <span>{{ getFormControl(i, 'remarks').value || 'Click to enter' }}</span>
+    <div
+      *ngIf="isPopupOpen && popupIndex === i && popupField === 'remarks'"
+      class="popup-box"
+      (click)="$event.stopPropagation()"
+    >
+      <textarea
+        [formControl]="getFormControl(i, 'remarks')"
+        rows="5"
+        cols="40"
+        (click)="$event.stopPropagation()"
+      ></textarea>
+      <div class="popup-actions">
+        <button (click)="closePopup(i)">Save</button>
+      </div>
+    </div>
+  </div>
+</ng-container>
                 
                 <ng-container *ngSwitchCase="'uploads'">
                   <input type="file" (change)="onUpload($event, i)" accept="image/*" multiple>

@@ -81,6 +81,11 @@ export class ModulesComponent implements OnInit, OnDestroy {
   startX = 0;
   startWidth = 0;
 
+  // ✅ Bound methods
+  private boundHandleClick = this.handleDocumentClick.bind(this);
+  private boundOnResize = this.onResize.bind(this);
+  private boundStopResize = this.stopResize.bind(this);
+
   viewColumns: TableColumn[] = [
     { field: 'slNo', header: 'Sl No', width: 80 },
     { field: 'useCase', header: 'Use Case', width: 150 },
@@ -114,9 +119,9 @@ export class ModulesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    document.removeEventListener('click', this.handleDocumentClick.bind(this));
-    document.removeEventListener('mousemove', this.onResize.bind(this));
-    document.removeEventListener('mouseup', this.stopResize.bind(this));
+    document.removeEventListener('click', this.boundHandleClick);
+    document.removeEventListener('mousemove', this.boundOnResize);
+    document.removeEventListener('mouseup', this.boundStopResize);
   }
 
   extractAvailableAttributes(): void {
@@ -156,8 +161,8 @@ export class ModulesComponent implements OnInit, OnDestroy {
     event.preventDefault();
     event.stopPropagation();
 
-    document.addEventListener('mousemove', this.onResize.bind(this));
-    document.addEventListener('mouseup', this.stopResize.bind(this));
+    document.addEventListener('mousemove', this.boundOnResize);
+    document.addEventListener('mouseup', this.boundStopResize);
   }
 
   onResize(event: MouseEvent): void {
@@ -170,46 +175,47 @@ export class ModulesComponent implements OnInit, OnDestroy {
 
   stopResize(): void {
     this.isResizing = false;
-    document.removeEventListener('mousemove', this.onResize);
-    document.removeEventListener('mouseup', this.stopResize);
+    document.removeEventListener('mousemove', this.boundOnResize);
+    document.removeEventListener('mouseup', this.boundStopResize);
   }
 
-private handleDocumentClick(event: MouseEvent) {
-  if (this.isPopupOpen && this.popupIndex !== null) {
-    const target = event.target as HTMLElement;
-    const popupElement = document.querySelector('.popup-box');
-    
-    if (popupElement && !popupElement.contains(target)) {
-      this.closePopup(this.popupIndex);
+  private handleDocumentClick(event: MouseEvent) {
+    if (this.isPopupOpen && this.popupIndex !== null) {
+      const target = event.target as HTMLElement;
+      const popupElement = document.querySelector('.popup-box');
+
+      if (popupElement && !popupElement.contains(target)) {
+        this.closePopup(this.popupIndex);
+      }
     }
   }
-}
 
- openPopup(index: number, field: 'actual' | 'remarks', event: MouseEvent) {
-  event.stopPropagation();
-  // Close any existing popup first
-  if (this.isPopupOpen && this.popupIndex !== null) {
-    this.closePopup(this.popupIndex);
+  openPopup(index: number, field: 'actual' | 'remarks', event: MouseEvent) {
+    event.stopPropagation();
+
+    if (this.isPopupOpen && this.popupIndex !== null) {
+      this.closePopup(this.popupIndex);
+    }
+
+    this.popupIndex = index;
+    this.popupField = field;
+    this.isPopupOpen = true;
+
+    setTimeout(() => {
+      document.addEventListener('click', this.boundHandleClick);
+    });
   }
-  
-  this.popupIndex = index;
-  this.popupField = field;
-  this.isPopupOpen = true;
-  
-  // Add click listener to close when clicking outside
-  setTimeout(() => {
-    document.addEventListener('click', this.handleDocumentClick.bind(this));
-  });
-}
-closePopup(index: number) {
-  if (this.popupIndex === index) {
-    this.isPopupOpen = false;
-    this.popupIndex = null;
-    this.popupField = null;
-    document.removeEventListener('click', this.handleDocumentClick.bind(this));
-    this.cdRef.detectChanges();
+
+  closePopup(index: number) {
+    if (this.popupIndex === index) {
+      this.isPopupOpen = false;
+      this.popupIndex = null;
+      this.popupField = null;
+      document.removeEventListener('click', this.boundHandleClick);
+      this.cdRef.detectChanges();
+    }
   }
-}
+
   getFormControl(index: number, controlName: string): FormControl {
     const control = this.formGroups()[index].get(controlName);
     if (!control) throw new Error(`Form control '${controlName}' not found`);
@@ -322,15 +328,13 @@ closePopup(index: number) {
     const mod = this.modules.find(m => m.id === id);
     return mod ? mod.name : `Module ${id}`;
   }
+
   getCellValue(testCase: TestCase, field: string): string {
-  // Handle attribute fields (prefixed with 'attr_')
-  if (field.startsWith('attr_')) {
-    const attrKey = field.substring(5); // remove 'attr_' prefix
-    return this.getAttributeValue(testCase, attrKey);
+    if (field.startsWith('attr_')) {
+      const attrKey = field.substring(5);
+      return this.getAttributeValue(testCase, attrKey);
+    }
+    const value = testCase[field as keyof TestCase];
+    return value !== undefined && value !== null ? value.toString() : '';
   }
-  
-  // Handle regular fields
-  const value = testCase[field as keyof TestCase];
-  return value !== undefined && value !== null ? value.toString() : '';
-}
 }
