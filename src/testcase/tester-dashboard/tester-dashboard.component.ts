@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ProductService, Product } from 'src/app/shared/services/product.service';
 
 @Component({
   selector: 'app-tester-dashboard',
@@ -10,26 +11,29 @@ import { RouterModule } from '@angular/router';
   templateUrl: './tester-dashboard.component.html',
   styleUrls: ['./tester-dashboard.component.css'],
 })
-export class TesterDashboardComponent {
-  products = [
-    { id: '2', name: 'Qualis SPC' },
-    { id: '3', name: 'MSA' },
-    { id: '4', name: 'FMEA' },
-    { id: '5', name: 'Wizard' },
-    { id: '6', name: 'APQP' },
-  ];
-
+export class TesterDashboardComponent implements OnInit {
+  products: Product[] = [];
   expandedProductId: string | null = null;
   expandedResultsProductId: string | null = null;
   generalExpanded: boolean = false;
   sidebarOpen = true;
   currentProductName: string | null = null;
 
-  constructor(private router: Router, private route: ActivatedRoute) {
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private productService: ProductService
+  ) {}
+
+  ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       if (params['productName']) {
         this.currentProductName = params['productName'];
       }
+    });
+
+    this.productService.getProducts().subscribe((data) => {
+      this.products = data;
     });
   }
 
