@@ -8,8 +8,11 @@ export interface TestCase {
   scenario: string;
   steps: string;
   expected: string;
+  result?: string;
+  actual?: string;
+  remarks?: string;
   attributes: { key: string; value: string }[];
-  uploads?: string[]; // base64 strings or file names
+  uploads?: string[];
 }
 
 export const DUMMY_TEST_CASES: TestCase[] = [
@@ -23,6 +26,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User logs in with valid credentials',
     steps: 'Enter valid username and password, click login',
     expected: 'Dashboard opens successfully',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -36,6 +42,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User generates report for custom date range',
     steps: 'Go to Reports > Select Date Range > Generate',
     expected: 'Report displays data for selected range',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -49,6 +58,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User resets password using registered email',
     steps: 'Click Forgot Password > Enter Email > Submit',
     expected: 'Password reset link sent to email',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -62,6 +74,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User updates profile with valid data',
     steps: 'Go to Profile > Edit > Update details > Save',
     expected: 'Profile updated successfully',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -75,6 +90,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User adds product to cart',
     steps: 'Select product > Click Add to Cart',
     expected: 'Product added to cart with quantity 1',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -88,6 +106,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User removes product from cart',
     steps: 'Go to Cart > Click Remove icon',
     expected: 'Product removed from cart',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -101,6 +122,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User logs out from dashboard',
     steps: 'Click on Logout in user menu',
     expected: 'Redirected to login page',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -114,6 +138,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User searches with valid keyword',
     steps: 'Enter keyword in search bar > Press Enter',
     expected: 'Relevant search results are displayed',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -127,6 +154,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User completes MFA successfully',
     steps: 'Enter password > Enter OTP > Submit',
     expected: 'User is logged in securely',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -140,6 +170,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User disables email notifications',
     steps: 'Settings > Notifications > Disable Email',
     expected: 'Email notifications are disabled',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -153,6 +186,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User uploads a valid PDF file',
     steps: 'Click Upload > Select File > Submit',
     expected: 'File uploaded and listed in files section',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -166,6 +202,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User downloads a report as Excel',
     steps: 'Generate report > Click Download as Excel',
     expected: 'Report downloaded successfully as .xlsx',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   },
@@ -179,6 +218,9 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User switches between light and dark mode',
     steps: 'Click on theme toggle in header',
     expected: 'UI switches to selected theme',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
     attributes: [],
     uploads: []
   }

@@ -168,6 +168,58 @@ tbody tr:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+.popup-box {
+  position: absolute;
+  z-index: 999;
+  background-color: #fdfdfd;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  width: 300px;
+  max-width: 90%;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.styled-textarea {
+  width: 100%;
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s;
+}
+
+.styled-textarea:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0,123,255,0.5);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.popup-box {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  z-index: 1000;
+  padding: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  top: 100%;
+  left: 0;
+  margin-top: 5px;
+}
+
 
 .filters {
   display: grid;
@@ -227,4 +279,105 @@ table {
   0% { background-position: 100% 0%; }
   50% { background-position: 0% 100%; }
   100% { background-position: 100% 0%; }
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+select, input {
+  padding: 8px;
+  margin-right: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.action-buttons {
+  margin: 20px 0;
+}
+
+.btn-view, .btn-start, .btn-save {
+  padding: 10px 15px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-view {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.btn-start {
+  background-color: #2196F3;
+  color: white;
+}
+
+.btn-save {
+  background-color: #ff9800;
+  color: white;
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.wrap-text {
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 200px;
+}
+
+.popup-box {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  background: white;
+  padding: 10px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.popup-box textarea {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.popup-box button {
+  padding: 5px 10px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.upload-preview {
+  margin-top: 5px;
+}
+
+.upload-preview img {
+  display: block;
+  margin-bottom: 5px;
 }

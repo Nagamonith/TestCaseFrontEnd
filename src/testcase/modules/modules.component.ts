@@ -1,5 +1,12 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit, OnDestroy, signal, inject, ChangeDetectorRef } from '@angular/core';
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  FormControl,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, RouterModule } from '@angular/router';
 import { TestCaseService } from 'src/app/shared/services/test-case.service';
@@ -19,10 +26,11 @@ interface Filter {
   templateUrl: './modules.component.html',
   styleUrls: ['./modules.component.css'],
 })
-export class ModulesComponent implements OnInit {
+export class ModulesComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private testCaseService = inject(TestCaseService);
+  private cdRef = inject(ChangeDetectorRef);
 
   selectedModule = signal<string | null>(null);
   selectedVersion = '';
@@ -43,12 +51,54 @@ export class ModulesComponent implements OnInit {
   formArray = new FormArray<FormGroup>([]);
   uploads: (string | ArrayBuffer | null)[][] = [];
 
+  // Popup state
+  popupIndex: number | null = null;
+  popupField: 'actual' | 'remarks' | null = null;
+  isPopupOpen: boolean = false;
+
   ngOnInit(): void {
     this.route.paramMap.subscribe((pm: ParamMap) => {
       const modId = pm.get('moduleId');
       const fallback = this.modules.length ? this.modules[0].id : null;
       this.onModuleChange(modId ?? fallback ?? '');
     });
+  }
+
+  ngOnDestroy(): void {
+    document.removeEventListener('click', this.handleDocumentClick.bind(this));
+  }
+
+  handleDocumentClick(event: MouseEvent): void {
+    if (this.isPopupOpen && this.popupIndex !== null) {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.popup-box') && !target.closest('td[style*="position: relative"]')) {
+        this.closePopup(this.popupIndex);
+      }
+    }
+  }
+
+  getFormControl(index: number, controlName: string): FormControl {
+    const control = this.formGroups()[index].get(controlName);
+    if (!control) {
+      throw new Error(`Form control '${controlName}' not found`);
+    }
+    return control as FormControl;
+  }
+
+  openPopup(index: number, field: 'actual' | 'remarks', event: MouseEvent) {
+    event.stopPropagation();
+    this.popupIndex = index;
+    this.popupField = field;
+    this.isPopupOpen = true;
+    document.addEventListener('click', this.handleDocumentClick.bind(this));
+  }
+
+  closePopup(index: number) {
+    this.isPopupOpen = false;
+    this.popupIndex = null;
+    this.popupField = null;
+    document.removeEventListener('click', this.handleDocumentClick.bind(this));
+    this.cdRef.detectChanges();
   }
 
   formGroups(): FormGroup[] {
@@ -65,8 +115,10 @@ export class ModulesComponent implements OnInit {
       const form = this.formGroups()[i];
       return (
         (!this.filter.slNo || tc.slNo.toString().includes(this.filter.slNo)) &&
-        (!this.filter.testCaseId || tc.testCaseId.toLowerCase().includes(this.filter.testCaseId.toLowerCase())) &&
-        (!this.filter.useCase || tc.useCase.toLowerCase().includes(this.filter.useCase.toLowerCase())) &&
+        (!this.filter.testCaseId ||
+          tc.testCaseId.toLowerCase().includes(this.filter.testCaseId.toLowerCase())) &&
+        (!this.filter.useCase ||
+          tc.useCase.toLowerCase().includes(this.filter.useCase.toLowerCase())) &&
         (!this.filter.result || form.get('result')?.value === this.filter.result)
       );
     });
@@ -90,12 +142,12 @@ export class ModulesComponent implements OnInit {
     this.formArray.clear();
     const testCases = this.filteredTestCases();
     this.uploads = [];
-    for (const _ of testCases) {
+    for (const testCase of testCases) {
       this.formArray.push(
         this.fb.group({
-          result: ['Pending'],
-          actual: [''],
-          remarks: [''],
+          result: [testCase.result || 'Pending'],
+          actual: [testCase.actual || ''],
+          remarks: [testCase.remarks || '']
         })
       );
       this.uploads.push([]);
@@ -116,20 +168,36 @@ export class ModulesComponent implements OnInit {
 
   onUpload($event: Event, index: number): void {
     const target = $event.target as HTMLInputElement;
-    const file = target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.uploads[index].push(reader.result);
-      };
-      reader.readAsDataURL(file);
+    const files = target.files;
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.uploads[index].push(reader.result);
+          this.cdRef.detectChanges();
+        };
+        reader.readAsDataURL(files[i]);
+      }
     }
   }
 
   onSave(): void {
-    console.log('✅ Saved results:', this.formArray.value);
-    console.log('📎 Uploads:', this.uploads);
-    alert('Results and uploads saved (dummy). Check console.');
+    const formValues = this.formArray.value;
+    const testCases = this.filteredTestCases();
+    
+    const updatedTestCases = testCases.map((tc, index) => ({
+      ...tc,
+      result: formValues[index].result,
+      actual: formValues[index].actual,
+      remarks: formValues[index].remarks,
+      uploads: this.uploads[index].map(u => u?.toString() || '')
+    }));
+
+    updatedTestCases.forEach(tc => this.testCaseService.updateTestCase(tc));
+    this.testCasePool = [...this.testCaseService.getTestCases()];
+    this.cdRef.detectChanges();
+    
+    alert('Results saved successfully!');
   }
 
   getModuleName(id: string): string {

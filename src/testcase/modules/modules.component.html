@@ -4,16 +4,15 @@
   <!-- Module dropdown -->
   <div class="form-group">
     <label>Select Module</label>
-    <select [ngModel]="selectedModule()" (ngModelChange)="onModuleChange($event)">
+    <select [ngModel]="selectedModule()" (ngModelChange)="onModuleChange($event)" [ngModelOptions]="{standalone: true}">
       <option value="">-- Choose Module --</option>
       <option *ngFor="let m of modules" [value]="m.id">
-
         {{ m.name }}
       </option>
     </select>
   </div>
 
-  <!-- Action buttons (shown when module is selected) -->
+  <!-- Action buttons -->
   <div class="action-buttons" *ngIf="selectedModule()">
     <button class="btn-view" (click)="showViewTestCases = true; showStartTesting = false">
       View Test Cases
@@ -27,7 +26,7 @@
   <div *ngIf="showViewTestCases">
     <div class="form-group" *ngIf="availableVersions.length">
       <label>Select Version</label>
-      <select [(ngModel)]="selectedVersion" (ngModelChange)="onVersionChange()">
+      <select [(ngModel)]="selectedVersion" (ngModelChange)="onVersionChange()" [ngModelOptions]="{standalone: true}">
         <option value="">-- Choose Version --</option>
         <option *ngFor="let v of availableVersions" [value]="v">
           {{ v }}
@@ -66,10 +65,10 @@
   <div *ngIf="showStartTesting">
     <!-- Filters -->
     <div class="filters" *ngIf="filteredTestCases().length">
-      <input type="text" placeholder="Filter by Sl No" [(ngModel)]="filter.slNo" />
-      <input type="text" placeholder="Filter by TestCase ID" [(ngModel)]="filter.testCaseId" />
-      <input type="text" placeholder="Filter by Use Case" [(ngModel)]="filter.useCase" />
-      <select [(ngModel)]="filter.result">
+      <input type="text" placeholder="Filter by Sl No" [(ngModel)]="filter.slNo" [ngModelOptions]="{standalone: true}">
+      <input type="text" placeholder="Filter by TestCase ID" [(ngModel)]="filter.testCaseId" [ngModelOptions]="{standalone: true}">
+      <input type="text" placeholder="Filter by Use Case" [(ngModel)]="filter.useCase" [ngModelOptions]="{standalone: true}">
+      <select [(ngModel)]="filter.result" [ngModelOptions]="{standalone: true}">
         <option value="">All Results</option>
         <option value="Pass">Pass</option>
         <option value="Fail">Fail</option>
@@ -96,8 +95,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index"
-              [formGroup]="formGroups()[i]">
+          <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index" [formGroup]="formGroups()[i]">
             <td>{{ tc.slNo }}</td>
             <td>{{ tc.version }}</td>
             <td class="wrap-text">{{ tc.useCase }}</td>
@@ -112,14 +110,26 @@
                 <option value="Pending">Pending ⏳</option>
               </select>
             </td>
-            <td><input type="text" formControlName="actual" /></td>
-            <td><input type="text" formControlName="remarks" /></td>
+            <td (click)="openPopup(i, 'actual', $event)" style="position: relative; cursor: pointer;">
+              {{ getFormControl(i, 'actual').value }}
+              <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'actual'" class="popup-box" (click)="$event.stopPropagation()">
+                <textarea [formControl]="getFormControl(i, 'actual')" (blur)="closePopup(i)" autofocus rows="5" cols="40"></textarea>
+                <button (click)="closePopup(i)">Save</button>
+              </div>
+            </td>
+            <td (click)="openPopup(i, 'remarks', $event)" style="position: relative; cursor: pointer;">
+              {{ getFormControl(i, 'remarks').value }}
+              <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'remarks'" class="popup-box" (click)="$event.stopPropagation()">
+                <textarea [formControl]="getFormControl(i, 'remarks')" (blur)="closePopup(i)" autofocus rows="5" cols="40"></textarea>
+                <button (click)="closePopup(i)">Save</button>
+              </div>
+            </td>
             <td>
-  <input type="file" (change)="onUpload($event, i)" accept="image/*" />
-  <div *ngFor="let file of uploads[i]">
-    <img [src]="file" alt="Uploaded Screenshot" width="50" height="50" style="margin-top: 5px" />
-  </div>
-</td>
+              <input type="file" (change)="onUpload($event, i)" accept="image/*" multiple>
+              <div *ngFor="let file of uploads[i]" class="upload-preview">
+                <img [src]="file" alt="Uploaded Screenshot" width="50" height="50">
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>

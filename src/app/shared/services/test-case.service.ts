@@ -6,7 +6,14 @@ import { TestCase, DUMMY_TEST_CASES } from '../data/dummy-testcases';
   providedIn: 'root'
 })
 export class TestCaseService {
-  private testCases = signal<TestCase[]>(DUMMY_TEST_CASES);
+  private testCases = signal<TestCase[]>(DUMMY_TEST_CASES.map(tc => ({
+    ...tc,
+    result: tc.result || 'Pending', // Ensure all test cases have a result
+    actual: tc.actual || '',
+    remarks: tc.remarks || '',
+    uploads: tc.uploads || []
+  })));
+
   private modules = signal([
     { id: 'mod1', name: 'Login Module' },
     { id: 'mod2', name: 'Reports Module' },
@@ -17,7 +24,7 @@ export class TestCaseService {
     { id: 'mod7', name: 'Settings Module' }
   ]);
 
-  getTestCases() {
+  getTestCases(): TestCase[] {
     return this.testCases();
   }
 
@@ -25,74 +32,113 @@ export class TestCaseService {
     return this.modules();
   }
 
-  getVersionsByModule(moduleId: string) {
+  getVersionsByModule(moduleId: string): string[] {
     return Array.from(new Set(
       this.testCases()
         .filter(tc => tc.moduleId === moduleId)
         .map(tc => tc.version)
-    ));
+    )).sort((a, b) => a.localeCompare(b)); // Sort versions alphabetically
   }
 
-  addTestCase(testCase: TestCase) {
-    // Ensure uploads field exists
-    const completeCase: TestCase = {
-      ...testCase,
-      uploads: testCase.uploads || []
-    };
-    this.testCases.update(current => [...current, completeCase]);
+addTestCase(testCase: Omit<TestCase, 'id'> | TestCase): TestCase {
+  const completeCase: TestCase = {
+    ...testCase,
+    id: 'id' in testCase ? testCase.id : Date.now().toString(), // Use existing ID or generate new one
+    result: testCase.result || 'Pending',
+    actual: testCase.actual || '',
+    remarks: testCase.remarks || '',
+    uploads: testCase.uploads || [],
+    attributes: testCase.attributes || []
+  };
+  
+  this.testCases.update(current => [...current, completeCase]);
+  return completeCase;
+}
+
+  updateTestCase(updatedCase: TestCase): TestCase {
+  const completeCase: TestCase = {
+    ...updatedCase,
+    result: updatedCase.result || 'Pending',
+    actual: updatedCase.actual || '',
+    remarks: updatedCase.remarks || '',
+    uploads: updatedCase.uploads || []
+  };
+
+  this.testCases.update(current => 
+    current.map(tc => tc.id === completeCase.id ? completeCase : tc)
+  );
+  
+  return completeCase;
+}
+
+  deleteTestCase(id: string): boolean {
+    const exists = this.testCases().some(tc => tc.id === id);
+    if (exists) {
+      this.testCases.update(current => current.filter(tc => tc.id !== id));
+      return true;
+    }
+    return false;
+  }
+addModule(name: string, initialVersion = 'v1.0'): string {
+  const newId = `mod${this.modules().length + 1}`;
+  this.modules.update(current => [...current, { id: newId, name }]);
+
+  // Add an initial test case to the new module and version
+  this.addTestCase({
+    slNo: this.getNextSlNoForModule(newId),
+    moduleId: newId,
+    version: initialVersion,
+    testCaseId: `TC${this.generateTestCaseId()}`,
+    useCase: 'Initial test case',
+    scenario: 'Initial scenario',
+    steps: 'Initial steps',
+    expected: 'Initial expectation',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
+    attributes: [],
+    uploads: [],
+    id: Date.now().toString() // Ensure unique ID
+  });
+
+  return newId;
+}
+
+addVersion(moduleId: string, version: string): TestCase {
+  return this.addTestCase({
+    slNo: this.getNextSlNoForModule(moduleId),
+    moduleId,
+    version,
+    testCaseId: `TC${this.generateTestCaseId()}`,
+    useCase: 'Initial test case for new version',
+    scenario: 'Initial scenario',
+    steps: 'Initial steps',
+    expected: 'Initial expectation',
+    result: 'Pending',
+    actual: '',
+    remarks: '',
+    attributes: [],
+    uploads: [],
+    id: Date.now().toString() // Ensure unique ID
+  });
+}
+
+  private generateTestCaseId(): string {
+    return Math.floor(1000 + Math.random() * 9000).toString();
   }
 
-  updateTestCase(updatedCase: TestCase) {
-    // Ensure uploads field exists
-    const completeCase: TestCase = {
-      ...updatedCase,
-      uploads: updatedCase.uploads || []
-    };
-    this.testCases.update(current => 
-      current.map(tc => tc.id === completeCase.id ? completeCase : tc)
-    );
+  // Helper method to get test cases by module and version
+  getTestCasesByModuleAndVersion(moduleId: string, version: string): TestCase[] {
+    return this.testCases().filter(tc => 
+      tc.moduleId === moduleId && tc.version === version
+    ).sort((a, b) => a.slNo - b.slNo);
   }
 
-  deleteTestCase(id: string) {
-    this.testCases.update(current => current.filter(tc => tc.id !== id));
-  }
-
-  addModule(name: string, initialVersion = 'v1.0') {
-    const newId = `mod${this.modules().length + 1}`;
-    this.modules.update(current => [...current, { id: newId, name }]);
-
-    // Add an initial test case to the new module and version
-    this.addTestCase({
-      slNo: this.testCases().length + 1,
-      id: Date.now().toString(),
-      moduleId: newId,
-      version: initialVersion,
-      testCaseId: `TC${Math.floor(Math.random() * 1000)}`,
-      useCase: 'Initial test case',
-      scenario: 'Initial scenario',
-      steps: 'Initial steps',
-      expected: 'Initial expectation',
-      attributes: [],
-      uploads: []
-    });
-
-    return newId;
-  }
-
-  addVersion(moduleId: string, version: string) {
-    // Add a test case to initialize the version
-    this.addTestCase({
-      slNo: this.testCases().length + 1,
-      id: Date.now().toString(),
-      moduleId,
-      version,
-      testCaseId: `TC${Math.floor(Math.random() * 1000)}`,
-      useCase: 'Initial test case for new version',
-      scenario: 'Initial scenario',
-      steps: 'Initial steps',
-      expected: 'Initial expectation',
-      attributes: [],
-      uploads: []
-    });
+  // Helper method to get the next available SL number for a module
+  getNextSlNoForModule(moduleId: string): number {
+    const moduleCases = this.testCases().filter(tc => tc.moduleId === moduleId);
+    return moduleCases.length > 0 
+      ? Math.max(...moduleCases.map(tc => tc.slNo)) + 1
+      : 1;
   }
 }
