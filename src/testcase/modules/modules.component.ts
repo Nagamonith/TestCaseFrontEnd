@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy, signal, inject, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  inject,
+  signal,
+} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -17,6 +24,18 @@ interface Filter {
   testCaseId: string;
   useCase: string;
   result: string;
+  attributeKey?: string;
+  attributeValue?: string;
+}
+
+type TestCaseField = keyof Omit<TestCase, 'attributes'> | `attr_${string}`;
+
+interface TableColumn {
+  field: TestCaseField | 'attributes' | string;
+  header: string;
+  width: number;
+  noResize?: boolean;
+  isAttribute?: boolean;
 }
 
 @Component({
@@ -38,6 +57,8 @@ export class ModulesComponent implements OnInit, OnDestroy {
   versionTestCases = signal<TestCase[]>([]);
   showViewTestCases = false;
   showStartTesting = false;
+  availableAttributes: string[] = [];
+  attributeColumns: TableColumn[] = [];
 
   filter: Filter = {
     slNo: '',
@@ -51,10 +72,37 @@ export class ModulesComponent implements OnInit, OnDestroy {
   formArray = new FormArray<FormGroup>([]);
   uploads: (string | ArrayBuffer | null)[][] = [];
 
-  // Popup state
   popupIndex: number | null = null;
   popupField: 'actual' | 'remarks' | null = null;
   isPopupOpen: boolean = false;
+
+  isResizing = false;
+  currentResizeColumn: TableColumn | null = null;
+  startX = 0;
+  startWidth = 0;
+
+  viewColumns: TableColumn[] = [
+    { field: 'slNo', header: 'Sl No', width: 80 },
+    { field: 'useCase', header: 'Use Case', width: 150 },
+    { field: 'testCaseId', header: 'Test Case ID', width: 120 },
+    { field: 'scenario', header: 'Scenario', width: 200 },
+    { field: 'steps', header: 'Steps', width: 200 },
+    { field: 'expected', header: 'Expected', width: 200 }
+  ];
+
+  testColumns: TableColumn[] = [
+    { field: 'slNo', header: 'Sl No', width: 80 },
+    { field: 'version', header: 'Version', width: 100 },
+    { field: 'useCase', header: 'Use Case', width: 150 },
+    { field: 'testCaseId', header: 'Test Case ID', width: 120 },
+    { field: 'scenario', header: 'Scenario', width: 200 },
+    { field: 'steps', header: 'Steps', width: 200 },
+    { field: 'expected', header: 'Expected', width: 200 },
+    { field: 'result', header: 'Result', width: 120 },
+    { field: 'actual', header: 'Actual', width: 200 },
+    { field: 'remarks', header: 'Remarks', width: 200 },
+    { field: 'uploads', header: 'Uploads', width: 150 }
+  ];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((pm: ParamMap) => {
@@ -62,43 +110,110 @@ export class ModulesComponent implements OnInit, OnDestroy {
       const fallback = this.modules.length ? this.modules[0].id : null;
       this.onModuleChange(modId ?? fallback ?? '');
     });
+    this.extractAvailableAttributes();
   }
 
   ngOnDestroy(): void {
     document.removeEventListener('click', this.handleDocumentClick.bind(this));
+    document.removeEventListener('mousemove', this.onResize.bind(this));
+    document.removeEventListener('mouseup', this.stopResize.bind(this));
   }
 
-  handleDocumentClick(event: MouseEvent): void {
-    if (this.isPopupOpen && this.popupIndex !== null) {
-      const target = event.target as HTMLElement;
-      if (!target.closest('.popup-box') && !target.closest('td[style*="position: relative"]')) {
-        this.closePopup(this.popupIndex);
-      }
+  extractAvailableAttributes(): void {
+    const allAttributes = new Set<string>();
+    this.testCasePool.forEach(tc => {
+      tc.attributes?.forEach(attr => {
+        allAttributes.add(attr.key);
+      });
+    });
+    this.availableAttributes = Array.from(allAttributes);
+  }
+
+  getAttributeValue(testCase: TestCase, key: string): string {
+    const attr = testCase.attributes?.find(a => a.key === key);
+    return attr ? attr.value : '';
+  }
+
+  addAttributeColumn(key: string): void {
+    if (!this.attributeColumns.some(col => col.field === `attr_${key}`)) {
+      this.attributeColumns.push({
+        field: `attr_${key}`,
+        header: key,
+        width: 150,
+        isAttribute: true
+      });
     }
   }
 
-  getFormControl(index: number, controlName: string): FormControl {
-    const control = this.formGroups()[index].get(controlName);
-    if (!control) {
-      throw new Error(`Form control '${controlName}' not found`);
-    }
-    return control as FormControl;
-  }
+  startResize(event: MouseEvent, column: TableColumn): void {
+    if (column.noResize) return;
 
-  openPopup(index: number, field: 'actual' | 'remarks', event: MouseEvent) {
+    this.isResizing = true;
+    this.currentResizeColumn = column;
+    this.startX = event.pageX;
+    this.startWidth = column.width;
+
+    event.preventDefault();
     event.stopPropagation();
-    this.popupIndex = index;
-    this.popupField = field;
-    this.isPopupOpen = true;
-    document.addEventListener('click', this.handleDocumentClick.bind(this));
+
+    document.addEventListener('mousemove', this.onResize.bind(this));
+    document.addEventListener('mouseup', this.stopResize.bind(this));
   }
 
-  closePopup(index: number) {
+  onResize(event: MouseEvent): void {
+    if (this.isResizing && this.currentResizeColumn) {
+      const dx = event.pageX - this.startX;
+      this.currentResizeColumn.width = Math.max(50, this.startWidth + dx);
+      this.cdRef.detectChanges();
+    }
+  }
+
+  stopResize(): void {
+    this.isResizing = false;
+    document.removeEventListener('mousemove', this.onResize);
+    document.removeEventListener('mouseup', this.stopResize);
+  }
+
+private handleDocumentClick(event: MouseEvent) {
+  if (this.isPopupOpen && this.popupIndex !== null) {
+    const target = event.target as HTMLElement;
+    const popupElement = document.querySelector('.popup-box');
+    
+    if (popupElement && !popupElement.contains(target)) {
+      this.closePopup(this.popupIndex);
+    }
+  }
+}
+
+ openPopup(index: number, field: 'actual' | 'remarks', event: MouseEvent) {
+  event.stopPropagation();
+  // Close any existing popup first
+  if (this.isPopupOpen && this.popupIndex !== null) {
+    this.closePopup(this.popupIndex);
+  }
+  
+  this.popupIndex = index;
+  this.popupField = field;
+  this.isPopupOpen = true;
+  
+  // Add click listener to close when clicking outside
+  setTimeout(() => {
+    document.addEventListener('click', this.handleDocumentClick.bind(this));
+  });
+}
+closePopup(index: number) {
+  if (this.popupIndex === index) {
     this.isPopupOpen = false;
     this.popupIndex = null;
     this.popupField = null;
     document.removeEventListener('click', this.handleDocumentClick.bind(this));
     this.cdRef.detectChanges();
+  }
+}
+  getFormControl(index: number, controlName: string): FormControl {
+    const control = this.formGroups()[index].get(controlName);
+    if (!control) throw new Error(`Form control '${controlName}' not found`);
+    return control as FormControl;
   }
 
   formGroups(): FormGroup[] {
@@ -113,13 +228,21 @@ export class ModulesComponent implements OnInit, OnDestroy {
   filteredAndSearchedTestCases(): TestCase[] {
     return this.filteredTestCases().filter((tc, i) => {
       const form = this.formGroups()[i];
+      const matchesAttribute =
+        !this.filter.attributeKey ||
+        (this.filter.attributeValue &&
+          this.getAttributeValue(tc, this.filter.attributeKey)
+            .toLowerCase()
+            .includes(this.filter.attributeValue.toLowerCase()));
+
       return (
         (!this.filter.slNo || tc.slNo.toString().includes(this.filter.slNo)) &&
         (!this.filter.testCaseId ||
           tc.testCaseId.toLowerCase().includes(this.filter.testCaseId.toLowerCase())) &&
         (!this.filter.useCase ||
           tc.useCase.toLowerCase().includes(this.filter.useCase.toLowerCase())) &&
-        (!this.filter.result || form.get('result')?.value === this.filter.result)
+        (!this.filter.result || form.get('result')?.value === this.filter.result) &&
+        matchesAttribute
       );
     });
   }
@@ -133,15 +256,11 @@ export class ModulesComponent implements OnInit, OnDestroy {
     this.showViewTestCases = false;
     this.showStartTesting = false;
 
-    if (id) {
-      this.availableVersions = this.testCaseService.getVersionsByModule(id);
-    } else {
-      this.availableVersions = [];
-    }
-
+    this.availableVersions = this.testCaseService.getVersionsByModule(id);
     this.formArray.clear();
     const testCases = this.filteredTestCases();
     this.uploads = [];
+
     for (const testCase of testCases) {
       this.formArray.push(
         this.fb.group({
@@ -166,8 +285,8 @@ export class ModulesComponent implements OnInit, OnDestroy {
     }
   }
 
-  onUpload($event: Event, index: number): void {
-    const target = $event.target as HTMLInputElement;
+  onUpload(event: Event, index: number): void {
+    const target = event.target as HTMLInputElement;
     const files = target.files;
     if (files && files.length > 0) {
       for (let i = 0; i < files.length; i++) {
@@ -184,19 +303,18 @@ export class ModulesComponent implements OnInit, OnDestroy {
   onSave(): void {
     const formValues = this.formArray.value;
     const testCases = this.filteredTestCases();
-    
+
     const updatedTestCases = testCases.map((tc, index) => ({
       ...tc,
-      result: formValues[index].result,
-      actual: formValues[index].actual,
-      remarks: formValues[index].remarks,
+      result: formValues[index]?.result,
+      actual: formValues[index]?.actual,
+      remarks: formValues[index]?.remarks,
       uploads: this.uploads[index].map(u => u?.toString() || '')
     }));
 
     updatedTestCases.forEach(tc => this.testCaseService.updateTestCase(tc));
     this.testCasePool = [...this.testCaseService.getTestCases()];
     this.cdRef.detectChanges();
-    
     alert('Results saved successfully!');
   }
 
@@ -204,4 +322,15 @@ export class ModulesComponent implements OnInit, OnDestroy {
     const mod = this.modules.find(m => m.id === id);
     return mod ? mod.name : `Module ${id}`;
   }
+  getCellValue(testCase: TestCase, field: string): string {
+  // Handle attribute fields (prefixed with 'attr_')
+  if (field.startsWith('attr_')) {
+    const attrKey = field.substring(5); // remove 'attr_' prefix
+    return this.getAttributeValue(testCase, attrKey);
+  }
+  
+  // Handle regular fields
+  const value = testCase[field as keyof TestCase];
+  return value !== undefined && value !== null ? value.toString() : '';
+}
 }
