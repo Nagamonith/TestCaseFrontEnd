@@ -34,12 +34,22 @@ export class TestCaseService {
   }
 
   addTestCase(testCase: TestCase) {
-    this.testCases.update(current => [...current, testCase]);
+    // Ensure uploads field exists
+    const completeCase: TestCase = {
+      ...testCase,
+      uploads: testCase.uploads || []
+    };
+    this.testCases.update(current => [...current, completeCase]);
   }
 
   updateTestCase(updatedCase: TestCase) {
+    // Ensure uploads field exists
+    const completeCase: TestCase = {
+      ...updatedCase,
+      uploads: updatedCase.uploads || []
+    };
     this.testCases.update(current => 
-      current.map(tc => tc.id === updatedCase.id ? updatedCase : tc)
+      current.map(tc => tc.id === completeCase.id ? completeCase : tc)
     );
   }
 
@@ -50,8 +60,8 @@ export class TestCaseService {
   addModule(name: string, initialVersion = 'v1.0') {
     const newId = `mod${this.modules().length + 1}`;
     this.modules.update(current => [...current, { id: newId, name }]);
-    
-    // Add a test case to initialize the version
+
+    // Add an initial test case to the new module and version
     this.addTestCase({
       slNo: this.testCases().length + 1,
       id: Date.now().toString(),
@@ -62,9 +72,10 @@ export class TestCaseService {
       scenario: 'Initial scenario',
       steps: 'Initial steps',
       expected: 'Initial expectation',
-      attributes: []
+      attributes: [],
+      uploads: []
     });
-    
+
     return newId;
   }
 
@@ -80,7 +91,8 @@ export class TestCaseService {
       scenario: 'Initial scenario',
       steps: 'Initial steps',
       expected: 'Initial expectation',
-      attributes: []
+      attributes: [],
+      uploads: []
     });
   }
 }

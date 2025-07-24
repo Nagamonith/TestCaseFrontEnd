@@ -9,6 +9,7 @@ export interface TestCase {
   steps: string;
   expected: string;
   attributes: { key: string; value: string }[];
+  uploads?: string[]; // base64 strings or file names
 }
 
 export const DUMMY_TEST_CASES: TestCase[] = [
@@ -22,7 +23,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User logs in with valid credentials',
     steps: 'Enter valid username and password, click login',
     expected: 'Dashboard opens successfully',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 2,
@@ -34,7 +36,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User generates report for custom date range',
     steps: 'Go to Reports > Select Date Range > Generate',
     expected: 'Report displays data for selected range',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 3,
@@ -46,7 +49,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User resets password using registered email',
     steps: 'Click Forgot Password > Enter Email > Submit',
     expected: 'Password reset link sent to email',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 4,
@@ -58,7 +62,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User updates profile with valid data',
     steps: 'Go to Profile > Edit > Update details > Save',
     expected: 'Profile updated successfully',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 5,
@@ -70,7 +75,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User adds product to cart',
     steps: 'Select product > Click Add to Cart',
     expected: 'Product added to cart with quantity 1',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 6,
@@ -82,7 +88,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User removes product from cart',
     steps: 'Go to Cart > Click Remove icon',
     expected: 'Product removed from cart',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 7,
@@ -94,7 +101,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User logs out from dashboard',
     steps: 'Click on Logout in user menu',
     expected: 'Redirected to login page',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 8,
@@ -106,7 +114,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User searches with valid keyword',
     steps: 'Enter keyword in search bar > Press Enter',
     expected: 'Relevant search results are displayed',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 9,
@@ -118,7 +127,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User completes MFA successfully',
     steps: 'Enter password > Enter OTP > Submit',
     expected: 'User is logged in securely',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 10,
@@ -130,7 +140,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User disables email notifications',
     steps: 'Settings > Notifications > Disable Email',
     expected: 'Email notifications are disabled',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 11,
@@ -142,7 +153,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User uploads a valid PDF file',
     steps: 'Click Upload > Select File > Submit',
     expected: 'File uploaded and listed in files section',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 12,
@@ -154,7 +166,8 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User downloads a report as Excel',
     steps: 'Generate report > Click Download as Excel',
     expected: 'Report downloaded successfully as .xlsx',
-    attributes: []
+    attributes: [],
+    uploads: []
   },
   {
     slNo: 13,
@@ -166,6 +179,7 @@ export const DUMMY_TEST_CASES: TestCase[] = [
     scenario: 'User switches between light and dark mode',
     steps: 'Click on theme toggle in header',
     expected: 'UI switches to selected theme',
-    attributes: []
+    attributes: [],
+    uploads: []
   }
 ];

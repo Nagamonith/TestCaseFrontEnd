@@ -92,6 +92,7 @@
             <th>Result</th>
             <th>Actual</th>
             <th>Remarks</th>
+            <th>Uploads</th>
           </tr>
         </thead>
         <tbody>
@@ -113,6 +114,12 @@
             </td>
             <td><input type="text" formControlName="actual" /></td>
             <td><input type="text" formControlName="remarks" /></td>
+            <td>
+  <input type="file" (change)="onUpload($event, i)" accept="image/*" />
+  <div *ngFor="let file of uploads[i]">
+    <img [src]="file" alt="Uploaded Screenshot" width="50" height="50" style="margin-top: 5px" />
+  </div>
+</td>
           </tr>
         </tbody>
       </table>

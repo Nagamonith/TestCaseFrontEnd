@@ -1,4 +1,3 @@
-// src/app/tester/modules/modules.component.ts
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -42,6 +41,7 @@ export class ModulesComponent implements OnInit {
   modules = this.testCaseService.getModules();
   testCasePool = this.testCaseService.getTestCases();
   formArray = new FormArray<FormGroup>([]);
+  uploads: (string | ArrayBuffer | null)[][] = [];
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((pm: ParamMap) => {
@@ -88,7 +88,9 @@ export class ModulesComponent implements OnInit {
     }
 
     this.formArray.clear();
-    for (const _ of this.filteredTestCases()) {
+    const testCases = this.filteredTestCases();
+    this.uploads = [];
+    for (const _ of testCases) {
       this.formArray.push(
         this.fb.group({
           result: ['Pending'],
@@ -96,6 +98,7 @@ export class ModulesComponent implements OnInit {
           remarks: [''],
         })
       );
+      this.uploads.push([]);
     }
   }
 
@@ -111,9 +114,22 @@ export class ModulesComponent implements OnInit {
     }
   }
 
+  onUpload($event: Event, index: number): void {
+    const target = $event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.uploads[index].push(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   onSave(): void {
-    console.log(`✅ Saved results for module '${this.selectedModule()}':`, this.formArray.value);
-    alert('Results saved (dummy). Check console.');
+    console.log('✅ Saved results:', this.formArray.value);
+    console.log('📎 Uploads:', this.uploads);
+    alert('Results and uploads saved (dummy). Check console.');
   }
 
   getModuleName(id: string): string {
