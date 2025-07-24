@@ -123,10 +123,10 @@
             <div *ngIf="product.editing" class="edit-form d-flex gap-2">
               <input type="text" [(ngModel)]="product.name" class="form-control">
               <button class="btn btn-sm btn-success" (click)="saveProductEdit(product)">
-                <i class="fas fa-check"></i>
+                <i class="fas fa-check"> edit</i>
               </button>
               <button class="btn btn-sm btn-secondary" (click)="product.editing = false">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times">delete</i>
               </button>
             </div>
           </div>
