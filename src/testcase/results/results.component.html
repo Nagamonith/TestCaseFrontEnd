@@ -1,88 +1,95 @@
 <h2 class="text-center">Results Summary</h2>
 
-<div class="container">
-  <!-- Module selector -->
-  <div class="form-section">
-    <label for="moduleSelect">Select Module</label>
-    <select id="moduleSelect"
-            [(ngModel)]="selectedModule"
-            (change)="onModuleChange(selectedModule)">
-      <option value="">-- Choose Module --</option>
-      <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
-    </select>
+<!-- Module selector -->
+<div class="form-section">
+  <label for="moduleSelect">Select Module</label>
+  <select id="moduleSelect"
+          [(ngModel)]="selectedModule"
+          (change)="onModuleChange(selectedModule)">
+    <option value="">-- Choose Module --</option>
+    <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
+  </select>
+</div>
+
+<!-- Metadata + buttons appear after module is chosen -->
+<div *ngIf="selectedModule">
+  <div class="meta-section">
+    <h4>📊 Module Metadata</h4>
+    <ul>
+      <li>Total Test Cases: {{ stats.total }}</li>
+      <li style="color: rgb(36, 188, 36);">✅ Passed: {{ stats.pass }}</li>
+      <li style="color: rgb(228, 39, 39);">❌ Failed: {{ stats.fail }}</li>
+      <li style="color: rgb(255, 170, 0);">⏳ Pending: {{ stats.pending }}</li>
+    </ul>
+    <!-- <button class="btn-automation">Automation Result</button> -->
   </div>
 
-  <!-- Metadata + buttons appear after module is chosen -->
-  <div *ngIf="selectedModule">
-    <div class="meta-section">
-      <h4>📊 Module Metadata</h4>
-      <ul>
-        <li>Total Test Cases: {{ stats.total }}</li>
-        <li style="color: rgb(36, 188, 36);">✅ Passed: {{ stats.pass }}</li>
-        <li style="color: rgb(228, 39, 39);">❌ Failed: {{ stats.fail }}</li>
-        <li style="color: rgb(255, 170, 0);">⏳ Pending: {{ stats.pending }}</li>
-      </ul>
-      <!-- <button class="btn-automation">Automation Result</button> -->
+  <!-- Toggle View Module -->
+  <div class="view-btn-container">
+    <button class="btn-view" (click)="showTable = !showTable">
+      {{ showTable ? 'Hide' : 'View' }} Module
+    </button>
+  </div>
+
+  <!-- Export button -->
+  <div *ngIf="showTable && tableData.length" class="export-btn-container">
+    <button class="btn-export" (click)="exportToExcel()">⬇️ Export Results</button>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="showTable">
+    <div class="filter-section">
+      <label for="statusFilter">Filter by Result</label>
+      <select id="statusFilter" [(ngModel)]="filterStatus">
+        <option value="All">All</option>
+        <option value="Pass">Pass</option>
+        <option value="Fail">Fail</option>
+        <option value="Pending">Pending</option>
+      </select>
     </div>
 
-    <!-- Toggle View Module -->
-    <div class="view-btn-container">
-      <button class="btn-view" (click)="showTable = !showTable">
-        {{ showTable ? 'Hide' : 'View' }} Module
-      </button>
-    </div>
+    <h4 class="table-title">🧪 Test Cases for {{ getModuleName(selectedModule) }}</h4>
 
-    <!-- Export button -->
-    <div *ngIf="showTable && tableData.length" class="export-btn-container">
-      <button class="btn-export" (click)="exportToExcel()">⬇️ Export Results</button>
-    </div>
+    <div class="table-scroll-container">
+      <div class="table-container">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th class="copy-header"></th>
+              <th>Sl. No</th>
+              <th>Test Case ID</th>
+              <th>Use Case</th>
+              <th>Scenario</th>
+              <th>Steps</th>
+              <th>Expected</th>
+              <th>Actual</th>
+              <th>Result</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of tableData">
+              <td class="copy-cell">
+               <button title="Copy Link" (click)="copyTestCaseLink(row.tc.testCaseId)">📋</button>
 
-    <!-- Table -->
-    <div *ngIf="showTable">
-      <div class="filter-section">
-        <label for="statusFilter">Filter by Result</label>
-        <select id="statusFilter" [(ngModel)]="filterStatus">
-          <option value="All">All</option>
-          <option value="Pass">Pass</option>
-          <option value="Fail">Fail</option>
-          <option value="Pending">Pending</option>
-        </select>
+              </td>
+              <td>{{ row.tc.slNo }}</td>
+              <td>{{ row.tc.testCaseId }}</td>
+              <td>{{ row.tc.useCase }}</td>
+              <td>{{ row.tc.scenario }}</td>
+              <td>{{ row.tc.steps }}</td>
+              <td>{{ row.tc.expected }}</td>
+              <td>Actual output {{ row.tc.slNo }}</td>
+              <td [ngClass]="{
+                    'pass': row.status === 'Pass',
+                    'fail': row.status === 'Fail',
+                    'pending': row.status === 'Pending'
+                  }">{{ row.status }}</td>
+              <td>Remarks for test {{ row.tc.slNo }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-
-      <h4 class="table-title">🧪 Test Cases for {{ getModuleName(selectedModule) }}</h4>
-
-      <table class="result-table">
-        <thead>
-          <tr>
-            <th>Sl. No</th>
-            <th>Test Case ID</th>
-            <th>Use Case</th>
-            <th>Scenario</th>
-            <th>Steps</th>
-            <th>Expected</th>
-            <th>Actual</th>
-            <th>Result</th>
-            <th>Remarks</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let row of tableData">
-            <td>{{ row.tc.slNo }}</td>
-            <td>{{ row.tc.testCaseId }}</td>
-            <td>{{ row.tc.useCase }}</td>
-            <td>{{ row.tc.scenario }}</td>
-            <td>{{ row.tc.steps }}</td>
-            <td>{{ row.tc.expected }}</td>
-            <td>Actual output {{ row.tc.slNo }}</td>
-            <td [ngClass]="{
-                  'pass': row.status === 'Pass',
-                  'fail': row.status === 'Fail',
-                  'pending': row.status === 'Pending'
-                }">{{ row.status }}</td>
-            <td>Remarks for test {{ row.tc.slNo }}</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </div>

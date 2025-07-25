@@ -96,4 +96,15 @@ export class ResultsComponent {
     const fileName = `${this.getModuleName(this.selectedModule)}_results.xlsx`.replace(/\s+/g, '_');
     saveAs(blob, fileName);
   }
+ copyTestCaseLink(testCaseId: string): void {
+  const baseUrl = window.location.origin;
+  const copyUrl = `${baseUrl}/tester/view-testcase/${testCaseId}`;
+  
+  navigator.clipboard.writeText(copyUrl).then(() => {
+    alert('Test case link copied to clipboard!');
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+  });
+}
+
 }

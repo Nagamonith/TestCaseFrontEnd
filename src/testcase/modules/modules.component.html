@@ -37,10 +37,10 @@
              [(ngModel)]="filter.attributeValue" [ngModelOptions]="{standalone: true}">
     </div>
 
-    <!-- Table wrapper with scroll -->
+    <!-- Table with scroll -->
     <div class="table-scroll-container">
       <button class="scroll-button scroll-left" (click)="scrollTable(-200)" [class.hidden]="!canScrollLeft">&larr;</button>
-      
+
       <div class="table-container" #tableContainer>
         <table class="resizable-table">
           <thead>
@@ -71,7 +71,7 @@
           </tbody>
         </table>
       </div>
-      
+
       <button class="scroll-button scroll-right" (click)="scrollTable(200)" [class.hidden]="!canScrollRight">&rarr;</button>
     </div>
   </div>
@@ -102,11 +102,12 @@
   <div *ngIf="filteredAndSearchedTestCases().length">
     <div class="table-scroll-container">
       <button class="scroll-button scroll-left" (click)="scrollTable(-200)" [class.hidden]="!canScrollLeft">&larr;</button>
-      
+
       <div class="table-container" #tableContainer>
         <table class="resizable-table">
           <thead>
             <tr>
+              <th class="copy-header"></th>
               <th *ngFor="let col of testColumns"
                   [style.width.px]="col.width"
                   (mousedown)="startResize($event, col)">
@@ -123,17 +124,40 @@
           </thead>
           <tbody>
             <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index" [formGroup]="formGroups()[i]">
+              <td class="copy-cell">
+  <button (click)="copyTestCaseLink(tc.testCaseId)">📋</button>
+</td>
+
+              
               <td *ngFor="let col of testColumns" class="wrap-text" [style.width.px]="col.width">
                 <ng-container [ngSwitch]="col.field">
-                  <ng-container *ngSwitchCase="'slNo'">{{ tc.slNo }}</ng-container>
-                  <ng-container *ngSwitchCase="'version'">{{ tc.version }}</ng-container>
-                  <ng-container *ngSwitchCase="'useCase'">{{ tc.useCase }}</ng-container>
-                  <ng-container *ngSwitchCase="'testCaseId'">{{ tc.testCaseId }}</ng-container>
-                  <ng-container *ngSwitchCase="'scenario'">{{ tc.scenario }}</ng-container>
-                  <ng-container *ngSwitchCase="'steps'">{{ tc.steps }}</ng-container>
-                  <ng-container *ngSwitchCase="'expected'">{{ tc.expected }}</ng-container>
+                  <ng-container *ngSwitchCase="'slNo'">
+                    {{ tc.slNo }}
+                  </ng-container>
 
-                
+                  <ng-container *ngSwitchCase="'version'">
+                    {{ tc.version }}
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'useCase'">
+                    {{ tc.useCase }}
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'testCaseId'">
+                    {{ tc.testCaseId }}
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'scenario'">
+                    {{ tc.scenario }}
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'steps'">
+                    {{ tc.steps }}
+                  </ng-container>
+
+                  <ng-container *ngSwitchCase="'expected'">
+                    {{ tc.expected }}
+                  </ng-container>
 
                   <ng-container *ngSwitchCase="'actual'">
                     <div class="popup-cell" (click)="openPopup(i, 'actual', $event)">
@@ -158,7 +182,8 @@
                       </div>
                     </div>
                   </ng-container>
-                    <ng-container *ngSwitchCase="'result'">
+
+                  <ng-container *ngSwitchCase="'result'">
                     <select formControlName="result">
                       <option value="Pass">Pass</option>
                       <option value="Fail">Fail</option>
@@ -182,7 +207,7 @@
           </tbody>
         </table>
       </div>
-      
+
       <button class="scroll-button scroll-right" (click)="scrollTable(200)" [class.hidden]="!canScrollRight">&rarr;</button>
     </div>
 

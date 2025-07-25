@@ -367,4 +367,18 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
     const mod = this.modules.find(m => m.id === id);
     return mod ? mod.name : `Module ${id}`;
   }
+copyTestCaseLink(testCaseId: string): void {
+  const copyUrl = `${window.location.origin}/tester/view-testcase/${testCaseId}`;
+  navigator.clipboard.writeText(copyUrl).then(() => {
+    alert('Link copied to clipboard!');
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+  });
 }
+
+}
+
+
+
+
+
