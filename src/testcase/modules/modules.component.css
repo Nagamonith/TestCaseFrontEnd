@@ -87,6 +87,7 @@ select, input {
 
 /* Popup styles */
 /* Popup styles */
+/* Popup styles */
 .popup-cell {
   position: relative;
   cursor: pointer;
@@ -133,6 +134,7 @@ select, input {
 .popup-actions button:hover {
   background: #0056b3;
 }
+
 
 /* Upload preview styles */
 .upload-preview {
