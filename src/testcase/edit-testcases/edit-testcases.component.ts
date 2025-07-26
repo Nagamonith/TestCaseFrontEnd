@@ -1,206 +1,230 @@
-// src/app/tester/edit-testcases/edit-testcases.component.ts
-import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormArray, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
+import { FormBuilder, FormArray, Validators, ReactiveFormsModule, FormsModule, FormGroup, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { TestCaseService } from 'src/app/shared/services/test-case.service';
 import { TestCase } from 'src/app/shared/data/dummy-testcases';
-import { AutoSaveService } from 'src/app/shared/services/auto-save.service';
 
-type TestCaseFilter = {
+interface TestCaseFilter {
   slNo: string;
   testCaseId: string;
   useCase: string;
-};
+}
 
 @Component({
   selector: 'app-edit-testcases',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule],
   templateUrl: './edit-testcases.component.html',
-  styleUrls: ['./edit-testcases.component.css'],
+  styleUrls: ['./edit-testcases.component.css']
 })
 export class EditTestcasesComponent {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private testCaseService = inject(TestCaseService);
-  // private autoSaveService = inject(AutoSaveService);
-  // ngOnInit(): void {
-  //   this.autoSaveService.start(() => this.saveTestCase());
-  // }
-
-  // ngOnDestroy(): void {
-  //   this.autoSaveService.stop();
-  // }
 
   selectedModule = signal<string>('');
   selectedVersion = signal<string>('');
-  showForm = signal(false);
-  editingId = signal<string | null>(null);
+  isEditing = signal(false);
+  testCases = signal<TestCase[]>([]);
+  filteredTestCases = signal<TestCase[]>([]);
   filter = signal<TestCaseFilter>({
     slNo: '',
     testCaseId: '',
-    useCase: '',
+    useCase: ''
   });
-
-  modules = this.testCaseService.getModules();
-  testCases = signal<TestCase[]>(this.testCaseService.getTestCases());
 
   form = this.fb.group({
     id: [''],
     moduleId: ['', Validators.required],
     version: ['', Validators.required],
+    testCaseId: ['', [Validators.required, Validators.pattern(/^TC\d+/)]],
     useCase: ['', Validators.required],
-    testCaseId: ['', Validators.required],
     scenario: ['', Validators.required],
     steps: ['', Validators.required],
     expected: ['', Validators.required],
-    attributes: this.fb.array([]),
+    result: ['Pending'],
+    actual: [''],
+    remarks: [''],
+    attributes: this.fb.array([])
   });
 
   constructor() {
-    const moduleId = this.route.snapshot.paramMap.get('moduleId');
-    const version = this.route.snapshot.paramMap.get('version');
+    this.route.paramMap.subscribe(params => {
+      const moduleId = params.get('moduleId');
+      const version = params.get('version');
 
-    if (moduleId) {
-      this.selectedModule.set(moduleId);
-      this.form.patchValue({ moduleId });
-    }
-    if (version) {
-      this.selectedVersion.set(version);
-      this.form.patchValue({ version });
-    }
+      if (moduleId && version) {
+        this.selectedModule.set(moduleId);
+        this.selectedVersion.set(version);
+        this.form.patchValue({
+          moduleId: moduleId,
+          version: version
+        });
+        this.loadTestCases(moduleId, version);
+      }
+    });
   }
 
   get attributes(): FormArray {
     return this.form.get('attributes') as FormArray;
   }
 
-  filteredTestCases = computed(() => {
-    const moduleId = this.selectedModule();
-    const version = this.selectedVersion();
-    const f = this.filter();
-
-    return this.testCases()
-      .filter((tc) => tc.moduleId === moduleId && tc.version === version)
-      .filter((tc) =>
-        (!f.slNo || tc.slNo.toString().includes(f.slNo)) &&
-        (!f.testCaseId || tc.testCaseId.toLowerCase().includes(f.testCaseId.toLowerCase())) &&
-        (!f.useCase || tc.useCase.toLowerCase().includes(f.useCase.toLowerCase()))
-      );
-  });
-
-  updateFilter<K extends keyof TestCaseFilter>(key: K, value: string) {
-    this.filter.set({
-      ...this.filter(),
-      [key]: value,
-    });
+  private loadTestCases(moduleId: string, version: string): void {
+    const testCases = this.testCaseService.getTestCasesByModuleAndVersion(moduleId, version);
+    this.testCases.set(testCases);
+    this.applyFilters();
   }
 
-  getModuleName(id: string): string {
-    return this.modules.find((m) => m.id === id)?.name || id;
+  updateFilter<K extends keyof TestCaseFilter>(key: K, value: string): void {
+    this.filter.update(current => ({
+      ...current,
+      [key]: value
+    }));
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
+    const { slNo, testCaseId, useCase } = this.filter();
+    this.filteredTestCases.set(
+      this.testCases().filter(tc => 
+        (!slNo || tc.slNo.toString().includes(slNo)) &&
+        (!testCaseId || tc.testCaseId.toLowerCase().includes(testCaseId.toLowerCase())) &&
+        (!useCase || tc.useCase.toLowerCase().includes(useCase.toLowerCase()))
+      )
+    );
+  }
+
+  getModuleName(moduleId: string): string {
+    return this.testCaseService.getModules().find(m => m.id === moduleId)?.name || '';
   }
 
   getUniqueAttributes(): string[] {
-    const allKeys = this.testCases().flatMap((tc) =>
-      tc.attributes.map((attr) => attr.key)
-    );
-    return Array.from(new Set(allKeys));
+    const allAttributes = new Set<string>();
+    this.testCases().forEach(tc => {
+      tc.attributes.forEach(attr => {
+        allAttributes.add(attr.key);
+      });
+    });
+    return Array.from(allAttributes);
   }
 
   getAttributeValue(testCase: TestCase, key: string): string {
-    const attr = testCase.attributes.find((a) => a.key === key);
+    const attr = testCase.attributes.find(a => a.key === key);
     return attr ? attr.value : '';
   }
 
-  trackByAttribute(_index: number, attr: string): string {
-    return attr;
-  }
-
-  addAttribute(key = '', value = '') {
+  addAttribute(key = '', value = ''): void {
     this.attributes.push(
       this.fb.group({
         key: [key, Validators.required],
-        value: [value],
+        value: [value, Validators.required]
       })
     );
   }
 
-  removeAttribute(index: number) {
+  removeAttribute(index: number): void {
     this.attributes.removeAt(index);
   }
 
-  openForm() {
+  openForm(): void {
     this.form.reset({
       moduleId: this.selectedModule(),
       version: this.selectedVersion(),
+      result: 'Pending'
     });
     this.attributes.clear();
-    this.editingId.set(null);
-    this.showForm.set(true);
+    this.isEditing.set(true);
   }
 
-  editTestCase(testCase: TestCase) {
-    this.form.patchValue({ ...testCase });
+  startEditing(testCase: TestCase): void {
+    this.form.patchValue({
+      id: testCase.id,
+      moduleId: testCase.moduleId,
+      version: testCase.version,
+      testCaseId: testCase.testCaseId,
+      useCase: testCase.useCase,
+      scenario: testCase.scenario,
+      steps: testCase.steps,
+      expected: testCase.expected,
+      result: testCase.result || 'Pending',
+      actual: testCase.actual || '',
+      remarks: testCase.remarks || ''
+    });
+
     this.attributes.clear();
-    testCase.attributes.forEach((attr) =>
-      this.addAttribute(attr.key, attr.value)
-    );
-    this.editingId.set(testCase.id);
-    this.showForm.set(true);
+    testCase.attributes.forEach(attr => {
+      this.addAttribute(attr.key, attr.value);
+    });
+
+    this.isEditing.set(true);
   }
 
-  saveTestCase() {
+  cancelEditing(): void {
+    this.form.reset();
+    this.attributes.clear();
+    this.isEditing.set(false);
+  }
+
+  saveTestCase(): void {
     if (this.form.invalid) {
-      alert('Please fill all required fields.');
+      this.markFormGroupTouched(this.form);
       return;
     }
 
-    const attrRaw = this.attributes.getRawValue() as {
-      key: string;
-      value: string;
-    }[];
-    const v = this.form.value;
-
+    const formValue = this.form.value;
     const testCase: TestCase = {
-      slNo: v.id ? this.testCases().find(tc => tc.id === v.id)?.slNo || 0 : 
-            this.testCases().length > 0 ? 
-            Math.max(...this.testCases().map(tc => tc.slNo)) + 1 : 1,
-      id: v.id || Date.now().toString(),
+      id: formValue.id || Date.now().toString(),
       moduleId: this.selectedModule(),
       version: this.selectedVersion(),
-      useCase: v.useCase!,
-      testCaseId: v.testCaseId?.trim() ||
-        `TC${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-      scenario: v.scenario!,
-      steps: v.steps!,
-      expected: v.expected!,
-      attributes: attrRaw,
+      testCaseId: formValue.testCaseId || '',
+      useCase: formValue.useCase || '',
+      scenario: formValue.scenario || '',
+      steps: formValue.steps || '',
+      expected: formValue.expected || '',
+      result: formValue.result as 'Pass' | 'Fail' | 'Pending' | 'Blocked' || 'Pending',
+      actual: formValue.actual || '',
+      remarks: formValue.remarks || '',
+      slNo: formValue.id 
+        ? this.testCases().find(tc => tc.id === formValue.id)?.slNo || 0
+        : Math.max(0, ...this.testCases().map(tc => tc.slNo)) + 1,
+      attributes: this.attributes.value || [],
+      uploads: []
     };
 
-    if (v.id) {
+    if (formValue.id) {
       this.testCaseService.updateTestCase(testCase);
     } else {
       this.testCaseService.addTestCase(testCase);
     }
 
-    this.testCases.set(this.testCaseService.getTestCases());
-    this.showForm.set(false);
+    this.loadTestCases(this.selectedModule(), this.selectedVersion());
+    this.cancelEditing();
   }
 
-  deleteTestCase(id: string) {
+  deleteTestCase(id: string): void {
     if (confirm('Are you sure you want to delete this test case?')) {
       this.testCaseService.deleteTestCase(id);
-      this.testCases.set(this.testCaseService.getTestCases());
+      this.loadTestCases(this.selectedModule(), this.selectedVersion());
     }
   }
 
-  cancelForm() {
-    this.showForm.set(false);
+  goBack(): void {
+    this.router.navigate(['/tester/add-testcases']);
   }
 
-  goBack() {
-    this.router.navigate(['/tester/add-testcases']);
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      } else if (control instanceof FormArray) {
+        control.controls.forEach(arrayControl => {
+          this.markFormGroupTouched(arrayControl as FormGroup);
+        });
+      }
+    });
   }
 }

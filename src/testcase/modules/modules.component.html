@@ -120,98 +120,87 @@
                 {{ col.header }}
                 <div class="resize-handle"></div>
               </th>
+              <th>Actual Result</th>
+              <th>Result</th>
+              <th>Remarks</th>
+              <th>Uploads</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let tc of filteredAndSearchedTestCases(); let i = index" [formGroup]="formGroups()[i]">
               <td class="copy-cell">
-  <button 
-  (click)="copyTestCaseLink(tc.testCaseId)"
-  class="copy-btn"
-  title="Copy test case link"
->
-<button class="copy-btn" title="Copy link">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
-</button>
-</button>
-</td>
-
+                <button (click)="copyTestCaseLink(tc.testCaseId)" class="copy-btn" title="Copy test case link">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </td>
               
+              <!-- Standard columns -->
               <td *ngFor="let col of testColumns" class="wrap-text" [style.width.px]="col.width">
-                <ng-container [ngSwitch]="col.field">
-                  <ng-container *ngSwitchCase="'slNo'">
-                    {{ tc.slNo }}
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'version'">
-                    {{ tc.version }}
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'useCase'">
-                    {{ tc.useCase }}
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'testCaseId'">
-                    {{ tc.testCaseId }}
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'scenario'">
-                    {{ tc.scenario }}
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'steps'">
-                    {{ tc.steps }}
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'expected'">
-                    {{ tc.expected }}
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'actual'">
-                    <div class="popup-cell" (click)="openPopup(i, 'actual', $event)">
-                      <span>{{ getFormControl(i, 'actual').value || 'Click to enter' }}</span>
-                      <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'actual'" class="popup-box">
-                        <textarea [formControl]="getFormControl(i, 'actual')" rows="5" cols="40"></textarea>
-                        <div class="popup-actions">
-                          <button (click)="closePopup(i)">Save</button>
-                        </div>
-                      </div>
-                    </div>
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'remarks'">
-                    <div class="popup-cell" (click)="openPopup(i, 'remarks', $event)">
-                      <span>{{ getFormControl(i, 'remarks').value || 'Click to enter' }}</span>
-                      <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'remarks'" class="popup-box">
-                        <textarea [formControl]="getFormControl(i, 'remarks')" rows="5" cols="40"></textarea>
-                        <div class="popup-actions">
-                          <button (click)="closePopup(i)">Save</button>
-                        </div>
-                      </div>
-                    </div>
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'result'">
-                    <select formControlName="result">
-                      <option value="Pass">Pass</option>
-                      <option value="Fail">Fail</option>
-                      <option value="Pending"></option>
-                    </select>
-                  </ng-container>
-
-                  <ng-container *ngSwitchCase="'uploads'">
-                    <input type="file" (change)="onUpload($event, i)" accept="image/*" multiple>
-                    <div *ngFor="let file of uploads[i]" class="upload-preview">
-                      <img [src]="file" alt="Uploaded Screenshot" width="50" height="50">
-                    </div>
-                  </ng-container>
-                </ng-container>
+                {{ getCellValue(tc, col.field) }}
               </td>
 
+              <!-- Attribute columns -->
               <td *ngFor="let col of attributeColumns" class="wrap-text" [style.width.px]="col.width">
                 {{ getCellValue(tc, col.field) }}
+              </td>
+
+              <!-- Actual Result -->
+              <td class="wrap-text">
+                <div class="popup-cell" (click)="openPopup(i, 'actual', $event)">
+                  <span>{{ getFormControl(i, 'actual').value || 'Click to enter' }}</span>
+                  <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'actual'" class="popup-box">
+                    <textarea [formControl]="getFormControl(i, 'actual')" rows="5" cols="40"></textarea>
+                    <div class="popup-actions">
+                      <button (click)="closePopup(i)">Save</button>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Result -->
+              <td class="wrap-text">
+                <select formControlName="result">
+                  <option value="Pass">Pass</option>
+                  <option value="Fail">Fail</option>
+                  <option value="Pending"></option>
+                </select>
+              </td>
+
+              <!-- Remarks -->
+              <td class="wrap-text">
+                <div class="popup-cell" (click)="openPopup(i, 'remarks', $event)">
+                  <span>{{ getFormControl(i, 'remarks').value || 'Click to enter' }}</span>
+                  <div *ngIf="isPopupOpen && popupIndex === i && popupField === 'remarks'" class="popup-box">
+                    <textarea [formControl]="getFormControl(i, 'remarks')" rows="5" cols="40"></textarea>
+                    <div class="popup-actions">
+                      <button (click)="closePopup(i)">Save</button>
+                    </div>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Uploads -->
+              <td class="uploads-cell">
+                <label class="file-upload-label">
+                  <input type="file" (change)="onUpload($event, i)" accept="image/*" multiple>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </label>
+                
+                <div class="upload-previews">
+                  <div *ngFor="let file of uploads[i]; let j = index" class="upload-preview">
+                    <div class="preview-container">
+                      <img [src]="file.url" 
+                           (load)="onImageLoad($event, i, j)"
+                           class="preview-image">
+                      <div class="loading-spinner" *ngIf="!file.loaded"></div>
+                    </div>
+                    <button class="remove-btn" (click)="removeUpload(i, j)">×</button>
+                  </div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -223,13 +212,4 @@
 
     <button class="btn-save" (click)="onSave()">✅ Save Results</button>
   </div>
-</div>
-
-<!-- Add Attribute Column -->
-<div *ngIf="availableAttributes.length" class="add-attribute">
-  <select #newAttribute>
-    <option value="">-- Add Attribute Column --</option>
-    <option *ngFor="let attr of availableAttributes" [value]="attr">{{ attr }}</option>
-  </select>
-  <button (click)="addAttributeColumn(newAttribute.value); newAttribute.value = ''">Add Column</button>
 </div>

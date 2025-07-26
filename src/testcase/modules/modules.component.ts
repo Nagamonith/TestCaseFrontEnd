@@ -40,12 +40,17 @@ interface TableColumn {
   isAttribute?: boolean;
 }
 
+interface UploadedFile {
+  url: string;
+  loaded: boolean;
+}
+
 @Component({
   selector: 'app-modules',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
   templateUrl: './modules.component.html',
-  styleUrls: ['./modules.component.css'],
+  styleUrls: ['./modules.component.css']
 })
 export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
   private fb = inject(FormBuilder);
@@ -73,7 +78,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
   modules = this.testCaseService.getModules();
   testCasePool = this.testCaseService.getTestCases();
   formArray = new FormArray<FormGroup>([]);
-  uploads: (string | ArrayBuffer | null)[][] = [];
+  uploads: UploadedFile[][] = [];
 
   popupIndex: number | null = null;
   popupField: 'actual' | 'remarks' | null = null;
@@ -108,11 +113,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
     { field: 'testCaseId', header: 'Test Case ID', width: 120 },
     { field: 'scenario', header: 'Scenario', width: 200 },
     { field: 'steps', header: 'Steps', width: 200 },
-    { field: 'expected', header: 'Expected', width: 200 },
-    { field: 'result', header: 'Result', width: 120 },
-    { field: 'actual', header: 'Actual', width: 200 },
-    { field: 'remarks', header: 'Remarks', width: 200 },
-    { field: 'uploads', header: 'Uploads', width: 150 }
+    { field: 'expected', header: 'Expected', width: 200 }
   ];
 
   ngOnInit(): void {
@@ -135,7 +136,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-     this.autoSaveService.stop();
+    this.autoSaveService.stop();
     document.removeEventListener('click', this.boundHandleClick);
     document.removeEventListener('mousemove', this.boundOnResize);
     document.removeEventListener('mouseup', this.boundStopResize);
@@ -179,7 +180,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onModuleChange(id: string): void {
     if (!this.modules.some(m => m.id === id)) return;
-
+    
     this.selectedModule.set(id);
     this.selectedVersion = '';
     this.versionTestCases.set([]);
@@ -189,7 +190,11 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
     this.availableVersions = this.testCaseService.getVersionsByModule(id);
     this.formArray.clear();
     const testCases = this.filteredTestCases();
-    this.uploads = [];
+    
+    // Initialize uploads array with existing uploads
+    this.uploads = testCases.map(tc => 
+      tc.uploads ? tc.uploads.map(url => ({ url, loaded: true })) : []
+    );
 
     for (const testCase of testCases) {
       this.formArray.push(
@@ -199,7 +204,6 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
           remarks: [testCase.remarks || '']
         })
       );
-      this.uploads.push([]);
     }
 
     setTimeout(() => this.updateScrollButtons(), 300);
@@ -220,17 +224,24 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onUpload(event: Event, index: number): void {
-    const target = event.target as HTMLInputElement;
-    const files = target.files;
-    if (files && files.length > 0) {
-      for (let i = 0; i < files.length; i++) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      if (!this.uploads[index]) {
+        this.uploads[index] = [];
+      }
+      
+      Array.from(input.files).forEach(file => {
         const reader = new FileReader();
-        reader.onload = () => {
-          this.uploads[index].push(reader.result);
+        reader.onload = (e) => {
+          const url = e.target?.result as string;
+          this.uploads[index].push({ url, loaded: false });
           this.cdRef.detectChanges();
         };
-        reader.readAsDataURL(files[i]);
-      }
+        reader.readAsDataURL(file);
+      });
+      
+      // Reset input to allow uploading same files again
+      input.value = '';
     }
   }
 
@@ -243,13 +254,12 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
       result: formValues[index]?.result,
       actual: formValues[index]?.actual,
       remarks: formValues[index]?.remarks,
-      uploads: this.uploads[index].map(u => u?.toString() || '')
+      uploads: this.uploads[index].map(u => u.url)
     }));
 
     updatedTestCases.forEach(tc => this.testCaseService.updateTestCase(tc));
     this.testCasePool = [...this.testCaseService.getTestCases()];
     this.cdRef.detectChanges();
-    console.log('Results saved successfully!');
   }
 
   filteredTestCases(): TestCase[] {
@@ -323,7 +333,6 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  // 🔄 Scroll logic
   scrollTable(offset: number): void {
     if (!this.scrollContainer) return;
     this.scrollContainer.scrollLeft += offset;
@@ -367,30 +376,24 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
     document.removeEventListener('mouseup', this.boundStopResize);
   }
 
-  getModuleName(id: string): string {
-    const mod = this.modules.find(m => m.id === id);
-    return mod ? mod.name : `Module ${id}`;
+  copyTestCaseLink(testCaseId: string): void {
+    const copyUrl = `${window.location.origin}/tester/view-testcase/${testCaseId}`;
+    
+    navigator.clipboard.writeText(copyUrl).then(() => {
+      alert("Link copied to clipboard!");
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+      alert("Failed to copy link");
+    });
   }
-// In your component class
-copyStatus = signal<string | null>(null);
 
-copyTestCaseLink(testCaseId: string): void {
-  const copyUrl = `${window.location.origin}/tester/view-testcase/${testCaseId}`;
-  
-  navigator.clipboard.writeText(copyUrl).then(() => {
-    this.copyStatus.set('Copied!');
-    alert("link Copied !")
-    setTimeout(() => this.copyStatus.set(null), 2000); // Clear after 2 seconds
-  }).catch(err => {
-    console.error('Failed to copy: ', err);
-    this.copyStatus.set('Failed to copy');
-    setTimeout(() => this.copyStatus.set(null), 2000);
-  });
+  onImageLoad(event: Event, rowIndex: number, fileIndex: number) {
+    this.uploads[rowIndex][fileIndex].loaded = true;
+    this.cdRef.detectChanges();
+  }
+
+  removeUpload(rowIndex: number, fileIndex: number) {
+    this.uploads[rowIndex].splice(fileIndex, 1);
+    this.cdRef.detectChanges();
+  }
 }
-
-}
-
-
-
-
-

@@ -47,22 +47,32 @@
 
 
   <!-- Add Product Form -->
-  <div *ngIf="showAddProductForm" class="form-section card mt-3">
-    <div class="card-body">
-      <h4 class="card-title">Add New Product</h4>
-      <div class="form-group mb-3">
-        <input class="form-control" placeholder="Product name" [(ngModel)]="newProductName" />
-      </div>
-      <div class="form-actions">
-        <button class="btn btn-success me-2" (click)="addProduct()" [disabled]="!newProductName.trim()">
-          <i class="fas fa-check"></i> Add
-        </button>
-        <button class="btn btn-secondary" (click)="showAddProductForm = false">
-          <i class="fas fa-times"></i> Cancel
-        </button>
-      </div>
+<!-- Add Product Form -->
+<div *ngIf="showAddProductForm" class="form-section card mt-3">
+  <div class="card-body">
+    <h4 class="card-title">Add New Product</h4>
+    <div class="form-group mb-3">
+      <input 
+        class="form-control" 
+        placeholder="Product name" 
+        [(ngModel)]="newProductName"
+        (keyup.enter)="addProduct()"
+      />
+    </div>
+    <div class="form-actions">
+      <button 
+        class="btn btn-success me-2" 
+        (click)="addProduct()" 
+        [disabled]="!newProductName.trim()"
+      >
+        <i class="fas fa-check"></i> Add
+      </button>
+      <button class="btn btn-secondary" (click)="showAddProductForm = false; newProductName = ''">
+        <i class="fas fa-times"></i> Cancel
+      </button>
     </div>
   </div>
+</div>
 
   <!-- Product Selection Modal -->
   <div *ngIf="showProductSelectorModal" class="modal-overlay">

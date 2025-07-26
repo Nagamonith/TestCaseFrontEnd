@@ -1,37 +1,33 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { AddAttributeDialogComponent } from './add-attribute-dialog.component';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { MatIconModule } from '@angular/material/icon';
+import { Router, ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { TestCaseService } from 'src/app/shared/services/test-case.service';
+import { AddAttributeDialogComponent } from './add-attribute-dialog.component';
+
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 interface FieldMapping {
-  required: boolean;
   field: string;
   label: string;
   mappedTo: string;
-  example?: string;
+  required: boolean;
 }
 
 @Component({
   selector: 'app-sheet-matching',
   standalone: true,
-  imports: [
-    CommonModule, 
-    RouterModule,
-    FormsModule,
-    DragDropModule,
-    MatDialogModule
-  ],
+  imports: [CommonModule, FormsModule, MatIconModule, MatDialogModule, MatInputModule, MatButtonModule],
   templateUrl: './sheet-matching.component.html',
   styleUrls: ['./sheet-matching.component.css']
 })
-export class SheetMatchingComponent implements OnInit {
-  private route = inject(ActivatedRoute);
+export class SheetMatchingComponent {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private testCaseService = inject(TestCaseService);
 
@@ -39,335 +35,154 @@ export class SheetMatchingComponent implements OnInit {
   sheetColumns = signal<string[]>([]);
   sheetData = signal<any[]>([]);
   customAttributes = signal<string[]>([]);
-  isSaving = signal<boolean>(false);
-  errorMessage = signal<string>('');
-
-  // Track mappings for custom attributes separately
   attributeMappings = signal<Record<string, string>>({});
+  isProcessing = signal(false);
+  errorMessage = signal<string | null>(null);
 
-  coreFields = signal<FieldMapping[]>([
-    { required: true, field: 'slNo', label: 'Serial No', mappedTo: '', example: '1, 2, 3' },
-    { required: true, field: 'testCaseId', label: 'Test Case ID', mappedTo: '', example: 'TC-001' },
-    { required: true, field: 'moduleId', label: 'Module ID', mappedTo: '', example: 'MOD-001' },
-    { required: true, field: 'scenario', label: 'Scenario', mappedTo: '', example: 'User login validation' },
-    { required: true, field: 'steps', label: 'Steps', mappedTo: '', example: '1. Enter username\n2. Enter password' },
-    { required: true, field: 'expected', label: 'Expected Result', mappedTo: '', example: 'User should be logged in' },
-    { required: false, field: 'version', label: 'Version', mappedTo: '', example: '1.0' },
-    { required: false, field: 'useCase', label: 'Use Case', mappedTo: '', example: 'UC-001' },
-    { required: false, field: 'result', label: 'Result', mappedTo: '', example: 'Pass/Fail' },
-    { required: false, field: 'actual', label: 'Actual Result', mappedTo: '', example: 'User logged in successfully' },
-    { required: false, field: 'remarks', label: 'Remarks', mappedTo: '', example: 'Tested on Chrome' },
-    { required: false, field: 'uploads', label: 'Attachments', mappedTo: '', example: 'screenshot.png' }
+  coreMappings = signal<FieldMapping[]>([
+    { field: 'slNo', label: 'Sl.No', mappedTo: '', required: true },
+    { field: 'testCaseId', label: 'Test Case ID', mappedTo: '', required: true },
+    { field: 'useCase', label: 'Use Case', mappedTo: '', required: true },
+    { field: 'scenario', label: 'Scenario', mappedTo: '', required: true },
+    { field: 'steps', label: 'Steps', mappedTo: '', required: true },
+    { field: 'expected', label: 'Expected', mappedTo: '', required: true },
+    { field: 'version', label: 'Version', mappedTo: 'v1.0', required: false }
   ]);
 
-  allFields = computed(() => [
-    ...this.coreFields(),
-    ...this.customAttributes().map(attr => ({
-      required: false,
-      field: `attr_${attr}`,
-      label: attr,
-      mappedTo: this.attributeMappings()[attr] || '',
-      example: ''
-    }))
-  ]);
+  constructor() {
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras.state;
 
-  previewData = signal<any[]>([]);
-
-  ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const sheetName = params.get('sheetName');
-      if (!sheetName) {
-        this.router.navigate(['/tester/import-excel']);
-        return;
-      }
-
-      this.sheetName.set(sheetName);
-
-      const navigation = this.router.getCurrentNavigation();
-      const state = navigation?.extras?.state || window.history.state;
-
-      if (state?.sheetColumns && state?.sheetData) {
-        this.processSheetData(state.sheetColumns, state.sheetData, sheetName);
-      } else {
-        this.loadFromSessionStorage(sheetName);
-      }
-    });
-  }
-
-  private processSheetData(columns: string[], data: any[], sheetName: string) {
-    this.sheetColumns.set(columns);
-    this.sheetData.set(data);
-    this.autoMapFields();
-    this.generatePreview();
-    
-    sessionStorage.setItem('sheetMappingData', JSON.stringify({
-      sheetName,
-      sheetColumns: columns,
-      sheetData: data
-    }));
-  }
-
-  private loadFromSessionStorage(sheetName: string) {
-    const savedData = sessionStorage.getItem('sheetMappingData');
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-        if (parsedData.sheetName === sheetName) {
-          this.processSheetData(
-            parsedData.sheetColumns, 
-            parsedData.sheetData, 
-            sheetName
-          );
-          return;
-        }
-      } catch (e) {
-        console.error('Error parsing saved data:', e);
-      }
+    if (state) {
+      this.sheetName.set(this.route.snapshot.paramMap.get('sheetName') || '');
+      this.sheetColumns.set(state['sheetColumns'] || []);
+      this.sheetData.set(state['sheetData'] || []);
+      setTimeout(() => this.autoMapColumns(), 0); // Auto-map after signals are set
+    } else {
+      this.router.navigate(['/tester/import-excel']);
     }
-    
-    this.router.navigate(['/tester/import-excel'], {
-      queryParams: { missingData: true }
-    });
   }
 
-  autoMapFields() {
-    const sheetCols = this.sheetColumns();
-    const updatedFields = this.coreFields().map(field => {
-      if (field.field === 'moduleId') {
-        const generatedModuleId = this.generateModuleId();
-        return { ...field, mappedTo: generatedModuleId || '' };
-      }
-
-      let match = sheetCols.find(col => col.toLowerCase() === field.field.toLowerCase());
-      if (!match) match = sheetCols.find(col => col.toLowerCase() === field.label.toLowerCase());
-      if (!match) {
-        match = sheetCols.find(col => 
-          col.toLowerCase().includes(field.field.toLowerCase()) || 
-          col.toLowerCase().includes(field.label.toLowerCase())
-        );
-      }
-      return { ...field, mappedTo: match || '' };
-    });
-
-    this.coreFields.set(updatedFields);
-  }
-
-  private generateModuleId(): string | null {
-    const sheetName = this.sheetName().toLowerCase();
-    const sheetCols = this.sheetColumns();
-    
-    const moduleNameMatch = sheetName.match(/(\w+)(module|mod|m)?$/i);
-    if (moduleNameMatch) {
-      const moduleName = moduleNameMatch[1]
-        .replace(/[^a-zA-Z]/g, ' ')
-        .trim()
-        .replace(/\s+/g, '-')
-        .toUpperCase();
-      return `MOD-${moduleName}`;
-    }
-    
-    const moduleCols = sheetCols.filter(col => 
-      col.toLowerCase().includes('module') || 
-      col.toLowerCase().includes('mod') ||
-      col.toLowerCase().includes('component')
+  updateMapping(field: string, column: string): void {
+    this.coreMappings.update(mappings =>
+      mappings.map(m => m.field === field ? { ...m, mappedTo: column } : m)
     );
-    
-    if (moduleCols.length > 0 && this.sheetData().length > 0) {
-      const sampleValue = this.sheetData()[0][moduleCols[0]];
-      if (sampleValue) {
-        return this.formatModuleId(sampleValue);
-      }
-    }
-    
-    if (sheetName.length > 0) {
-      const initials = sheetName
-        .split(/[\s-_]/)
-        .filter(word => word.length > 0)
-        .map(word => word[0])
-        .join('')
-        .toUpperCase();
-      return initials ? `MOD-${initials}` : null;
-    }
-    
-    return null;
   }
 
-  private formatModuleId(rawValue: string): string {
-    let cleanValue = rawValue.toString()
-      .replace(/[^a-zA-Z0-9]/g, ' ')
-      .trim()
-      .replace(/\s+/g, '-')
-      .toUpperCase();
-      
-    if (!cleanValue.startsWith('MOD-')) {
-      cleanValue = `MOD-${cleanValue}`;
-    }
-    
-    return cleanValue.substring(0, 20);
-  }
-    getPreviewValue(row: any, field: string): string {
-    if (field.startsWith('attr_')) {
-      const attrKey = field.substring(5);
-      const attribute = row.attributes?.find((a: any) => a.key === attrKey);
-      return attribute?.value || '-';
-    }
-    return row[field] || '-';
+  getAttributeMapping(attr: string): string {
+    return this.attributeMappings()[attr] || '';
   }
 
-  updateMapping(field: string, selectedColumn: string) {
-    this.coreFields.update(fields => 
-      fields.map(f => f.field === field ? { ...f, mappedTo: selectedColumn } : f)
-    );
-    this.generatePreview();
-  }
-
-  updateAttributeMapping(attr: string, selectedColumn: string) {
+  updateAttributeMapping(attr: string, column: string): void {
     this.attributeMappings.update(mappings => ({
       ...mappings,
-      [attr]: selectedColumn
+      [attr]: column
     }));
-    this.generatePreview();
   }
 
- generatePreview() {
-    if (this.sheetData().length === 0) return;
-
-    const preview = this.sheetData().slice(0, 3).map(row => {
-      const previewRow: any = {};
-      const attributes: any[] = [];
-
-      // Process core fields
-      this.coreFields().forEach(field => {
-        if (field.mappedTo) {
-          previewRow[field.field] = row[field.mappedTo];
-        }
-      });
-
-      // Process custom attributes
-      this.customAttributes().forEach(attr => {
-        const column = this.attributeMappings()[attr];
-        if (column) {
-          attributes.push({
-            key: attr,
-            value: row[column]
-          });
-        }
-      });
-
-      if (attributes.length > 0) {
-        previewRow.attributes = attributes;
-      }
-
-      return previewRow;
-    });
-
-    this.previewData.set(preview);
-  }
-
-  openAddAttributeDialog() {
+  openAddAttributeDialog(): void {
     const dialogRef = this.dialog.open(AddAttributeDialogComponent, {
       width: '400px',
-      data: { existingAttributes: this.customAttributes() }
+      data: { existing: this.customAttributes() }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.customAttributes.update(attrs => [...attrs, result]);
-        this.generatePreview();
+    dialogRef.afterClosed().subscribe(attribute => {
+      if (attribute) {
+        this.customAttributes.update(attrs => [...attrs, attribute]);
+        this.attributeMappings.update(mappings => ({
+          ...mappings,
+          [attribute]: ''
+        }));
       }
     });
   }
 
-  removeCustomAttribute(attr: string) {
+  removeCustomAttribute(attr: string): void {
     this.customAttributes.update(attrs => attrs.filter(a => a !== attr));
     this.attributeMappings.update(mappings => {
-      const newMappings = {...mappings};
+      const newMappings = { ...mappings };
       delete newMappings[attr];
       return newMappings;
     });
-    this.generatePreview();
   }
 
-  async saveMapping() {
-    this.isSaving.set(true);
-    this.errorMessage.set('');
-    
-    // Validate required fields
-    const missingRequired = this.coreFields().filter(f => 
-      f.required && !f.mappedTo
-    );
-    
-    if (missingRequired.length > 0) {
-      this.errorMessage.set(
-        `Please map all required fields: ${missingRequired.map(f => f.label).join(', ')}`
-      );
-      this.isSaving.set(false);
-      return;
-    }
+  goBack(): void {
+    this.router.navigate(['/tester/import-excel']);
+  }
+
+  importTestCases(): void {
+    this.isProcessing.set(true);
+    this.errorMessage.set(null);
 
     try {
-      // Create module from sheet name
-      const moduleName = this.generateModuleNameFromSheet();
-      const moduleId = this.testCaseService.addModule(moduleName, 'v1.0');
-      
-      // Process and save all test cases
-      this.sheetData().forEach(row => {
+      const missingRequired = this.coreMappings()
+        .filter(m => m.required && !m.mappedTo);
+
+      if (missingRequired.length > 0) {
+        throw new Error(`Please map all required fields: ${missingRequired.map(m => m.label).join(', ')}`);
+      }
+
+      const moduleName = this.generateModuleName();
+      const moduleId = this.testCaseService.addModule(moduleName);
+
+      this.sheetData().forEach((row, index) => {
+        const attributes = this.customAttributes()
+          .filter(attr => this.attributeMappings()[attr] && row[this.attributeMappings()[attr]])
+          .map(attr => ({
+            key: attr,
+            value: row[this.attributeMappings()[attr]]
+          }));
+
         const testCase: any = {
           moduleId,
-          version: 'v1.0',
-          result: 'Pending',
-          actual: '',
-          remarks: '',
-          attributes: [],
-          uploads: []
+          version: this.getMappedValue('version') || 'v1.0',
+          testCaseId: row[this.getMappedValue('testCaseId')] || `TC${index + 1}`,
+          useCase: row[this.getMappedValue('useCase')] || '',
+          scenario: row[this.getMappedValue('scenario')] || '',
+          steps: row[this.getMappedValue('steps')] || '',
+          expected: row[this.getMappedValue('expected')] || '',
+          slNo: parseInt(row[this.getMappedValue('slNo')]) || index + 1,
+          attributes,
+          result: 'Pending'
         };
-
-        // Map core fields
-        this.coreFields().forEach(field => {
-          if (field.mappedTo) {
-            testCase[field.field] = row[field.mappedTo];
-          }
-        });
-
-        // Map custom attributes
-        this.customAttributes().forEach(attr => {
-          const column = this.attributeMappings()[attr];
-          if (column) {
-            testCase.attributes.push({
-              key: attr,
-              value: row[column]
-            });
-          }
-        });
 
         this.testCaseService.addTestCase(testCase);
       });
 
       this.router.navigate(['/tester/modules', moduleId]);
     } catch (error) {
-      console.error('Error saving test cases:', error);
-      this.errorMessage.set('Failed to save test cases. Please try again.');
+      this.errorMessage.set(error instanceof Error ? error.message : 'Failed to import test cases');
+      console.error('Import error:', error);
     } finally {
-      this.isSaving.set(false);
+      this.isProcessing.set(false);
     }
   }
 
-  private generateModuleNameFromSheet(): string {
-    const sheetName = this.sheetName();
-    return sheetName
-      .replace(/^mod-?/i, '')
-      .replace(/[-_]/g, ' ')
+  private getMappedValue(field: string): string {
+    return this.coreMappings().find(m => m.field === field)?.mappedTo || '';
+  }
+
+  private generateModuleName(): string {
+    return this.sheetName()
+      .replace(/[_-]/g, ' ')
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ') + ' Module';
+      .join(' ');
   }
 
-  goBack() {
-    this.router.navigate(['/tester/import-excel']);
-  }
+  private autoMapColumns(): void {
+    const availableColumns = this.sheetColumns().map(col => col.toLowerCase().trim());
 
-  drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.sheetColumns(), event.previousIndex, event.currentIndex);
-    this.generatePreview();
+    this.coreMappings.update(mappings =>
+      mappings.map(mapping => {
+        const match = availableColumns.find(col =>
+          col === mapping.label.toLowerCase().trim() ||
+          col === mapping.field.toLowerCase().trim()
+        );
+        return match
+          ? { ...mapping, mappedTo: this.sheetColumns().find(col => col.toLowerCase().trim() === match)! }
+          : mapping;
+      })
+    );
   }
 }

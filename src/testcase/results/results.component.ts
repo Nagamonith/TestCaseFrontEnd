@@ -1,102 +1,77 @@
-// src/app/tester/results/results.component.ts
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
 import { TestCaseService } from 'src/app/shared/services/test-case.service';
-import { TestCase } from 'src/app/shared/data/dummy-testcases';
 
 @Component({
   selector: 'app-results',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './results.component.html',
-  styleUrls: ['./results.component.css'],
+  styleUrls: ['./results.component.css']
 })
 export class ResultsComponent {
   private testCaseService = inject(TestCaseService);
 
-  selectedModule = '';
-  showTable = false;
-  filterStatus: 'All' | 'Pass' | 'Fail' | 'Pending' = 'All';
+  selectedModule = signal<string>('');
+  filterStatus = signal<'All' | 'Pass' | 'Fail' | 'Pending'>('All');
   modules = this.testCaseService.getModules();
-  testCasePool = this.testCaseService.getTestCases();
 
-  private getStatus(index: number): 'Pass' | 'Fail' | 'Pending' {
-    const mod = index % 3;
-    return mod === 0 ? 'Pass' : mod === 1 ? 'Fail' : 'Pending';
-  }
+  testCases = computed(() => 
+    this.selectedModule()
+      ? this.testCaseService.getTestCases()
+          .filter(tc => tc.moduleId === this.selectedModule())
+      : []
+  );
 
-  private get filteredByModule(): TestCase[] {
-    return this.selectedModule
-      ? this.testCasePool.filter((tc) => tc.moduleId === this.selectedModule)
-      : [];
-  }
+  filteredTestCases = computed(() => {
+    const status = this.filterStatus();
+    return this.testCases().filter(tc => 
+      status === 'All' ? true : tc.result === status
+    );
+  });
 
-  get tableData(): { tc: TestCase; status: 'Pass' | 'Fail' | 'Pending' }[] {
-    return this.filteredByModule
-      .map((tc, i) => ({ tc, status: this.getStatus(i) }))
-      .filter((row) =>
-        this.filterStatus === 'All' ? true : row.status === this.filterStatus
-      );
-  }
+  stats = computed(() => {
+    const cases = this.testCases();
+    return {
+      total: cases.length,
+      pass: cases.filter(tc => tc.result === 'Pass').length,
+      fail: cases.filter(tc => tc.result === 'Fail').length,
+      pending: cases.filter(tc => !tc.result || tc.result === 'Pending').length
+    };
+  });
 
-  get stats() {
-    const total = this.filteredByModule.length;
-    const pass = this.filteredByModule.filter((_, i) => this.getStatus(i) === 'Pass').length;
-    const fail = this.filteredByModule.filter((_, i) => this.getStatus(i) === 'Fail').length;
-    const pending = this.filteredByModule.filter((_, i) => this.getStatus(i) === 'Pending').length;
-    return { total, pass, fail, pending };
-  }
+  exportResults(): void {
+    const module = this.modules.find(m => m.id === this.selectedModule());
+    if (!module) return;
 
-  onModuleChange(id: string) {
-    this.selectedModule = id;
-    this.showTable = false;
-    this.filterStatus = 'All';
-  }
-
-  getModuleName(id: string): string {
-    const mod = this.modules.find((m) => m.id === id);
-    return mod ? mod.name : '';
-  }
-
-  exportToExcel(): void {
-    if (!this.selectedModule || this.tableData.length === 0) return;
-
-    const rows = this.tableData.map((row) => {
-      const dynamicObj = row.tc.attributes.reduce((acc, attr) => {
+    const data = this.filteredTestCases().map(tc => ({
+      'Sl.No': tc.slNo,
+      'Test Case ID': tc.testCaseId,
+      'Use Case': tc.useCase,
+      'Scenario': tc.scenario,
+      'Steps': tc.steps,
+      'Expected': tc.expected,
+      'Result': tc.result,
+      'Actual': tc.actual || '',
+      'Remarks': tc.remarks || '',
+      ...tc.attributes.reduce((acc, attr) => {
         acc[attr.key] = attr.value;
         return acc;
-      }, {} as Record<string, string>);
+      }, {} as Record<string, string>)
+    }));
 
-      return {
-        'Sl. No': row.tc.slNo,
-        'Test Case ID': row.tc.testCaseId,
-        'Use Case': row.tc.useCase,
-        'Scenario': row.tc.scenario,
-        'Steps': row.tc.steps,
-        'Expected': row.tc.expected,
-        'Actual': `Actual output ${row.tc.slNo}`,
-        'Result': row.status,
-        'Remarks': `Remarks for test ${row.tc.slNo}`,
-        ...dynamicObj,
-      };
-    });
-
-    const worksheet = XLSX.utils.json_to_sheet(rows);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, this.getModuleName(this.selectedModule));
-
-    const wbArray = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([wbArray], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-
-    const fileName = `${this.getModuleName(this.selectedModule)}_results.xlsx`.replace(/\s+/g, '_');
-    saveAs(blob, fileName);
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Test Results');
+    XLSX.writeFile(wb, `${module.name}_Test_Results.xlsx`);
   }
- copyTestCaseLink(testCaseId: string): void {
+  getModuleName(moduleId: string): string {
+  const module = this.modules.find(m => m.id === moduleId);
+  return module ? module.name : 'Unknown Module';
+}
+copyTestCaseLink(testCaseId: string): void {
   const baseUrl = window.location.origin;
   const copyUrl = `${baseUrl}/tester/view-testcase/${testCaseId}`;
   
@@ -106,5 +81,4 @@ export class ResultsComponent {
     console.error('Failed to copy: ', err);
   });
 }
-
 }

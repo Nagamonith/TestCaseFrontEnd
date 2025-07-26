@@ -126,16 +126,22 @@ updateInterval(): void {
   getProductName(productId: string): string {
     return this.products().find(p => p.id === productId)?.name || 'Unknown Product';
   }
+addProduct(): void {
+  const name = this.newProductName.trim();
+  if (!name) return;
 
-  addProduct() {
-    const name = this.newProductName.trim();
-    if (!name) return;
-
-    this.productService.addProduct(name);
-    this.newProductName = '';
-    this.showAddProductForm = false;
-    this.loadProducts(); // Refresh the product list
-  }
+  this.productService.addProduct(name).subscribe({
+    next: () => {
+      this.newProductName = '';
+      this.showAddProductForm = false;
+      this.loadProducts(); // Refresh the product list
+    },
+    error: (err) => {
+      console.error('Failed to add product:', err);
+      alert('Failed to add product. Please try again.');
+    }
+  });
+}
 
   // Module methods
   handleAddModule() {

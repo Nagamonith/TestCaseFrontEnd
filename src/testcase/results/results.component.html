@@ -1,99 +1,97 @@
-<h2 class="text-center">Results Summary</h2>
 
-<!-- Module selector -->
-<div class="form-section">
-  <label for="moduleSelect">Select Module</label>
-  <select id="moduleSelect"
-          [(ngModel)]="selectedModule"
-          (change)="onModuleChange(selectedModule)">
-    <option value="">-- Choose Module --</option>
-    <option *ngFor="let m of modules" [value]="m.id">{{ m.name }}</option>
-  </select>
-</div>
+  <h2 class="text-center">Results Summary</h2>
 
-<!-- Metadata + buttons appear after module is chosen -->
-<div *ngIf="selectedModule">
-  <div class="meta-section">
-    <h4>📊 Module Metadata</h4>
-    <ul>
-      <li>Total Test Cases: {{ stats.total }}</li>
-      <li style="color: rgb(36, 188, 36);">✅ Passed: {{ stats.pass }}</li>
-      <li style="color: rgb(228, 39, 39);">❌ Failed: {{ stats.fail }}</li>
-      <li style="color: rgb(255, 170, 0);">⏳ Pending: {{ stats.pending }}</li>
-    </ul>
-    <!-- <button class="btn-automation">Automation Result</button> -->
+  <!-- Module selector -->
+  <div class="form-section">
+    <label for="moduleSelect">Select Module</label>
+    <select id="moduleSelect"
+            [(ngModel)]="selectedModule">
+      <option value="">-- Choose Module --</option>
+      <option *ngFor="let module of modules" [value]="module.id">{{ module.name }}</option>
+    </select>
   </div>
 
-  <!-- Toggle View Module -->
-  <div class="view-btn-container">
-    <button class="btn-view" (click)="showTable = !showTable">
-      {{ showTable ? 'Hide' : 'View' }} Module
-    </button>
-  </div>
-
-  <!-- Export button -->
-  <div *ngIf="showTable && tableData.length" class="export-btn-container">
-    <button class="btn-export" (click)="exportToExcel()">⬇️ Export Results</button>
-  </div>
-
-  <!-- Table -->
-  <div *ngIf="showTable">
-    <div class="filter-section">
-      <label for="statusFilter">Filter by Result</label>
-      <select id="statusFilter" [(ngModel)]="filterStatus">
-        <option value="All">All</option>
-        <option value="Pass">Pass</option>
-        <option value="Fail">Fail</option>
-        <option value="Pending">Pending</option>
-      </select>
+  <!-- Results summary section -->
+  <div *ngIf="selectedModule()" class="results-summary">
+    <div class="stats-section">
+      <h4>📊 Module Statistics</h4>
+      <ul>
+        <li>Total Test Cases: {{ stats().total }}</li>
+        <li class="pass">✅ Passed: {{ stats().pass }}</li>
+        <li class="fail">❌ Failed: {{ stats().fail }}</li>
+        <li class="pending">⏳ Pending: {{ stats().pending }}</li>
+      </ul>
     </div>
 
-    <h4 class="table-title">🧪 Test Cases for {{ getModuleName(selectedModule) }}</h4>
+    <!-- Filter controls -->
+    <div class="filter-controls">
+      <div class="filter-section">
+        <label for="statusFilter">Filter by Status</label>
+        <select id="statusFilter" [(ngModel)]="filterStatus">
+          <option value="All">All Results</option>
+          <option value="Pass">Passed Only</option>
+          <option value="Fail">Failed Only</option>
+          <option value="Pending">Pending Only</option>
+        </select>
+      </div>
+      
+      <button class="export-btn" (click)="exportResults()">
+        <span class="export-icon">⬇️</span> Export to Excel
+      </button>
+    </div>
 
-    <div class="table-scroll-container">
-      <div class="table-container">
-        <table class="result-table">
+    <!-- Results table -->
+    <div class="table-container">
+      <h4>🧪 Test Cases for {{ getModuleName(selectedModule()) }}</h4>
+      
+      <div *ngIf="filteredTestCases().length > 0; else noResults" class="table-wrapper">
+        <table class="results-table">
           <thead>
             <tr>
-              <th class="copy-header"></th>
-              <th>Sl. No</th>
+              <th>Sl.No</th>
               <th>Test Case ID</th>
               <th>Use Case</th>
               <th>Scenario</th>
               <th>Steps</th>
               <th>Expected</th>
               <th>Actual</th>
-              <th>Result</th>
+              <th>Status</th>
               <th>Remarks</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let row of tableData">
-              <td class="copy-cell">
-               <button title="Copy Link" (click)="copyTestCaseLink(row.tc.testCaseId)"><button class="copy-btn" title="Copy link">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
-</button></button>
-
+            <tr *ngFor="let testCase of filteredTestCases()" [class.pass-row]="testCase.result === 'Pass'"
+                [class.fail-row]="testCase.result === 'Fail'"
+                [class.pending-row]="!testCase.result || testCase.result === 'Pending'">
+              <td>{{ testCase.slNo }}</td>
+              <td>{{ testCase.testCaseId }}</td>
+              <td>{{ testCase.useCase }}</td>
+              <td>{{ testCase.scenario }}</td>
+              <td class="steps-cell">{{ testCase.steps }}</td>
+              <td>{{ testCase.expected }}</td>
+              <td>{{ testCase.actual || '-' }}</td>
+              <td [class]="testCase.result?.toLowerCase() || 'pending'">
+                {{ testCase.result || 'Pending' }}
               </td>
-              <td>{{ row.tc.slNo }}</td>
-              <td>{{ row.tc.testCaseId }}</td>
-              <td>{{ row.tc.useCase }}</td>
-              <td>{{ row.tc.scenario }}</td>
-              <td>{{ row.tc.steps }}</td>
-              <td>{{ row.tc.expected }}</td>
-              <td>Actual output {{ row.tc.slNo }}</td>
-              <td [ngClass]="{
-                    'pass': row.status === 'Pass',
-                    'fail': row.status === 'Fail',
-                    'pending': row.status === 'Pending'
-                  }">{{ row.status }}</td>
-              <td>Remarks for test {{ row.tc.slNo }}</td>
+              <td>{{ testCase.remarks || '-' }}</td>
+              <td>
+                <button class="copy-btn" (click)="copyTestCaseLink(testCase.testCaseId)" title="Copy test case link">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" 
+                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <ng-template #noResults>
+        <div class="no-results">
+          <p>No test cases found matching the current filters</p>
+        </div>
+      </ng-template>
     </div>
   </div>
-</div>

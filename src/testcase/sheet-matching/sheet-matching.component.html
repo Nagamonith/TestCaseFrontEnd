@@ -1,11 +1,11 @@
 <div class="sheet-matching-container">
   <div class="sheet-header">
     <h2 class="sheet-title">
-      <span class="material-icons">description</span>
+      <mat-icon>description</mat-icon>
       Mapping Sheet: <strong>{{ sheetName() }}</strong>
     </h2>
     <button (click)="goBack()" class="back-btn">
-      <span class="material-icons">arrow_back</span>
+      <mat-icon>arrow_back</mat-icon>
       Back to Import
     </button>
   </div>
@@ -19,13 +19,13 @@
     <div class="mapping-column">
       <div class="column-header">
         <h3 class="column-title">
-          <span class="material-icons">label</span>
+          <mat-icon>label</mat-icon>
           Test Case Fields
         </h3>
         <span class="column-subtitle">{{ sheetColumns().length }} columns detected</span>
       </div>
       
-      <div *ngFor="let field of allFields()" class="field-item" [class.mapped]="field.mappedTo">
+      <div *ngFor="let field of coreMappings()" class="field-item" [class.mapped]="field.mappedTo">
         <div class="field-header">
           <div>
             <span class="field-name">{{ field.label }}</span>
@@ -38,41 +38,38 @@
         <select
           class="field-select"
           [ngModel]="field.mappedTo"
-          (ngModelChange)="field.field.startsWith('attr_') ? 
-            updateAttributeMapping(field.label, $event) : 
-            updateMapping(field.field, $event)"
+          (ngModelChange)="updateMapping(field.field, $event)"
         >
           <option value="">-- Select Column --</option>
           <option *ngFor="let col of sheetColumns()" [value]="col">{{ col }}</option>
         </select>
-        
-        <div *ngIf="field.example" class="field-example">
-          Example: {{ field.example }}
-        </div>
-
-        <div *ngIf="field.field === 'moduleId' && field.mappedTo" class="auto-generated-hint">
-          <span class="material-icons">auto_awesome</span>
-          Auto-generated from sheet name
-        </div>
       </div>
 
       <!-- Custom Attributes Section -->
       <div class="custom-attributes">
         <h4 class="column-title">
-          <span class="material-icons">add_circle</span>
+          <mat-icon>add_circle</mat-icon>
           Custom Attributes
         </h4>
         <div *ngFor="let attr of customAttributes()" class="custom-attribute-item">
           <span class="custom-attribute-name">{{ attr }}</span>
           <button (click)="removeCustomAttribute(attr)" class="remove-attr-btn">
-            <span class="material-icons">delete</span>
+            <mat-icon>delete</mat-icon>
           </button>
+          <select
+            class="field-select"
+            [ngModel]="getAttributeMapping(attr)"
+            (ngModelChange)="updateAttributeMapping(attr, $event)"
+          >
+            <option value="">-- Select Column --</option>
+            <option *ngFor="let col of sheetColumns()" [value]="col">{{ col }}</option>
+          </select>
         </div>
         <button
           (click)="openAddAttributeDialog()"
           class="add-attribute-btn"
         >
-          <span class="material-icons">add</span>
+          <mat-icon>add</mat-icon>
           Add Custom Attribute
         </button>
       </div>
@@ -81,12 +78,12 @@
     <!-- Sheet Columns Column -->
     <div class="mapping-column">
       <h3 class="column-title">
-        <span class="material-icons">grid_on</span>
+        <mat-icon>grid_on</mat-icon>
         Sheet Columns
       </h3>
-      <div cdkDropList class="columns-list" (cdkDropListDropped)="drop($event)">
-        <div *ngFor="let col of sheetColumns()" cdkDrag class="sheet-column-item">
-          <span class="material-icons">drag_indicator</span>
+      <div class="columns-list">
+        <div *ngFor="let col of sheetColumns()" class="sheet-column-item">
+          <mat-icon>drag_indicator</mat-icon>
           {{ col }}
         </div>
       </div>
@@ -95,33 +92,37 @@
     <!-- Preview Column -->
     <div class="mapping-column">
       <h3 class="column-title">
-        <span class="material-icons">preview</span>
+        <mat-icon>preview</mat-icon>
         Preview (First 3 Rows)
       </h3>
       
-      <div *ngIf="previewData().length > 0" class="preview-table-container">
+      <div *ngIf="sheetData().length > 0" class="preview-table-container">
         <table class="preview-table">
           <thead>
             <tr>
-              <th *ngFor="let field of allFields()" [class.mapped]="field.mappedTo">
+              <th *ngFor="let field of coreMappings()" [class.mapped]="field.mappedTo">
                 {{ field.label }}
+              </th>
+              <th *ngFor="let attr of customAttributes()">
+                {{ attr }}
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let row of previewData()">
-              <td *ngFor="let field of allFields()">
-                <div class="preview-cell" [title]="getPreviewValue(row, field.field)">
-                  {{ getPreviewValue(row, field.field) }}
-                </div>
+            <tr *ngFor="let row of sheetData().slice(0, 3)">
+              <td *ngFor="let field of coreMappings()">
+                {{ field.mappedTo ? row[field.mappedTo] : '-' }}
+              </td>
+              <td *ngFor="let attr of customAttributes()">
+                {{ getAttributeMapping(attr) ? row[getAttributeMapping(attr)] : '-' }}
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       
-      <div *ngIf="previewData().length === 0" class="empty-preview">
-        <span class="material-icons">info</span>
+      <div *ngIf="sheetData().length === 0" class="empty-preview">
+        <mat-icon>info</mat-icon>
         <p>No preview available</p>
         <p>Map some fields to see a preview</p>
       </div>
@@ -130,13 +131,13 @@
 
   <div class="action-buttons">
     <button
-      (click)="saveMapping()"
-      [disabled]="isSaving()"
+      (click)="importTestCases()"
+      [disabled]="isProcessing()"
       class="save-btn"
     >
-      <span *ngIf="!isSaving()" class="material-icons">save</span>
-      <span *ngIf="isSaving()" class="spinner material-icons">hourglass_top</span>
-      {{ isSaving() ? 'Saving...' : 'Save Mapping' }}
+      <mat-icon *ngIf="!isProcessing()">save</mat-icon>
+      <mat-icon *ngIf="isProcessing()" class="spinner">hourglass_top</mat-icon>
+      {{ isProcessing() ? 'Importing...' : 'Import Test Cases' }}
     </button>
   </div>
 </div>
