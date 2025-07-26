@@ -19,6 +19,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap, RouterModule } from '@angular/router';
 import { TestCaseService } from 'src/app/shared/services/test-case.service';
 import { TestCase } from 'src/app/shared/data/dummy-testcases';
+import { AutoSaveService } from 'src/app/shared/services/auto-save.service';
 
 interface Filter {
   slNo: string;
@@ -51,6 +52,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
   private route = inject(ActivatedRoute);
   private testCaseService = inject(TestCaseService);
   private cdRef = inject(ChangeDetectorRef);
+  private autoSaveService = inject(AutoSaveService);
 
   selectedModule = signal<string | null>(null);
   selectedVersion = '';
@@ -114,6 +116,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
   ];
 
   ngOnInit(): void {
+    this.autoSaveService.start(() => this.onSave());
     this.route.paramMap.subscribe((pm: ParamMap) => {
       const modId = pm.get('moduleId');
       const fallback = this.modules.length ? this.modules[0].id : null;
@@ -132,6 +135,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
+     this.autoSaveService.stop();
     document.removeEventListener('click', this.boundHandleClick);
     document.removeEventListener('mousemove', this.boundOnResize);
     document.removeEventListener('mouseup', this.boundStopResize);

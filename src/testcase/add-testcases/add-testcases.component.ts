@@ -1,10 +1,11 @@
 // src/app/tester/add-testcases/add-testcases.component.ts
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { TestCaseService } from 'src/app/shared/services/test-case.service';
+import { AutoSaveService } from 'src/app/shared/services/auto-save.service';
 
 @Component({
   selector: 'app-add-testcases',
@@ -13,8 +14,16 @@ import { TestCaseService } from 'src/app/shared/services/test-case.service';
   templateUrl: './add-testcases.component.html',
   styleUrls: ['./add-testcases.component.css'],
 })
-export class AddTestcasesComponent {
+export class AddTestcasesComponent implements OnInit, OnDestroy{
   private testCaseService = inject(TestCaseService);
+  private autoSaveService = inject(AutoSaveService);
+  ngOnInit(): void {
+    this.autoSaveService.start(() => this.exportModuleToExcel());
+  }
+
+  ngOnDestroy(): void {
+    this.autoSaveService.stop();
+  }
 
   selectedModule = signal<string | null>(null);
   selectedVersion = signal<string | null>(null);

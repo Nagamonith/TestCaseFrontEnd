@@ -1,10 +1,11 @@
 // src/app/tester/edit-testcases/edit-testcases.component.ts
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormArray, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { TestCaseService } from 'src/app/shared/services/test-case.service';
 import { TestCase } from 'src/app/shared/data/dummy-testcases';
+import { AutoSaveService } from 'src/app/shared/services/auto-save.service';
 
 type TestCaseFilter = {
   slNo: string;
@@ -19,11 +20,19 @@ type TestCaseFilter = {
   templateUrl: './edit-testcases.component.html',
   styleUrls: ['./edit-testcases.component.css'],
 })
-export class EditTestcasesComponent {
+export class EditTestcasesComponent implements OnInit, OnDestroy{
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private testCaseService = inject(TestCaseService);
+  private autoSaveService = inject(AutoSaveService);
+  ngOnInit(): void {
+    this.autoSaveService.start(() => this.saveTestCase());
+  }
+
+  ngOnDestroy(): void {
+    this.autoSaveService.stop();
+  }
 
   selectedModule = signal<string>('');
   selectedVersion = signal<string>('');

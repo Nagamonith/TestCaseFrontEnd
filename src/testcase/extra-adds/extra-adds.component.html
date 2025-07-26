@@ -1,5 +1,6 @@
 <div class="container">
-  <h2 class="header">🚀 Module & Version Management</h2>
+  <h2 class="header">🚀 Module & Version Management</h2> 
+  
 
   <!-- Independent Action Buttons -->
   <div class="action-buttons">
@@ -18,7 +19,32 @@
     <button class="btn btn-primary" (click)="showProducts = !showProducts">
       <i class="fas fa-box-open"></i> {{ showProducts ? 'Hide' : 'Show' }} Products
     </button>
+ 
+
   </div>
+  <!-- Auto-Save Toggle -->
+<!-- Auto Save Toggle -->
+<div class="auto-save-toggle">
+  <label class="btn btn-primary" for="btn-check-5">Auto Save</label>
+  <label class="switch">
+    <input type="checkbox" class="btn-check" id="btn-check-5" [checked]="autoSaveEnabled" (change)="toggleAutoSave()" />
+    <span class="slider"></span>
+  </label>
+  
+
+  <!-- Interval Dropdown (visible only if enabled) -->
+  <select
+    *ngIf="autoSaveEnabled"
+    [(ngModel)]="selectedInterval"
+    (change)="updateInterval()"
+    class="interval-select"
+  >
+    <option *ngFor="let opt of intervalOptions" [value]="opt.value">
+      {{ opt.label }}
+    </option>
+  </select>
+</div>
+
 
   <!-- Add Product Form -->
   <div *ngIf="showAddProductForm" class="form-section card mt-3">

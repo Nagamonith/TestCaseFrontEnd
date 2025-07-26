@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService, Product } from 'src/app/shared/services/product.service';
 import { TestCaseService } from 'src/app/shared/services/test-case.service';
+import { AutoSaveService } from 'src/app/shared/services/auto-save.service';
 
 import {
   faPlus, faCube, faCodeBranch, faList, faCheck, faTimes,
@@ -57,6 +58,18 @@ export class ExtraAddsComponent implements OnInit {
   newVersionName = '';
   selectedModuleId = '';
 
+  autoSaveEnabled = true;
+  selectedInterval = 3000; // default to 3 seconds
+intervalOptions = [
+  { label: '3 sec', value: 3000 },
+  { label: '5 sec', value: 5000 },
+  { label: '10 sec', value: 10000 },
+  { label: '30 sec', value: 30000 },
+  { label: '1 min', value: 60000 },
+  { label: '3 min', value: 180000 }
+];
+  
+
   modules = signal<Module[]>([]);
   versionsByModule = computed(() => {
     const result: Record<string, string[]> = {};
@@ -68,13 +81,37 @@ export class ExtraAddsComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
-    private testCaseService: TestCaseService
+    private testCaseService: TestCaseService,
+    private autoSaveService: AutoSaveService
   ) {}
 
-  ngOnInit(): void {
-    this.loadProducts();
-    this.modules.set(this.testCaseService.getModules());
+ngOnInit(): void {
+  this.autoSaveEnabled = this.autoSaveService.isEnabled();
+  this.autoSaveService.setInterval(this.selectedInterval);
+  if (this.autoSaveEnabled) {
+    this.autoSaveService.start(() => {
+      console.log('Auto-saving...'); // 🔁 Replace with actual save logic
+    });
   }
+
+  this.loadProducts();
+  this.modules.set(this.testCaseService.getModules());
+}
+
+toggleAutoSave(): void {
+  this.autoSaveEnabled = this.autoSaveService.toggle();
+  if (this.autoSaveEnabled) {
+    this.autoSaveService.start(() => {
+      console.log('Auto-saving...'); // 🔁 Replace with actual save logic
+    });
+  } else {
+    this.autoSaveService.stop();
+  }
+}
+updateInterval(): void {
+  this.autoSaveService.setInterval(this.selectedInterval);
+}
+
 
   loadProducts(): void {
     this.productService.getProducts().subscribe((products) => {

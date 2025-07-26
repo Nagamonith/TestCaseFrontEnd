@@ -24,6 +24,7 @@ import { ImportExcelComponent } from '../testcase/import-excel/import-excel.comp
 import { ModulesComponent } from '../testcase/modules/modules.component';
 import { ResultsComponent } from '../testcase/results/results.component';
 import { SummaryComponent } from '../testcase/summary/summary.component';
+import { TestCaseViewerComponent } from '../testcase/test-case-viewer/test-case-viewer.component';
 
 export const routes: Routes = [
   /* ───────── Public / login section ───────── */
@@ -88,7 +89,14 @@ export const routes: Routes = [
               )
           },
 
-          { path: '', redirectTo: 'add-testcases', pathMatch: 'full' }
+          { path: '', redirectTo: 'add-testcases', pathMatch: 'full' },
+ {
+    path: 'view-testcase/:testCaseId',
+    loadComponent: () =>
+      import('../testcase/test-case-viewer/test-case-viewer.component')
+        .then(m => m.TestCaseViewerComponent)
+  },
+
         ]
       }
     ]
