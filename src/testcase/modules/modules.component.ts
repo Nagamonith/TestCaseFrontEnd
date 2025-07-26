@@ -249,7 +249,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
     updatedTestCases.forEach(tc => this.testCaseService.updateTestCase(tc));
     this.testCasePool = [...this.testCaseService.getTestCases()];
     this.cdRef.detectChanges();
-    alert('Results saved successfully!');
+    console.log('Results saved successfully!');
   }
 
   filteredTestCases(): TestCase[] {
