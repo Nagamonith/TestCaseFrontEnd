@@ -14,16 +14,16 @@ import { AutoSaveService } from 'src/app/shared/services/auto-save.service';
   templateUrl: './add-testcases.component.html',
   styleUrls: ['./add-testcases.component.css'],
 })
-export class AddTestcasesComponent implements OnInit, OnDestroy{
+export class AddTestcasesComponent {
   private testCaseService = inject(TestCaseService);
-  private autoSaveService = inject(AutoSaveService);
-  ngOnInit(): void {
-    this.autoSaveService.start(() => this.exportModuleToExcel());
-  }
+  // private autoSaveService = inject(AutoSaveService);
+  // ngOnInit(): void {
+  //   this.autoSaveService.start(() => this.exportModuleToExcel());
+  // }
 
-  ngOnDestroy(): void {
-    this.autoSaveService.stop();
-  }
+  // ngOnDestroy(): void {
+  //   this.autoSaveService.stop();
+  // }
 
   selectedModule = signal<string | null>(null);
   selectedVersion = signal<string | null>(null);

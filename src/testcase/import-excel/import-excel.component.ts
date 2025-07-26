@@ -1,18 +1,21 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as XLSX from 'xlsx';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-import-excel',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './import-excel.component.html',
   styleUrls: ['./import-excel.component.css']
 })
 export class ImportExcelComponent {
   fileName = '';
   sheetNames = signal<string[]>([]);
-  sheetData = signal<Record<string, any[]> | null>(null); // store all sheet data internally
+  sheetData = signal<Record<string, any[]> | null>(null);
+
+  constructor(private router: Router) {}
 
   handleFileInput(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -32,14 +35,25 @@ export class ImportExcelComponent {
         allSheets[sheet] = rows;
       });
 
-      // Save only sheet names to show in UI
       this.sheetNames.set(workbook.SheetNames);
-
-      // Keep actual sheet data internally (simulate storing to DB)
       this.sheetData.set(allSheets);
     };
 
     reader.readAsBinaryString(file);
+  }
+
+  onCancelSheet(sheetName: string) {
+    const updated = this.sheetNames().filter((name) => name !== sheetName);
+    this.sheetNames.set(updated);
+
+    const updatedData = { ...this.sheetData() };
+    delete updatedData[sheetName];
+    this.sheetData.set(updatedData);
+  }
+
+  onSelectSheet(sheetName: string) {
+    // Navigate to mapping page with sheet name
+    this.router.navigate(['/mapping', sheetName]);
   }
 
   saveData() {

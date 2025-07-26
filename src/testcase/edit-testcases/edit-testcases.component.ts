@@ -20,19 +20,19 @@ type TestCaseFilter = {
   templateUrl: './edit-testcases.component.html',
   styleUrls: ['./edit-testcases.component.css'],
 })
-export class EditTestcasesComponent implements OnInit, OnDestroy{
+export class EditTestcasesComponent {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private testCaseService = inject(TestCaseService);
-  private autoSaveService = inject(AutoSaveService);
-  ngOnInit(): void {
-    this.autoSaveService.start(() => this.saveTestCase());
-  }
+  // private autoSaveService = inject(AutoSaveService);
+  // ngOnInit(): void {
+  //   this.autoSaveService.start(() => this.saveTestCase());
+  // }
 
-  ngOnDestroy(): void {
-    this.autoSaveService.stop();
-  }
+  // ngOnDestroy(): void {
+  //   this.autoSaveService.stop();
+  // }
 
   selectedModule = signal<string>('');
   selectedVersion = signal<string>('');
