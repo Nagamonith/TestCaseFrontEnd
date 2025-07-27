@@ -27,6 +27,8 @@ import { APP_INITIALIZER } from '@angular/core';
 import { AppComponent } from './app/app.component';
 import { ConfigService } from './app/services/config.service';
 import { appConfig } from './app/app.config';
+import { routes } from './app/app.routes';
+import { provideRouter } from '@angular/router';
 
 export function configInitializer(config: ConfigService) {
   return () => config.loadConfig();
@@ -35,6 +37,7 @@ export function configInitializer(config: ConfigService) {
 bootstrapApplication(AppComponent, {
   providers: [
     provideHttpClient(),
+    provideRouter(routes),
     ...appConfig.providers,
     {
       provide: APP_INITIALIZER,

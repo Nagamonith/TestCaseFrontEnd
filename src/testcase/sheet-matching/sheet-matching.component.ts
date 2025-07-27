@@ -3,13 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TestCaseService } from 'src/app/shared/services/test-case.service';
 import { AddAttributeDialogComponent } from './add-attribute-dialog.component';
 
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface FieldMapping {
   field: string;
@@ -21,7 +24,17 @@ interface FieldMapping {
 @Component({
   selector: 'app-sheet-matching',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, MatDialogModule, MatInputModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatIconModule,
+    MatDialogModule,
+    MatInputModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatTooltipModule
+  ],
   templateUrl: './sheet-matching.component.html',
   styleUrls: ['./sheet-matching.component.css']
 })
@@ -57,7 +70,7 @@ export class SheetMatchingComponent {
       this.sheetName.set(this.route.snapshot.paramMap.get('sheetName') || '');
       this.sheetColumns.set(state['sheetColumns'] || []);
       this.sheetData.set(state['sheetData'] || []);
-      setTimeout(() => this.autoMapColumns(), 0); // Auto-map after signals are set
+      setTimeout(() => this.autoMapColumns(), 0);
     } else {
       this.router.navigate(['/tester/import-excel']);
     }
@@ -83,6 +96,7 @@ export class SheetMatchingComponent {
   openAddAttributeDialog(): void {
     const dialogRef = this.dialog.open(AddAttributeDialogComponent, {
       width: '400px',
+      disableClose: true,
       data: { existing: this.customAttributes() }
     });
 
@@ -159,7 +173,8 @@ export class SheetMatchingComponent {
   }
 
   private getMappedValue(field: string): string {
-    return this.coreMappings().find(m => m.field === field)?.mappedTo || '';
+    const mapping = this.coreMappings().find(m => m.field === field);
+    return mapping?.mappedTo || '';
   }
 
   private generateModuleName(): string {

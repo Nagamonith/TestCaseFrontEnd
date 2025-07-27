@@ -26,6 +26,9 @@ import { ResultsComponent } from '../testcase/results/results.component';
 import { SummaryComponent } from '../testcase/summary/summary.component';
 import { TestCaseViewerComponent } from '../testcase/test-case-viewer/test-case-viewer.component';
 
+import { SheetMatchingComponent } from 'src/testcase/sheet-matching/sheet-matching.component';
+import { AutomationResultComponent } from 'src/testcase/automation-result/automation-result.component';
+
 export const routes: Routes = [
   /* ───────── Public / login section ───────── */
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -96,6 +99,19 @@ export const routes: Routes = [
       import('../testcase/test-case-viewer/test-case-viewer.component')
         .then(m => m.TestCaseViewerComponent)
   },
+  {
+    path: 'mapping/:sheetName',
+    loadComponent: () =>
+      import('../testcase/sheet-matching/sheet-matching.component').then(
+        (m) => m.SheetMatchingComponent
+      ),
+  },
+{
+  path: 'automation-result',
+  loadComponent: () =>
+    import('../testcase/automation-result/automation-result.component')
+      .then(m => m.AutomationResultComponent)
+},
 
         ]
       }

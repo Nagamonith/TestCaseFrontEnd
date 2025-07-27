@@ -1,47 +1,76 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { delay, tap } from 'rxjs/operators';
 
 export interface Product {
   id: string;
   name: string;
-  editing?: boolean; // Optional field for UI state
+  description?: string;
+  createdAt?: Date;
+  editing?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private products = [
-    { id: '2', name: 'Qualis SPC' },
-    { id: '3', name: 'MSA' },
-    { id: '4', name: 'FMEA' },
-    { id: '5', name: 'Wizard' },
-    { id: '6', name: 'APQP' },
-  ];
-
-  private productsSubject = new BehaviorSubject<Product[]>(this.products);
+  private products = new BehaviorSubject<Product[]>([
+    { id: '1', name: 'Qualis SPC', createdAt: new Date() },
+    { id: '2', name: 'MSA', createdAt: new Date() },
+    { id: '3', name: 'FMEA', createdAt: new Date() },
+    { id: '4', name: 'Wizard', createdAt: new Date() },
+    { id: '5', name: 'APQP', createdAt: new Date() }
+  ]);
 
   getProducts(): Observable<Product[]> {
-    return this.productsSubject.asObservable();
+    return this.products.asObservable().pipe(
+      delay(200)
+    );
   }
 
-  addProduct(newProductName: string): void {
-    const newId = (Math.max(...this.products.map(p => +p.id)) + 1).toString();
-    const newProduct = { id: newId, name: newProductName.trim() };
-    this.products.push(newProduct);
-    this.productsSubject.next([...this.products]);
-  }
-
-  updateProduct(updatedProduct: Product): Observable<void> {
-    const index = this.products.findIndex(p => p.id === updatedProduct.id);
-    if (index !== -1) {
-      this.products[index] = { ...updatedProduct };
-      this.productsSubject.next([...this.products]);
+  addProduct(name: string): Observable<Product> {
+    if (!name?.trim()) {
+      return throwError(() => new Error('Product name is required'));
     }
-    return of(undefined);
+
+    const newProduct: Product = {
+      id: Date.now().toString(),
+      name: name.trim(),
+      createdAt: new Date()
+    };
+
+    return of(newProduct).pipe(
+      delay(200),
+      tap(() => {
+        this.products.next([...this.products.value, newProduct]);
+      })
+    );
   }
 
-  deleteProduct(productId: string): Observable<void> {
-    this.products = this.products.filter(p => p.id !== productId);
-    this.productsSubject.next([...this.products]);
-    return of(undefined);
+  updateProduct(product: Product): Observable<Product> {
+    if (!product.id || !product.name?.trim()) {
+      return throwError(() => new Error('Invalid product data'));
+    }
+
+    return of(product).pipe(
+      delay(200),
+      tap(() => {
+        const updated = this.products.value.map(p => 
+          p.id === product.id ? { ...product, name: product.name.trim() } : p
+        );
+        this.products.next(updated);
+      })
+    );
+  }
+
+  deleteProduct(id: string): Observable<boolean> {
+    if (!id) {
+      return throwError(() => new Error('Product ID is required'));
+    }
+
+    return of(true).pipe(
+      delay(200),
+      tap(() => {
+        this.products.next(this.products.value.filter(p => p.id !== id));
+      })
+    );
   }
 }

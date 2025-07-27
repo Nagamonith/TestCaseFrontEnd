@@ -40,7 +40,10 @@
                 </a>
               </li>
               <li>
-                <a href="javascript:void(0)" (click)="onAutomationClick()"> - Automation Results</a>
+                <a [routerLink]="['/tester/automation-result']" [queryParams]="{ productId: product.id, productName: product.name }">
+  - Automation Results
+</a>
+
               </li>
             </ul>
           </li>
