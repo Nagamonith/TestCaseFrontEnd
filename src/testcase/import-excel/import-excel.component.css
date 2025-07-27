@@ -59,11 +59,11 @@ li {
 
 /* Button */
 button {
-  background-color: #007bff;
+  background-color: #2885e8;
   color: #fff;
   padding: 12px 18px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   margin-top: 20px;
   font-weight: bold;
