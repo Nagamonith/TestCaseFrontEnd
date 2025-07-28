@@ -58,6 +58,8 @@ export class ExtraAddsComponent implements OnInit {
   newVersionName = '';
   selectedModuleId = '';
 
+  showAutoSavePopup = false;
+
   autoSaveEnabled = true;
   selectedInterval = 3000; // default to 3 seconds
 intervalOptions = [
@@ -97,7 +99,9 @@ ngOnInit(): void {
   this.loadProducts();
   this.modules.set(this.testCaseService.getModules());
 }
-
+toggleAutoSavePopup(): void {
+  this.showAutoSavePopup = !this.showAutoSavePopup;
+}
 toggleAutoSave(): void {
   this.autoSaveEnabled = this.autoSaveService.toggle();
   if (this.autoSaveEnabled) {

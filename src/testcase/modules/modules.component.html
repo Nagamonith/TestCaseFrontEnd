@@ -22,14 +22,18 @@
 <div *ngIf="showViewTestCases">
   <div class="form-group" *ngIf="availableVersions.length">
     <label>Select Version</label>
-    <select [(ngModel)]="selectedVersion" (ngModelChange)="onVersionChange()" [ngModelOptions]="{standalone: true}">
+    <select [(ngModel)]="selectedVersion" (ngModelChange)="onVersionChange()" [ngModelOptions]="{ standalone: true }">
       <option value="">-- Choose Version --</option>
+      <option value="all">All Versions</option>
       <option *ngFor="let v of availableVersions" [value]="v">{{ v }}</option>
     </select>
   </div>
 
   <div *ngIf="selectedVersion && versionTestCases().length">
-    <h3>Test Cases for Version {{ selectedVersion }}</h3>
+    <h3>
+      Test Cases for 
+      {{ selectedVersion === 'all' ? 'All Versions' : ('Version ' + selectedVersion) }}
+    </h3>
 
     <!-- Attribute filter -->
     <div class="filters">
@@ -90,10 +94,10 @@
       <option value="Fail">Fail</option>
       <option value="Pending">others</option>
     </select>
-    <select [(ngModel)]="filter.attributeKey" [ngModelOptions]="{standalone: true}">
+    <!-- <select [(ngModel)]="filter.attributeKey" [ngModelOptions]="{standalone: true}">
       <option value="">-- Filter by Attribute --</option>
       <option *ngFor="let attr of availableAttributes" [value]="attr">{{ attr }}</option>
-    </select>
+    </select> -->
     <input *ngIf="filter.attributeKey" type="text" placeholder="Attribute value"
            [(ngModel)]="filter.attributeValue" [ngModelOptions]="{standalone: true}">
   </div>

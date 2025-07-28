@@ -1,9 +1,8 @@
 <div class="container">
-  <h2 class="header">🚀 Module & Version Management</h2> 
-  
+  <h2 class="header">🚀 Module & Version Management</h2>
 
   <!-- Independent Action Buttons -->
-  <div class="action-buttons">
+  <div class="action-buttons d-flex flex-wrap gap-2 align-items-center position-relative">
     <button class="btn btn-success" (click)="showAddProductForm = true">
       <i class="fas fa-plus"></i> Add Product
     </button>
@@ -19,32 +18,35 @@
     <button class="btn btn-primary" (click)="showProducts = !showProducts">
       <i class="fas fa-box-open"></i> {{ showProducts ? 'Hide' : 'Show' }} Products
     </button>
- 
+    
+    <!-- Auto Save Toggle Button -->
+    <div class="position-relative">
+      <button class="btn btn-outline-dark" (click)="toggleAutoSavePopup()">
+        <i class="fas fa-save"></i> Auto Save
+      </button>
 
+      <!-- Auto Save Popup -->
+      <!-- Auto Save Popup -->
+<div *ngIf="showAutoSavePopup" class="card p-3 mt-2 shadow position-absolute bg-white z-3" style="min-width: 220px;">
+  <div class="auto-save-toggle mb-3 d-flex align-items-center justify-content-between">
+    <label class="form-label mb-0">Auto Save</label>
+    <label class="switch mb-0">
+      <input type="checkbox" [checked]="autoSaveEnabled" (change)="toggleAutoSave()" />
+      <span class="slider round"></span>
+    </label>
   </div>
-  <!-- Auto-Save Toggle -->
-<!-- Auto Save Toggle -->
-<div class="auto-save-toggle">
-  <label class="btn btn-primary" for="btn-check-5">Auto Save</label>
-  <label class="switch">
-    <input type="checkbox" class="btn-check" id="btn-check-5" [checked]="autoSaveEnabled" (change)="toggleAutoSave()" />
-    <span class="slider"></span>
-  </label>
-  
-
-  <!-- Interval Dropdown (visible only if enabled) -->
-  <select
-    *ngIf="autoSaveEnabled"
-    [(ngModel)]="selectedInterval"
-    (change)="updateInterval()"
-    class="interval-select"
-  >
-    <option *ngFor="let opt of intervalOptions" [value]="opt.value">
-      {{ opt.label }}
-    </option>
-  </select>
+  <div *ngIf="autoSaveEnabled">
+    <label class="form-label">Interval:</label>
+    <select class="form-select" [(ngModel)]="selectedInterval" (change)="updateInterval()">
+      <option *ngFor="let opt of intervalOptions" [value]="opt.value">
+        {{ opt.label }}
+      </option>
+    </select>
+  </div>
 </div>
 
+    </div>
+  </div>
 
   <!-- Add Product Form -->
 <!-- Add Product Form -->

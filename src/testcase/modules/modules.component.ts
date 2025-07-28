@@ -99,6 +99,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   viewColumns: TableColumn[] = [
     { field: 'slNo', header: 'Sl No', width: 80 },
+    { header: 'Version', field: 'version', width: 100 },
     { field: 'useCase', header: 'Use Case', width: 150 },
     { field: 'testCaseId', header: 'Test Case ID', width: 120 },
     { field: 'scenario', header: 'Scenario', width: 200 },
@@ -118,13 +119,22 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.autoSaveService.start(() => this.onSave());
+    
     this.route.paramMap.subscribe((pm: ParamMap) => {
       const modId = pm.get('moduleId');
       const fallback = this.modules.length ? this.modules[0].id : null;
       this.onModuleChange(modId ?? fallback ?? '');
     });
-    this.extractAvailableAttributes();
 
+    this.route.queryParamMap.subscribe(queryParams => {
+      const shouldLoadAll = queryParams.get('loadAllVersions') === 'true';
+      if (shouldLoadAll && this.selectedModule()) {
+        this.selectedVersion = 'all';
+        this.onVersionChange();
+      }
+    });
+
+    this.extractAvailableAttributes();
     window.addEventListener('resize', this.updateScrollButtons.bind(this));
   }
 
@@ -180,7 +190,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onModuleChange(id: string): void {
     if (!this.modules.some(m => m.id === id)) return;
-    
+
     this.selectedModule.set(id);
     this.selectedVersion = '';
     this.versionTestCases.set([]);
@@ -190,9 +200,8 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
     this.availableVersions = this.testCaseService.getVersionsByModule(id);
     this.formArray.clear();
     const testCases = this.filteredTestCases();
-    
-    // Initialize uploads array with existing uploads
-    this.uploads = testCases.map(tc => 
+
+    this.uploads = testCases.map(tc =>
       tc.uploads ? tc.uploads.map(url => ({ url, loaded: true })) : []
     );
 
@@ -211,15 +220,19 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onVersionChange(): void {
     const mod = this.selectedModule();
-    if (this.selectedVersion && mod) {
-      const cases = this.testCasePool.filter(
-        tc => tc.moduleId === mod && tc.version === this.selectedVersion
-      );
-      this.versionTestCases.set(cases);
-    } else {
-      this.versionTestCases.set([]);
+    let cases: TestCase[] = [];
+
+    if (mod) {
+      if (this.selectedVersion === 'all') {
+        cases = this.testCasePool.filter(tc => tc.moduleId === mod);
+      } else if (this.selectedVersion) {
+        cases = this.testCasePool.filter(
+          tc => tc.moduleId === mod && tc.version === this.selectedVersion
+        );
+      }
     }
 
+    this.versionTestCases.set(cases);
     setTimeout(() => this.updateScrollButtons(), 300);
   }
 
@@ -229,7 +242,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
       if (!this.uploads[index]) {
         this.uploads[index] = [];
       }
-      
+
       Array.from(input.files).forEach(file => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -239,8 +252,7 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
         };
         reader.readAsDataURL(file);
       });
-      
-      // Reset input to allow uploading same files again
+
       input.value = '';
     }
   }
@@ -378,13 +390,12 @@ export class ModulesComponent implements OnInit, OnDestroy, AfterViewInit {
 
   copyTestCaseLink(testCaseId: string): void {
     const copyUrl = `${window.location.origin}/tester/view-testcase/${testCaseId}`;
-    
-    navigator.clipboard.writeText(copyUrl).then(() => {
-      alert("Link copied to clipboard!");
-    }).catch(err => {
-      console.error('Failed to copy: ', err);
-      alert("Failed to copy link");
-    });
+    navigator.clipboard.writeText(copyUrl)
+      .then(() => alert("Link copied to clipboard!"))
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+        alert("Failed to copy link");
+      });
   }
 
   onImageLoad(event: Event, rowIndex: number, fileIndex: number) {

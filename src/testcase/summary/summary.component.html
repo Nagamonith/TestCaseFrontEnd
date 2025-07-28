@@ -19,6 +19,7 @@
           <a
   class="link-primary fw-bold"
   [routerLink]="['/tester/modules', mod.id]"
+  [queryParams]="{ loadAllVersions: true }"
   routerLinkActive="text-decoration-underline"
 >
   {{ mod.name }}
